@@ -100,5 +100,5 @@ ax = scores.plot(x=0, y=1, kind='scatter', s=50,
 ax.set_xlabel('PLS-DA axis 1')
 ax.set_ylabel('PLS-DA axis 2')
 ax.legend()
-
+plt.title('PLS-DA')
 plt.show()
