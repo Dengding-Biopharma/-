@@ -90,7 +90,7 @@ clustergram = dashbio.Clustergram(
     column_labels=list(df.columns.values),
     row_labels=list(df.index),
     height=1000,
-    width=2000,
+    width=3000,
 )
 
 clustergram.show()

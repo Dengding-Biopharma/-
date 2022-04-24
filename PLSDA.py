@@ -1,3 +1,4 @@
+from skimage.measure import EllipseModel
 from sklearn.cross_decomposition import PLSRegression
 import math
 import random
@@ -96,6 +97,37 @@ scores.index = targets
 
 ax = scores.plot(x=0, y=1, kind='scatter', s=50,
                     figsize=(6,6),c=colorlist)
+
+
+print(scores)
+
+points_ad = []
+points_hc = []
+for i in range(len(scores)):
+    if 'AD' in scores.index[i]:
+        points_ad.append([scores[0][i],scores[1][i]])
+    else:
+        points_hc.append([scores[0][i],scores[1][i]])
+
+
+
+points_ad = np.array(points_ad)
+ellipse_points_ad = EllipseModel()
+ellipse_points_ad.estimate(points_ad)
+ad_x_mean,ad_y_mean,ad_a,ad_b,ad_theta = ellipse_points_ad.params
+
+points_hc = np.array(points_hc)
+ellipse_points_hc = EllipseModel()
+ellipse_points_hc.estimate(points_hc)
+hc_x_mean,hc_y_mean,hc_a,hc_b,hc_theta = ellipse_points_hc.params
+
+ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
+                        edgecolor='r', fc='None', lw=2)
+ax.add_patch(ellipse_ad)
+ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
+                        edgecolor='b', fc='None', lw=2)
+ax.add_patch(ellipse_hc)
+
 
 ax.set_xlabel('PLS-DA axis 1')
 ax.set_ylabel('PLS-DA axis 2')

@@ -73,7 +73,7 @@ for i in range(len(X_diff_hc)):
     labels_hc.append(saved_label[top_k_index[i]])
 
 fig = plt.figure(figsize=(10, 7))
-ax1 = fig.add_subplot(111)
+
 
 # Creating axes instance
 data_ads = []
@@ -88,39 +88,21 @@ data_hc = data_hcs
 
 data_ad = np.array(data_ad)
 data_hc = np.array(data_hc)
+print(data_ad.shape)
+print(data_hc.shape)
 data = np.hstack((data_ad,data_hc))
-print(data.shape)
-print(targets)
 
 
-bp = ax1.boxplot(data,  vert=1)
-plt.xticks(rotation = 90)
-ax1.set_xticklabels(targets)
-for cap in bp['caps']:
-    cap.set(color ='#8B008B',
-            linewidth = 2)
-ax1.get_xaxis().tick_bottom()
-ax1.get_yaxis().tick_left()
-for flier in bp['fliers']:
-    flier.set(marker ='D',
-              color ='#e7298a',
-              alpha = 0.5)
-for median in bp['medians']:
-    median.set(color ='red',
-               linewidth = 3)
-for whisker in bp['whiskers']:
-    whisker.set(color ='#8B008B',
-                linewidth = 1.5,
-                linestyle =":")
 
-# ax2 = fig.add_subplot(211)
-# # data_hcs = []
-# # for i in data_hc:
-# #     data_hcs.append(i.reshape(22))
-# # data_hc = data_hcs
-#
-# bp = ax2.boxplot(data_hc,  vert=0)
-# ax2.set_yticklabels(labels_hc)
+ax1 = fig.add_subplot(211)
+ax1.boxplot(data_ad.T,  vert=0)
+ax1.set_yticklabels(labels_ad)
+plt.title('boxplot for top 20 variables which have significant differences between groups\nAD group')
+
+ax2 = fig.add_subplot(212)
+ax2.boxplot(data_hc.T,  vert=0)
+ax2.set_yticklabels(labels_hc)
+plt.title('HC group')
 # for cap in bp['caps']:
 #     cap.set(color ='#8B008B',
 #             linewidth = 2)
@@ -137,7 +119,7 @@ for whisker in bp['whiskers']:
 #     whisker.set(color ='#8B008B',
 #                 linewidth = 1.5,
 #                 linestyle =":")
-plt.title('boxplot for top 20 variables which have significant differences between groups')
+
 
 plt.show()
 
