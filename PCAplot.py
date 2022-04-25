@@ -16,6 +16,15 @@ data = pd.read_excel('files/peaktablePOSout_POS_noid_replace_variable.xlsx')
 color_exist = []
 targets = data.columns.values[1:]
 
+for i in range(len(data)):
+    temp = []
+    for j in targets:
+        temp.append(data[j][i])
+    for k in range(len(temp)):
+        temp[k] = math.isnan(temp[k])
+    if temp.count(True) >= len(temp) /2:
+        data = data.drop(i)
+
 for i in range(len(targets)):
     if 'AD' in targets[i]:
         targets[i] = 'AD_Disease_group'
@@ -27,8 +36,10 @@ for i in range(len(targets)):
         color_exist.append('r')
     else:
         color_exist.append('b')
-print(data)
+
+
 print(targets)
+
 
 saved_label = data['dataMatrix'].values
 print(saved_label)
@@ -70,14 +81,14 @@ print(y_pred)
 group0 =[]
 outlier_index = []
 for i in range(len(y_pred)):
-    if y_pred[i] == 1:
+    if y_pred[i] == 2:
         group0.append(X_new[i])
         outlier_index.append(i)
 
 group0 = np.array(group0)
-ellipse_outliers = EllipseModel()
-ellipse_outliers.estimate(group0)
-outliers_x_mean,outliers_y_mean,a,b,theta = ellipse_outliers.params
+# ellipse_outliers = EllipseModel()
+# ellipse_outliers.estimate(group0)
+# outliers_x_mean,outliers_y_mean,a,b,theta = ellipse_outliers.params
 
 
 

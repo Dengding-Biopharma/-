@@ -1,3 +1,5 @@
+import math
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -37,6 +39,15 @@ targets = data.columns.values[1:]
 
 print(data)
 print(targets)
+
+for i in range(len(data)):
+    temp = []
+    for j in targets:
+        temp.append(data[j][i])
+    for k in range(len(temp)):
+        temp[k] = math.isnan(temp[k])
+    if temp.count(True) >= len(temp) /2:
+        data = data.drop(i)
 
 
 

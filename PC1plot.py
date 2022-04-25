@@ -19,6 +19,15 @@ targets = data.columns.values[1:]
 print(data)
 print(targets)
 
+for i in range(len(data)):
+    temp = []
+    for j in targets:
+        temp.append(data[j][i])
+    for k in range(len(temp)):
+        temp[k] = math.isnan(temp[k])
+    if temp.count(True) >= len(temp) /2:
+        data = data.drop(i)
+
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']

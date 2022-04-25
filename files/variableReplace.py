@@ -38,7 +38,6 @@ print(table)
 for i in range(len(table)):
     if 'no_match' in table['dataMatrix'][i]:
         table = table.drop(i)
-
 print(table)
 
 table.to_excel('peaktablePOSout_POS_noid_replace_variable.xlsx',index=False,na_rep=np.nan)

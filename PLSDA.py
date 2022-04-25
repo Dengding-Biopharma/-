@@ -18,6 +18,16 @@ data = pd.read_excel('files/peaktablePOSout_POS_noid_replace_variable.xlsx')
 color_exist = []
 targets = data.columns.values[1:]
 
+for i in range(len(data)):
+    temp = []
+    for j in targets:
+        temp.append(data[j][i])
+    for k in range(len(temp)):
+        temp[k] = math.isnan(temp[k])
+    if temp.count(True) >= len(temp) /2:
+        data = data.drop(i)
+
+
 for i in range(len(targets)):
     if 'AD' in targets[i]:
         targets[i] = 'AD_Disease_group'
@@ -29,8 +39,12 @@ for i in range(len(targets)):
         color_exist.append('r')
     else:
         color_exist.append('b')
-print(data)
+
+
 print(targets)
+
+
+
 
 saved_label = data['dataMatrix'].values
 print(saved_label)
