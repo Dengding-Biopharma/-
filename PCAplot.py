@@ -157,7 +157,7 @@ for target, color in zip(targets,colors):
                , s = 50)
 
 
-ax.legend(['AD_Disease_group','HC_Control_group'],loc='upper right',borderpad=2,labelspacing=2,prop={'size': 12})
+ax.legend(['AD_Disease_group','HC_Control_group'],loc='lower right',borderpad=2,labelspacing=2,prop={'size': 12})
 ax.grid()
 
 
