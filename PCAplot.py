@@ -33,11 +33,10 @@ print(targets)
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
-# 分别插值,根据column mean（所有sample这个variable的mean）插值
+
 imputer_mean_ad = SimpleImputer(missing_values=np.nan,strategy='mean')
 data_impute = imputer_mean_ad.fit_transform(data)
-# imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
-# data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
+
 print(data_impute)
 sum_baseline = 30000
 for i in range(data_impute.shape[1]):
@@ -135,9 +134,7 @@ ax.add_patch(ellipse_ad)
 ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
                         edgecolor='b', fc='None', lw=2)
 ax.add_patch(ellipse_hc)
-ellipse_outliers = Ellipse((outliers_x_mean, outliers_y_mean), 2*a, 2*b,theta*180/np.pi,
-                        edgecolor='g', fc='None', lw=2)
-ax.add_patch(ellipse_outliers)
+
 
 
 for target, color in zip(targets,colors):
@@ -149,7 +146,7 @@ for target, color in zip(targets,colors):
                , s = 50)
 
 
-ax.legend(['AD_Disease_group','HC_Control_group','outliers'],loc='upper right',borderpad=2,labelspacing=2,prop={'size': 12})
+ax.legend(['AD_Disease_group','HC_Control_group'],loc='upper right',borderpad=2,labelspacing=2,prop={'size': 12})
 ax.grid()
 
 

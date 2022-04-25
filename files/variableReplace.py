@@ -41,5 +41,4 @@ for i in range(len(table)):
 
 print(table)
 
-
 table.to_excel('peaktablePOSout_POS_noid_replace_variable.xlsx',index=False,na_rep=np.nan)

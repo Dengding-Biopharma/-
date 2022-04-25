@@ -95,6 +95,8 @@ print(colorlist)
 scores = pd.DataFrame(plsr.x_scores_)
 scores.index = targets
 
+
+
 ax = scores.plot(x=0, y=1, kind='scatter', s=50,
                     figsize=(6,6),c=colorlist)
 
@@ -128,9 +130,10 @@ ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
                         edgecolor='b', fc='None', lw=2)
 ax.add_patch(ellipse_hc)
 
+print(targets)
 
 ax.set_xlabel('PLS-DA axis 1')
 ax.set_ylabel('PLS-DA axis 2')
-ax.legend()
+ax.legend(handles=[ellipse_ad,ellipse_hc],labels=['AD_group','HC_group'])
 plt.title('PLS-DA')
 plt.show()
