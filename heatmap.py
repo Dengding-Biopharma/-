@@ -8,6 +8,11 @@ from sklearn.impute import SimpleImputer
 import dash_bio
 
 data = pd.read_excel('files/peaktablePOSout_POS_noid_replace_variable.xlsx')
+
+for column in data.columns.values:
+    if '16' in column:
+        del data[column]
+
 color_exist = []
 targets = data.columns.values[1:]
 

@@ -13,6 +13,11 @@ from skimage.measure import EllipseModel
 
 data = pd.read_excel('files/peaktablePOSout_POS_noid_replace_variable.xlsx')
 
+for column in data.columns.values:
+    if '16' in column:
+        del data[column]
+
+
 color_exist = []
 targets = data.columns.values[1:]
 print(targets)
@@ -87,14 +92,14 @@ X_new = pca.fit_transform(normalized_data_impute.T)
 print(X_new)
 print(pca.explained_variance_ratio_)
 
-y_pred = KMeans(n_clusters=3,random_state=8).fit_predict(X_new)
+y_pred = KMeans(n_clusters=2,random_state=8).fit_predict(X_new)
 
 print(y_pred)
 
 group0 =[]
 outlier_index = []
 for i in range(len(y_pred)):
-    if y_pred[i] == 2:
+    if y_pred[i] == 1:
         group0.append(X_new[i])
         outlier_index.append(i)
 
