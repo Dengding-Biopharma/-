@@ -32,7 +32,7 @@ table = table.drop(columns='dataMatrix')
 print(table)
 # variable_name_list = pd.DataFrame(variable_name_list)
 table.insert(0,'dataMatrix',variable_name_list)
-print(table)
+
 
 
 for i in range(len(table)):

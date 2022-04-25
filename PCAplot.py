@@ -15,6 +15,9 @@ data = pd.read_excel('files/peaktablePOSout_POS_noid_replace_variable.xlsx')
 
 color_exist = []
 targets = data.columns.values[1:]
+print(targets)
+
+
 
 for i in range(len(data)):
     temp = []
@@ -24,6 +27,7 @@ for i in range(len(data)):
         temp[k] = math.isnan(temp[k])
     if temp.count(True) >= len(temp) /2:
         data = data.drop(i)
+
 
 for i in range(len(targets)):
     if 'AD' in targets[i]:
@@ -38,8 +42,6 @@ for i in range(len(targets)):
         color_exist.append('b')
 
 
-print(targets)
-
 
 saved_label = data['dataMatrix'].values
 print(saved_label)
@@ -48,8 +50,8 @@ del data['dataMatrix']
 imputer_mean_ad = SimpleImputer(missing_values=np.nan,strategy='mean')
 data_impute = imputer_mean_ad.fit_transform(data)
 
-print(data_impute)
-sum_baseline = 30000
+
+sum_baseline = 13800
 for i in range(data_impute.shape[1]):
     coe = sum_baseline/np.sum(data_impute[:,i])
     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
@@ -57,14 +59,25 @@ for i in range(data_impute.shape[1]):
 normalized_data_impute = data_impute
 print(normalized_data_impute)
 
-normalized_data_impute_ad = normalized_data_impute[:,:23].T
-normalized_data_impute_hc = normalized_data_impute[:,23:].T
+ad_index=[]
+hc_index=[]
+for i in range(len(targets)):
+    if "AD" in targets[i]:
+        ad_index.append(i)
+    else:
+        hc_index.append(i)
+print(ad_index)
+print(hc_index)
 
+normalized_data_impute_ad = []
+for index in ad_index:
+    normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
+normalized_data_impute_ad = np.array(normalized_data_impute_ad)
 
-print(normalized_data_impute_ad.shape)
-print(normalized_data_impute_hc.shape)
-
-
+normalized_data_impute_hc =[]
+for index in hc_index:
+    normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
+normalized_data_impute_hc = np.array(normalized_data_impute_hc)
 
 
 # PCA
@@ -157,7 +170,7 @@ for target, color in zip(targets,colors):
                , s = 50)
 
 
-ax.legend(['AD_Disease_group','HC_Control_group'],loc='lower right',borderpad=2,labelspacing=2,prop={'size': 12})
+ax.legend(['AD_Disease_group','HC_Control_group'],loc='upper right',borderpad=2,labelspacing=2,prop={'size': 12})
 ax.grid()
 
 

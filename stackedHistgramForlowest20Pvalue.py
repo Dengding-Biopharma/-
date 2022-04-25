@@ -40,8 +40,29 @@ for i in range(data_impute.shape[1]):
 
 normalized_data_impute = data_impute
 print(normalized_data_impute.shape)
-data_impute_ad = normalized_data_impute.T[:45]
-data_impute_hc = normalized_data_impute.T[45:]
+
+ad_index=[]
+hc_index=[]
+for i in range(len(targets)):
+    if "AD" in targets[i]:
+        ad_index.append(i)
+    else:
+        hc_index.append(i)
+print(ad_index)
+print(hc_index)
+
+normalized_data_impute_ad = []
+for index in ad_index:
+    normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
+normalized_data_impute_ad = np.array(normalized_data_impute_ad)
+
+normalized_data_impute_hc =[]
+for index in hc_index:
+    normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
+normalized_data_impute_hc = np.array(normalized_data_impute_hc)
+
+data_impute_ad = normalized_data_impute_ad
+data_impute_hc = normalized_data_impute_hc
 
 top_k = 20
 p_list =[]
@@ -74,8 +95,8 @@ for row in range(X.shape[0]):
 
 
 X_top = np.array(X_top)
-print(X_top.shape)
-X_top = X_top.reshape(top_k,68)
+
+X_top = X_top.reshape(top_k,X_top.shape[0])
 
 labels = []
 for i in top_k_index:

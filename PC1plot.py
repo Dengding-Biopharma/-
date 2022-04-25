@@ -37,7 +37,7 @@ data_impute = imputer_mean_ad.fit_transform(data)
 # imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
 # data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
 print(data_impute)
-sum_baseline = 30000
+sum_baseline = 13800
 for i in range(data_impute.shape[1]):
     coe = sum_baseline/np.sum(data_impute[:,i])
     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
@@ -45,8 +45,25 @@ for i in range(data_impute.shape[1]):
 normalized_data_impute = data_impute
 print(normalized_data_impute)
 
-normalized_data_impute_ad = normalized_data_impute[:,:23].T
-normalized_data_impute_hc = normalized_data_impute[:,23:].T
+ad_index=[]
+hc_index=[]
+for i in range(len(targets)):
+    if "AD" in targets[i]:
+        ad_index.append(i)
+    else:
+        hc_index.append(i)
+print(ad_index)
+print(hc_index)
+
+normalized_data_impute_ad = []
+for index in ad_index:
+    normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
+normalized_data_impute_ad = np.array(normalized_data_impute_ad)
+
+normalized_data_impute_hc =[]
+for index in hc_index:
+    normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
+normalized_data_impute_hc = np.array(normalized_data_impute_hc)
 
 
 print(normalized_data_impute_ad.shape)

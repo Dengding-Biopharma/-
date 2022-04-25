@@ -60,15 +60,16 @@ data_impute = imputer_mean_ad.fit_transform(data)
 # imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
 # data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
 print(data_impute)
-sum_baseline = 30000
+sum_baseline = 13800
 for i in range(data_impute.shape[1]):
     coe = sum_baseline/np.sum(data_impute[:,i])
     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
 
 normalized_data_impute = data_impute
-print(normalized_data_impute.shape)
 normalized_data_impute = normalized_data_impute.T
-print(normalized_data_impute.shape)
+
+
+
 forest = RandomForestClassifier(n_estimators=10000,random_state=0,n_jobs=-1)
 forest.fit(normalized_data_impute,targets)
 importances = forest.feature_importances_

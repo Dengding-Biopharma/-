@@ -39,29 +39,51 @@ data_impute = imputer_mean_ad.fit_transform(data)
 # imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
 # data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
 print(data_impute)
-sum_baseline = 30000
+sum_baseline = 13800
 for i in range(data_impute.shape[1]):
     coe = sum_baseline/np.sum(data_impute[:,i])
     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
 
 normalized_data_impute = data_impute
 print(normalized_data_impute.shape)
-data_impute_ad = normalized_data_impute.T[:45]
-data_impute_hc = normalized_data_impute.T[45:]
+ad_index=[]
+hc_index=[]
+for i in range(len(targets)):
+    if "AD" in targets[i]:
+        ad_index.append(i)
+    else:
+        hc_index.append(i)
+
+
+normalized_data_impute_ad = []
+for index in ad_index:
+    normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
+normalized_data_impute_ad = np.array(normalized_data_impute_ad)
+
+normalized_data_impute_hc =[]
+for index in hc_index:
+    normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
+normalized_data_impute_hc = np.array(normalized_data_impute_hc)
+
 
 top_k = 20
 p_list =[]
-for i in range(data_impute_ad.shape[1]):
-    t,p = ttest_ind(data_impute_ad[:,i:i+1],data_impute_hc[:,i:i+1],equal_var=True)
+for i in range(normalized_data_impute_ad.shape[1]):
+    t,p = ttest_ind(normalized_data_impute_ad[:,i:i+1],normalized_data_impute_hc[:,i:i+1],equal_var=True)
     p_list.append(p[0])
 p_list = np.array(p_list)
+count = 0
+for p in p_list:
+    if p < 0.05:
+        count +=1
+print(count)
 
-top_k_index = p_list.argsort()[::-1][len(p_list)-top_k:]
+top_k_index = p_list.argsort()[::-1][len(p_list)-count:]
 print(top_k_index)
 
 
-X_ad = np.array(data_impute_ad)
-X_hc = np.array(data_impute_hc)
+X_ad = np.array(normalized_data_impute_ad)
+X_hc = np.array(normalized_data_impute_hc)
 
 
 
@@ -89,18 +111,18 @@ for i in range(len(X_diff_hc)):
     data_hc.append(X_diff_hc[i])
     labels_hc.append(saved_label[top_k_index[i]])
 
-fig = plt.figure(figsize=(10, 7))
+
 
 
 # Creating axes instance
 data_ads = []
 for i in data_ad:
-    data_ads.append(i.reshape(45))
+    data_ads.append(i.reshape(i.shape[0]))
 data_ad = data_ads
 
 data_hcs = []
 for i in data_hc:
-    data_hcs.append(i.reshape(23))
+    data_hcs.append(i.reshape(i.shape[0]))
 data_hc = data_hcs
 
 data_ad = np.array(data_ad)
@@ -110,16 +132,25 @@ print(data_hc.shape)
 data = np.hstack((data_ad,data_hc))
 
 
+for i in range(data_ad.shape[0]):
+    data = [data_ad[i,:],data_hc[i,:]]
+    plt.boxplot(data,labels=['AD','HC'])
+    plt.title(labels_ad[i])
+    plt.savefig('figures/boxplots/boxplot-{}.png'.format(i))
+    plt.close()
 
-ax1 = fig.add_subplot(211)
-ax1.boxplot(data_ad.T,  vert=0)
-ax1.set_yticklabels(labels_ad)
-plt.title('boxplot for top 20 variables which have significant differences between groups\nAD group')
 
-ax2 = fig.add_subplot(212)
-ax2.boxplot(data_hc.T,  vert=0)
-ax2.set_yticklabels(labels_hc)
-plt.title('HC group')
+
+#
+# ax1 = fig.add_subplot(211)
+# ax1.boxplot(data_ad.T,  vert=0)
+# ax1.set_yticklabels(labels_ad)
+# plt.title('boxplot for top 20 variables which have significant differences between groups\nAD group')
+#
+# ax2 = fig.add_subplot(212)
+# ax2.boxplot(data_hc.T,  vert=0)
+# ax2.set_yticklabels(labels_hc)
+# plt.title('HC group')
 # for cap in bp['caps']:
 #     cap.set(color ='#8B008B',
 #             linewidth = 2)
