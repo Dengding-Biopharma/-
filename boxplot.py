@@ -20,6 +20,7 @@ targets = data.columns.values[1:]
 
 print(data)
 
+
 for i in range(len(data)):
     temp = []
     for j in targets:
@@ -30,7 +31,8 @@ for i in range(len(data)):
         data = data.drop(i)
 
 
-
+print(data)
+quit()
 
 
 print(targets)

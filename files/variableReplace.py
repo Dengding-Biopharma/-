@@ -21,9 +21,9 @@ for i in range(variable_num):
     bool_rt = temp['Exp_RT'].between(rtmin,rtmax,inclusive=True)
     temp =temp[bool_rt]
     if temp.empty:
-        variable_name_list.append('variable_{}_no_match'.format(data_dic['variableMetadata'][i]))
+        variable_name_list.append('{}_no_match'.format(data_dic['variableMetadata'][i]))
         continue
-    name_list = temp['Max_NAME'].values
+    name_list = temp['Max_SMILES'].values
     collections_names = Counter(name_list)
     most_common_name = collections_names.most_common(1)
     variable_name_list.append(most_common_name[0][0])
@@ -35,9 +35,9 @@ table.insert(0,'dataMatrix',variable_name_list)
 
 
 
-for i in range(len(table)):
-    if 'no_match' in table['dataMatrix'][i]:
-        table = table.drop(i)
+# for i in range(len(table)):
+#     if 'no_match' in table['dataMatrix'][i]:
+#         table = table.drop(i)
 print(table)
 
-table.to_excel('peaktablePOSout_POS_noid_replace_variable.xlsx',index=False,na_rep=np.nan)
+table.to_excel('peaktablePOSout_POS_noid_replace_variable_ours.xlsx',index=False,na_rep=np.nan)
