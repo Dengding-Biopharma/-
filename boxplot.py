@@ -8,7 +8,7 @@ import sklearn
 from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
 
-data = pd.read_excel('files/peaktablePOSout_POS_noid_replace_variable.xlsx')
+data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace_variable_ours.xlsx')
 
 for column in data.columns.values:
     if '16' in column:
@@ -16,24 +16,6 @@ for column in data.columns.values:
 
 color_exist = []
 targets = data.columns.values[1:]
-
-
-print(data)
-
-
-for i in range(len(data)):
-    temp = []
-    for j in targets:
-        temp.append(data[j][i])
-    for k in range(len(temp)):
-        temp[k] = math.isnan(temp[k])
-    if temp.count(True) >= len(temp) /2:
-        data = data.drop(i)
-
-
-print(data)
-quit()
-
 
 print(targets)
 
@@ -83,10 +65,10 @@ count = 0
 for p in p_list:
     if p < 0.05:
         count +=1
-print(count)
 
-top_k_index = p_list.argsort()[::-1][len(p_list)-count:]
+top_k_index = p_list.argsort()[::-1][len(p_list)-top_k:]
 print(top_k_index)
+
 
 
 X_ad = np.array(normalized_data_impute_ad)
@@ -138,13 +120,27 @@ print(data_ad.shape)
 print(data_hc.shape)
 data = np.hstack((data_ad,data_hc))
 
-
+data = []
+color_list=[]
 for i in range(data_ad.shape[0]):
-    data = [data_ad[i,:],data_hc[i,:]]
-    plt.boxplot(data,labels=['AD','HC'])
-    plt.title(labels_ad[i])
-    plt.savefig('figures/boxplots/boxplot-{}.png'.format(i))
-    plt.close()
+    color_list.append('r')
+    data.append(data_ad[i,:])
+for i in range(data_hc.shape[0]):
+    color_list.append('b')
+    data.append(data_hc[i, :])
+
+
+
+print(data)
+bp = plt.boxplot(data,labels=labels_ad+labels_hc,patch_artist=True)
+plt.xticks(rotation = 90)
+for i in range(len(bp['boxes'])):
+    if i < len(bp['boxes'])/2:
+        bp['boxes'][i].set(color='r')
+    else:
+        bp['boxes'][i].set(color='b')
+plt.show()
+
 
 
 
