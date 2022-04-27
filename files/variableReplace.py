@@ -35,9 +35,20 @@ table.insert(0,'dataMatrix',variable_name_list)
 
 
 
-# for i in range(len(table)):
-#     if 'no_match' in table['dataMatrix'][i]:
-#         table = table.drop(i)
+for i in range(len(table)):
+    if 'no_match' in table['dataMatrix'][i]:
+        table = table.drop(i)
+    elif 'Massbank' in table['dataMatrix'][i]:
+        temp = table['dataMatrix'][i].split(' ',1)[1].split('|')[0]
+        table['dataMatrix'][i] = temp
+    elif ';' in table['dataMatrix'][i]:
+        temp = table['dataMatrix'][i].split(';')[0]
+        table['dataMatrix'][i] = temp
+    elif 'ReSpect' in table['dataMatrix'][i]:
+        temp = table['dataMatrix'][i].split(' ',1)[1].split('|')[0]
+        table['dataMatrix'][i] = temp
+
+
 print(table)
 
 table.to_excel('peaktablePOSout_POS_noid_replace_variable_ours.xlsx',index=False,na_rep=np.nan)
