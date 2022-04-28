@@ -18,6 +18,8 @@ variable_smile_list = []
 most_common_count_list=[]
 candidate_count_list=[]
 variable_num = len(data_dic)
+count_hmdb = 0
+count_others = 0
 for i in range(variable_num):
     mzmin = data_dic['xcmsCamera_mzmin'][i]-0.05
     mzmax = data_dic['xcmsCamera_mzmax'][i]+0.05
@@ -51,6 +53,14 @@ for i in range(variable_num):
     most_common_name_tuple = collections_names.most_common(1)
     most_common_name = most_common_name_tuple[0][0]
     most_common_smile = most_common_smile_tuple[0][0]
+
+
+    print(temp['Max_Source'][temp[temp['Max_NAME'] == most_common_name].index.tolist()[0]],end='\n\n')
+    if temp['Max_Source'][temp[temp['Max_NAME'] == most_common_name].index.tolist()[0]] == 'HMDB':
+        count_hmdb+=1
+    else:
+        count_others+=1
+
     candidates_count = len(name_list)
     most_common_count = most_common_name_tuple[0][1]
 
@@ -65,6 +75,9 @@ for i in range(variable_num):
         most_common_count_list.append(most_common_count)
         candidate_count_list.append(candidates_count)
 
+print(count_hmdb)
+print(count_others)
+print(count_hmdb/(count_others+count_hmdb))
 
 data_dic['gnps_name'] = variable_name_list
 data_dic['gnps_smile'] = variable_smile_list
@@ -78,7 +91,7 @@ print(data_dic)
 table = table.drop(columns='dataMatrix')
 print(table)
 # variable_name_list = pd.DataFrame(variable_name_list)
-table.insert(0,'dataMatrix',variable_name_list)
+table.insert(0,'dataMatrix',variable_smile_list)
 
 
 print(table)
@@ -103,15 +116,15 @@ for i in range(len(table)):
 print(table)
 
 
-table.to_excel('ad files/peaktablePOSout_POS_noid_replace_variable_gnps.xlsx',index=False,na_rep=np.nan)
+table.to_excel('ad files/peaktablePOSout_POS_noid_replace_variable_ours_hmdb.xlsx',index=False,na_rep=np.nan)
 # table.to_excel('ad files/peaktableNEGout_NEG_noid_repla7ce_variable.xlsx',index=False,na_rep=np.nan)
 
-data = pd.read_excel('ad files/peaktablePOSout_POS_noid_replace_variable_gnps.xlsx')
+data = pd.read_excel('ad files/peaktablePOSout_POS_noid_replace_variable_ours_hmdb.xlsx')
 
 targets = data.columns.values[1:]
 
 
-print(data)
+
 
 
 for i in range(len(data)):
@@ -124,5 +137,4 @@ for i in range(len(data)):
         data = data.drop(i)
 
 print(data)
-
-data.to_excel('ad files/peaktablePOSout_POS_noid_replace_variable_gnps.xlsx',index=False,na_rep=np.nan)
+data.to_excel('ad files/peaktablePOSout_POS_noid_replace_variable_ours_hmdb.xlsx',index=False,na_rep=np.nan)

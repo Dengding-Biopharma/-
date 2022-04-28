@@ -8,7 +8,7 @@ import sklearn
 from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
 
-data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace_variable_ours.xlsx')
+data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace.xlsx')
 
 for column in data.columns.values:
     if '16' in column:
@@ -139,6 +139,9 @@ for i in range(len(bp['boxes'])):
         bp['boxes'][i].set(color='r')
     else:
         bp['boxes'][i].set(color='b')
+
+plt.title('boxplot for top 20 variables which have significant differences between groups')
+plt.legend(handles=[bp['boxes'][0],bp['boxes'][0+top_k]],labels=['AD_group','HC_group'])
 plt.show()
 
 

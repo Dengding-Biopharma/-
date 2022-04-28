@@ -1,14 +1,15 @@
 import csv
-
+from rdkit import Chem
 import pandas as pd
 
 
-table = pd.read_csv('hmdb_metabolites.csv',quoting=csv.QUOTE_NONE,error_bad_lines=False)
+table = pd.read_csv('hmdb_metabolites.csv',sep='\t')
 
 
 print(table.columns.values)
+
 print(table['inchi'])
-quit()
+
 import math
 from math import nan
 
@@ -16,7 +17,7 @@ import numpy as np
 from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
 
-data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace_variable_ours.xlsx')
+data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace_variable_ours_hmdb.xlsx')
 print(data)
 for column in data.columns.values:
     if '16' in column:
@@ -80,9 +81,19 @@ print(top_k_index)
 print(len(top_k_index))
 ids=[]
 for k in top_k_index:
-    for i in range(len(table['smiles'].values)):
-        if saved_label[k] == table['smiles'].values[i]:
-            ids.append(table['accession'].values[i])
+    m = Chem.MolFromSmiles(saved_label[k])
+    inchikey = Chem.MolToInchiKey(m)
+    print(inchikey)
+    for i in range(len(table['inchikey'].values)):
+        if inchikey == table['inchikey'].values[i]:
+            try:
+                ids.append(int(table['pubchem_compound_id'].values[i]))
+            except:
+                continue
+            print(ids[-1])
+
 
 print(ids)
 print(len(ids))
+for id in ids:
+    print(id)
