@@ -1,9 +1,14 @@
+import csv
+
 import pandas as pd
 
-table = pd.read_csv('hmdb_metabolites.csv')
-print(table['accession'].values)
-print(table['smiles'].values)
 
+table = pd.read_csv('hmdb_metabolites.csv',quoting=csv.QUOTE_NONE,error_bad_lines=False)
+
+
+print(table.columns.values)
+print(table['inchi'])
+quit()
 import math
 from math import nan
 
@@ -69,8 +74,8 @@ for p in p_list:
     if p < 0.05:
         count +=1
 
-# top_k_index = p_list.argsort()[::-1][len(p_list)-count:]
-top_k_index = p_list.argsort()[::-1][:]
+top_k_index = p_list.argsort()[::-1][len(p_list)-count:]
+#top_k_index = p_list.argsort()[::-1][:]
 print(top_k_index)
 print(len(top_k_index))
 ids=[]
