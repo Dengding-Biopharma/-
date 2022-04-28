@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 from collections import Counter
-data_dic = pd.read_excel('pollen files/results/process_output_quantid_neg_camera_noid/varsNEGout_Neg_noid.xlsx')
-data = pd.read_excel('pollen files/0325-pollen-Neg.xlsx')
-table = pd.read_excel('pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_Neg_noid.xlsx')
+data_dic = pd.read_excel('pollen files/results/process_output_quantid_pos_camera_noid/varsPOSout_POS_noid.xlsx')
+data = pd.read_excel('pollen files/0325-pollen-Pos.xlsx')
+table = pd.read_excel('pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_Pos_noid.xlsx')
 
 
 variable_name_list = []
@@ -39,13 +39,16 @@ for i in range(len(table)):
     if 'no_match' in table['dataMatrix'][i]:
         table = table.drop(i)
     elif 'Massbank' in table['dataMatrix'][i]:
-        temp = table['dataMatrix'][i].split(' ',1)[1].split('|')[0]
+        temp = table['dataMatrix'][i].split(' ', 1)[1].split('|')[0]
         table['dataMatrix'][i] = temp
     elif ';' in table['dataMatrix'][i]:
         temp = table['dataMatrix'][i].split(';')[0]
         table['dataMatrix'][i] = temp
     elif 'ReSpect' in table['dataMatrix'][i]:
-        temp = table['dataMatrix'][i].split(' ',1)[1].split('|')[0]
+        temp = table['dataMatrix'][i].split(' ', 1)[1].split('|')[0]
+        table['dataMatrix'][i] = temp
+    elif 'HMDB' in table['dataMatrix'][i]:
+        temp = table['dataMatrix'][i].split(' ', 1)[1].split('|')[0]
         table['dataMatrix'][i] = temp
 
 
