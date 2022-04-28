@@ -3,13 +3,13 @@ import math
 import numpy as np
 import pandas as pd
 from collections import Counter
-data_dic = pd.read_excel('ad files/varsPOSout_pos_noid.xlsx')
-data = pd.read_excel('ad files/Pos-summary-0313-16.xlsx')
-table = pd.read_excel('ad files/peaktablePOSout_POS_noid.xlsx')
+# data_dic = pd.read_excel('ad files/varsPOSout_pos_noid.xlsx')
+# data = pd.read_excel('ad files/Pos-summary-0313-16.xlsx')
+# table = pd.read_excel('ad files/peaktablePOSout_POS_noid.xlsx')
 
-# data_dic = pd.read_excel('ad files/varsNEGout_neg_noid.xlsx')
-# data = pd.read_excel('ad files/Neg-summary-0313-16.xlsx')
-# table = pd.read_excel('ad files/peaktableNEGout_NEG_noid.xlsx')
+data_dic = pd.read_excel('ad files/varsNEGout_neg_noid.xlsx')
+data = pd.read_excel('ad files/Neg-summary-0313-16.xlsx')
+table = pd.read_excel('ad files/peaktableNEGout_NEG_noid.xlsx')
 
 
 
@@ -55,7 +55,6 @@ for i in range(variable_num):
     most_common_smile = most_common_smile_tuple[0][0]
 
 
-    print(temp['Max_Source'][temp[temp['Max_NAME'] == most_common_name].index.tolist()[0]],end='\n\n')
     if temp['Max_Source'][temp[temp['Max_NAME'] == most_common_name].index.tolist()[0]] == 'HMDB':
         count_hmdb+=1
     else:
@@ -79,22 +78,20 @@ print(count_hmdb)
 print(count_others)
 print(count_hmdb/(count_others+count_hmdb))
 
-data_dic['gnps_name'] = variable_name_list
-data_dic['gnps_smile'] = variable_smile_list
-data_dic['gnps_most_common_count']=most_common_count_list
-data_dic['gnps_candidate_count']=candidate_count_list
-
-print(data_dic)
+# data_dic['gnps_name'] = variable_name_list
+# data_dic['gnps_smile'] = variable_smile_list
+# data_dic['gnps_most_common_count']=most_common_count_list
+# data_dic['gnps_candidate_count']=candidate_count_list
 #
-# data_dic.to_excel('ad files/varsPOSout_pos_noid.xlsx',index=False,na_rep=np.nan)
+
 
 table = table.drop(columns='dataMatrix')
-print(table)
+
 # variable_name_list = pd.DataFrame(variable_name_list)
-table.insert(0,'dataMatrix',variable_smile_list)
+table.insert(0,'dataMatrix',variable_name_list)
 
 
-print(table)
+
 
 
 for i in range(len(table)):
@@ -112,14 +109,18 @@ for i in range(len(table)):
     elif 'HMDB' in table['dataMatrix'][i]:
         temp = table['dataMatrix'][i].split(' ',1)[1].split('|')[0]
         table['dataMatrix'][i] = temp
+    elif 'Spectral Match to' in table['dataMatrix'][i]:
+        temp = table['dataMatrix'][i].split('Spectral Match to ',1)[1]
+        table['dataMatrix'][i] = temp
 
 print(table)
 
 
-table.to_excel('ad files/peaktablePOSout_POS_noid_replace_variable_ours_hmdb.xlsx',index=False,na_rep=np.nan)
-# table.to_excel('ad files/peaktableNEGout_NEG_noid_repla7ce_variable.xlsx',index=False,na_rep=np.nan)
+# table.to_excel('ad files/peaktablePOSout_POS_noid_replace.xlsx',index=False,na_rep=np.nan)
+table.to_excel('ad files/peaktableNEGout_NEG_noid_replace.xlsx',index=False,na_rep=np.nan)
 
-data = pd.read_excel('ad files/peaktablePOSout_POS_noid_replace_variable_ours_hmdb.xlsx')
+# data = pd.read_excel('ad files/peaktablePOSout_POS_noid_replace.xlsx')
+data = pd.read_excel('ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
 targets = data.columns.values[1:]
 
@@ -133,8 +134,9 @@ for i in range(len(data)):
         temp.append(data[j][i])
     for k in range(len(temp)):
         temp[k] = math.isnan(temp[k])
-    if temp.count(True) >= len(temp) /2:
+    if temp.count(True) > len(temp) /2:
         data = data.drop(i)
 
 print(data)
-data.to_excel('ad files/peaktablePOSout_POS_noid_replace_variable_ours_hmdb.xlsx',index=False,na_rep=np.nan)
+# data.to_excel('ad files/peaktablePOSout_POS_noid_replace.xlsx',index=False,na_rep=np.nan)
+data.to_excel('ad files/peaktableNEGout_NEG_noid_replace.xlsx',index=False,na_rep=np.nan)
