@@ -14,22 +14,6 @@ data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_c
 color_exist = []
 targets = data.columns.values[1:]
 
-
-print(data)
-print(targets)
-
-for i in range(len(data)):
-    temp = []
-    for j in targets:
-        temp.append(data[j][i])
-    for k in range(len(temp)):
-        temp[k] = math.isnan(temp[k])
-    if temp.count(True) >= len(temp) /2:
-        data = data.drop(i)
-
-
-print(data)
-
 print(targets)
 
 saved_label = data['dataMatrix'].values
@@ -41,107 +25,118 @@ data_impute = imputer_mean_ad.fit_transform(data)
 # imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
 # data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
 print(data_impute)
-sum_baseline = 10000
+sum_baseline = 13800
 for i in range(data_impute.shape[1]):
     coe = sum_baseline/np.sum(data_impute[:,i])
     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
 
 normalized_data_impute = data_impute
 print(normalized_data_impute.shape)
-
-xych_index=[]
-gych_index=[]
+ad_index=[]
+hc_index=[]
 for i in range(len(targets)):
-    if "XYCH" in targets[i]:
-        xych_index.append(i)
-    elif 'GYCH' in targets[i]:
-        gych_index.append(i)
+    if "AD" in targets[i]:
+        ad_index.append(i)
+    else:
+        hc_index.append(i)
 
 
-normalized_data_impute_xych = []
-for index in xych_index:
-    normalized_data_impute_xych.append(normalized_data_impute[:,index].T)
-normalized_data_impute_xych = np.array(normalized_data_impute_xych)
+normalized_data_impute_ad = []
+for index in ad_index:
+    normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
+normalized_data_impute_ad = np.array(normalized_data_impute_ad)
 
-normalized_data_impute_gych =[]
-for index in gych_index:
-    normalized_data_impute_gych.append(normalized_data_impute[:,index].T)
-normalized_data_impute_gych = np.array(normalized_data_impute_gych)
+normalized_data_impute_hc =[]
+for index in hc_index:
+    normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
+normalized_data_impute_hc = np.array(normalized_data_impute_hc)
 
 
 top_k = 20
 p_list =[]
-for i in range(normalized_data_impute_xych.shape[1]):
-    t,p = ttest_ind(normalized_data_impute_xych[:,i:i+1],normalized_data_impute_xych[:,i:i+1],equal_var=True)
+for i in range(normalized_data_impute_ad.shape[1]):
+    t,p = ttest_ind(normalized_data_impute_ad[:,i:i+1],normalized_data_impute_hc[:,i:i+1],equal_var=True)
     p_list.append(p[0])
 p_list = np.array(p_list)
-
 count = 0
 for p in p_list:
     if p < 0.05:
         count +=1
-print(count)
 
 top_k_index = p_list.argsort()[::-1][len(p_list)-top_k:]
 print(top_k_index)
 
 
-X_xych = np.array(normalized_data_impute_xych)
-X_gych = np.array(normalized_data_impute_gych)
+
+X_ad = np.array(normalized_data_impute_ad)
+X_hc = np.array(normalized_data_impute_hc)
 
 
 
-X_diff_xych = []
+X_diff_ad = []
 for i in top_k_index:
-    X_diff_xych.append(X_xych[:,i:i+1])
+    X_diff_ad.append(X_ad[:,i:i+1])
 
 
 
-X_diff_gych = []
+X_diff_hc = []
 for i in top_k_index:
-    X_diff_gych.append(X_gych[:,i:i+1])
+    X_diff_hc.append(X_hc[:,i:i+1])
 
 
 
-data_xych = []
-labels_xych = []
-for i in range(len(X_diff_xych)):
-    data_xych.append(X_diff_xych[i])
-    labels_xych.append(saved_label[top_k_index[i]])
+data_ad = []
+labels_ad = []
+for i in range(len(X_diff_ad)):
+    data_ad.append(X_diff_ad[i])
+    labels_ad.append(saved_label[top_k_index[i]])
 
-data_gych = []
-labels_gych = []
-for i in range(len(X_diff_gych)):
-    data_gych.append(X_diff_gych[i])
-    labels_gych.append(saved_label[top_k_index[i]])
+data_hc = []
+labels_hc = []
+for i in range(len(X_diff_hc)):
+    data_hc.append(X_diff_hc[i])
+    labels_hc.append(saved_label[top_k_index[i]])
 
 
 
 
 # Creating axes instance
-data_xychs = []
-for i in data_xych:
-    data_xychs.append(i.reshape(i.shape[0]))
-data_xych = data_xychs
+data_ads = []
+for i in data_ad:
+    data_ads.append(i.reshape(i.shape[0]))
+data_ad = data_ads
 
-data_gychs = []
-for i in data_gych:
-    data_gychs.append(i.reshape(i.shape[0]))
-data_gych = data_gychs
+data_hcs = []
+for i in data_hc:
+    data_hcs.append(i.reshape(i.shape[0]))
+data_hc = data_hcs
 
-data_xych = np.array(data_xych)
-data_gych = np.array(data_gych)
+data_ad = np.array(data_ad)
+data_hc = np.array(data_hc)
+print(data_ad.shape)
+print(data_hc.shape)
+data = np.hstack((data_ad,data_hc))
 
-data = np.hstack((data_xych,data_gych))
+data = []
+color_list=[]
+for i in range(data_ad.shape[0]):
+    color_list.append('r')
+    data.append(data_ad[i,:])
+for i in range(data_hc.shape[0]):
+    color_list.append('b')
+    data.append(data_hc[i, :])
 
 
-for i in range(data_xych.shape[0]):
 
-    data = [data_xych[i,:],data_gych[i,:]]
-    plt.boxplot(data,labels=['XYCH','GYCH'])
-    plt.title(labels_xych[i])
-    plt.savefig('figures/pos_boxplots/boxplot-{}.png'.format(i+1))
-    plt.close()
+print(data)
+bp = plt.boxplot(data,labels=labels_ad+labels_hc,patch_artist=True)
+plt.xticks(rotation = 90)
+for i in range(len(bp['boxes'])):
+    if i < len(bp['boxes'])/2:
+        bp['boxes'][i].set(color='r')
+    else:
+        bp['boxes'][i].set(color='b')
+plt.show()
 
 
 
