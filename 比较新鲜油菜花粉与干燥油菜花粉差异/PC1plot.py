@@ -1,48 +1,46 @@
 import math
 import random
-
+import matplotlib
+matplotlib.rc('font',family='Microsoft YaHei')
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import sklearn.preprocessing
 from matplotlib.patches import Ellipse
+from scipy.stats import ttest_ind
 from sklearn.decomposition import PCA
 from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
-data = pd.read_excel('files/peaktablePOSout_POS_noid_replace_variable.xlsx')
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
+# data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+print(data)
 
-for column in data.columns.values:
-    if '16' in column:
-        del data[column]
+sample_labels = []
+
 
 color_exist = []
 targets = data.columns.values[1:]
 
 
-print(data)
+for i in range(len(targets)):
+    if 'XYCH_WX_' not in targets[i] and 'GYCH_WX_' not in targets[i]:
+        del data[targets[i]]
+targets = data.columns.values[1:]
 print(targets)
 
-for i in range(len(data)):
-    temp = []
-    for j in targets:
-        temp.append(data[j][i])
-    for k in range(len(temp)):
-        temp[k] = math.isnan(temp[k])
-    if temp.count(True) >= len(temp) /2:
-        data = data.drop(i)
+
 
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
-# 分别插值,根据column mean（所有sample这个variable的mean）插值
-imputer_mean_ad = SimpleImputer(missing_values=np.nan,strategy='mean')
-data_impute = imputer_mean_ad.fit_transform(data)
-# imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
-# data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
-print(data_impute)
-sum_baseline = 13800
+
+imputer_mean_XYCH_WX = SimpleImputer(missing_values=np.nan,strategy='mean')
+data_impute = imputer_mean_XYCH_WX.fit_transform(data)
+
+
+sum_baseline = 10000
 for i in range(data_impute.shape[1]):
     coe = sum_baseline/np.sum(data_impute[:,i])
     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
@@ -50,29 +48,28 @@ for i in range(data_impute.shape[1]):
 normalized_data_impute = data_impute
 print(normalized_data_impute)
 
-ad_index=[]
-hc_index=[]
+XYCH_WX_index=[]
+GYCH_WX_index=[]
 for i in range(len(targets)):
-    if "AD" in targets[i]:
-        ad_index.append(i)
+    if "XYCH_WX_" in targets[i]:
+        XYCH_WX_index.append(i)
     else:
-        hc_index.append(i)
-print(ad_index)
-print(hc_index)
-
-normalized_data_impute_ad = []
-for index in ad_index:
-    normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
-normalized_data_impute_ad = np.array(normalized_data_impute_ad)
-
-normalized_data_impute_hc =[]
-for index in hc_index:
-    normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
-normalized_data_impute_hc = np.array(normalized_data_impute_hc)
+        GYCH_WX_index.append(i)
 
 
-print(normalized_data_impute_ad.shape)
-print(normalized_data_impute_hc.shape)
+normalized_data_impute_XYCH_WX = []
+for index in XYCH_WX_index:
+    normalized_data_impute_XYCH_WX.append(normalized_data_impute[:,index].T)
+normalized_data_impute_XYCH_WX = np.array(normalized_data_impute_XYCH_WX)
+
+normalized_data_impute_GYCH_WX =[]
+for index in GYCH_WX_index:
+    normalized_data_impute_GYCH_WX.append(normalized_data_impute[:,index].T)
+normalized_data_impute_GYCH_WX = np.array(normalized_data_impute_GYCH_WX)
+
+
+print(normalized_data_impute_XYCH_WX.shape)
+print(normalized_data_impute_GYCH_WX.shape)
 
 
 
@@ -101,26 +98,26 @@ X_mean_list = []
 for i in range(len(targets[0].values)):
     X_mean_list.append(X_mean)
 plt.plot(X_mean_list,linestyle = 'solid')
-plt.text(2,X_mean,'Mean',fontsize=8)
+plt.text(1,X_mean,'Mean',fontsize=8)
 
 X_std = np.std(X_new[:,:1])
 X_mean_list = []
 for i in range(len(targets[0].values)):
     X_mean_list.append(X_mean+X_std)
 plt.plot(X_mean_list,linestyle = 'dashed')
-plt.text(2,X_mean+X_std,'Mean+1*std',fontsize=8)
+plt.text(1,X_mean+X_std,'Mean+1*std',fontsize=8)
 
 X_mean_list = []
 for i in range(len(targets[0].values)):
     X_mean_list.append(X_mean+2*X_std)
 plt.plot(X_mean_list,linestyle = 'dashed')
-plt.text(2,X_mean+2*X_std,'Mean+2*std',fontsize=8)
+plt.text(1,X_mean+2*X_std,'Mean+2*std',fontsize=8)
 
 X_mean_list = []
 for i in range(len(targets[0].values)):
     X_mean_list.append(X_mean-X_std)
 plt.plot(X_mean_list,linestyle = 'dashed')
-plt.text(2,X_mean-X_std,'Mean-1*std',fontsize=8)
+plt.text(1,X_mean-X_std,'Mean-1*std',fontsize=8)
 
 
 plt.xlabel('samples')
@@ -139,7 +136,7 @@ plt.show()
 #
 # colors = color_exist
 # fig = plt.figure(figsize = (20,20))
-# ax = fig.add_subplot(1,1,1)
+# ax = fig.XYCH_WXd_subplot(1,1,1)
 # ax.set_xlabel('Principal Component 1 {}%'.format(round(pca.explained_variance_ratio_[0]*100,2)), fontsize = 15)
 # ax.set_ylabel('Principal Component 2 {}%'.format(round(pca.explained_variance_ratio_[1]*100,2)), fontsize = 15)
 # ax.set_title('2 component PCA', fontsize = 20)
@@ -153,7 +150,7 @@ plt.show()
 #                , c = color
 #                , s = 50)
 #
-# # ax.legend('AD_Disease_group','HC_Control_group')
+# # ax.legend('XYCH_WX_Disease_group','GYCH_WX_Control_group')
 # ax.grid()
 #
 #

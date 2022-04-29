@@ -1,78 +1,55 @@
 import math
+import random
+import matplotlib
+from sklearn.ensemble import RandomForestClassifier
 
+matplotlib.rc('font',family='Microsoft YaHei')
 import matplotlib.pyplot as plt
+
 import numpy as np
 import pandas as pd
-import sklearn
-from scipy.stats import ttest_ind
+import sklearn.preprocessing
+from matplotlib.patches import Ellipse
+from sklearn.cross_decomposition import PLSRegression
+from sklearn.decomposition import PCA
 from sklearn.impute import SimpleImputer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.cluster import KMeans
+from skimage.measure import EllipseModel
 
-# url = 'http://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data'
-# df = pd.read_csv(url, header = None)
-#
-# print(df)
-#
-#
-# from sklearn.ensemble import RandomForestClassifier
-# x, y = df.iloc[:, 1:].values, df.iloc[:, 0].values
-# x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.3, random_state = 0)
-# feat_labels = df.columns[1:]
-# print(x_train.shape,y_train.shape)
-# print(feat_labels[0])
-# forest = RandomForestClassifier(n_estimators=10000, random_state=0, n_jobs=-1)
-# forest.fit(x_train, y_train)
-# importances = forest.feature_importances_
-# indices = np.argsort(importances)[::-1]
-# for f in range(x_train.shape[1]):
-#     print("%2d) %-*s %f" % (f + 1, 30, feat_labels[indices[f]], importances[indices[f]]))
-#
-# quit()
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
+# data = pd.reXYCH_WX_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+print(data)
 
-
-data = pd.read_excel('files/peaktablePOSout_POS_noid_replace_variable.xlsx')
-
-for column in data.columns.values:
-    if '16' in column:
-        del data[column]
+sample_labels = []
 
 
 color_exist = []
 targets = data.columns.values[1:]
 
 
-print(data)
+for i in range(len(targets)):
+    if 'XYCH_WX_' not in targets[i] and 'GYCH_WX_' not in targets[i]:
+        del data[targets[i]]
+targets = data.columns.values[1:]
 print(targets)
-
-for i in range(len(data)):
-    temp = []
-    for j in targets:
-        temp.append(data[j][i])
-    for k in range(len(temp)):
-        temp[k] = math.isnan(temp[k])
-    if temp.count(True) >= len(temp) /2:
-        data = data.drop(i)
 
 
 
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
-# 分别插值,根据column mean（所有sample这个variable的mean）插值
-imputer_mean_ad = SimpleImputer(missing_values=np.nan,strategy='mean')
-data_impute = imputer_mean_ad.fit_transform(data)
-# imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
-# data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
-print(data_impute)
-sum_baseline = 13800
+
+imputer_mean_data = SimpleImputer(missing_values=np.nan,strategy='mean')
+data_impute = imputer_mean_data.fit_transform(data)
+
+
+sum_baseline = 10000
 for i in range(data_impute.shape[1]):
     coe = sum_baseline/np.sum(data_impute[:,i])
     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
 
 normalized_data_impute = data_impute
 normalized_data_impute = normalized_data_impute.T
-
 
 
 forest = RandomForestClassifier(n_estimators=10000,random_state=0,n_jobs=-1)

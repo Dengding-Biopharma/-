@@ -1,81 +1,87 @@
 import math
+import random
+import matplotlib
+from scipy.stats import ttest_ind
 
+matplotlib.rc('font',family='Microsoft YaHei')
 import matplotlib.pyplot as plt
+
 import numpy as np
 import pandas as pd
-import sklearn
-from scipy.stats import ttest_ind
+import sklearn.preprocessing
+from matplotlib.patches import Ellipse
+from sklearn.cross_decomposition import PLSRegression
+from sklearn.decomposition import PCA
 from sklearn.impute import SimpleImputer
+from sklearn.cluster import KMeans
+from skimage.measure import EllipseModel
 
-data = pd.read_excel('files/peaktablePOSout_POS_noid_replace_variable.xlsx')
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
+# data = pd.reXYCH_WX_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+print(data)
 
-for column in data.columns.values:
-    if '16' in column:
-        del data[column]
+sample_labels = []
+
 
 color_exist = []
 targets = data.columns.values[1:]
 
 
-print(data)
+for i in range(len(targets)):
+    if 'XYCH_WX_' not in targets[i] and 'GYCH_WX_' not in targets[i]:
+        del data[targets[i]]
+targets = data.columns.values[1:]
 print(targets)
 
-for i in range(len(data)):
-    temp = []
-    for j in targets:
-        temp.append(data[j][i])
-    for k in range(len(temp)):
-        temp[k] = math.isnan(temp[k])
-    if temp.count(True) >= len(temp) /2:
-        data = data.drop(i)
+
 
 
 
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
-# 分别插值,根据column mean（所有sample这个variable的mean）插值
-imputer_mean_ad = SimpleImputer(missing_values=np.nan,strategy='mean')
-data_impute = imputer_mean_ad.fit_transform(data)
-# imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
-# data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
-print(data_impute)
-sum_baseline = 30000
+
+imputer_mean_XYCH_WX = SimpleImputer(missing_values=np.nan,strategy='mean')
+data_impute = imputer_mean_XYCH_WX.fit_transform(data)
+
+
+sum_baseline = 10000
 for i in range(data_impute.shape[1]):
     coe = sum_baseline/np.sum(data_impute[:,i])
     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
 
 normalized_data_impute = data_impute
-print(normalized_data_impute.shape)
+print(normalized_data_impute)
 
-ad_index=[]
-hc_index=[]
+XYCH_WX_index=[]
+GYCH_WX_index=[]
 for i in range(len(targets)):
-    if "AD" in targets[i]:
-        ad_index.append(i)
+    if "XYCH_WX_" in targets[i]:
+        XYCH_WX_index.append(i)
     else:
-        hc_index.append(i)
-print(ad_index)
-print(hc_index)
+        GYCH_WX_index.append(i)
+print(XYCH_WX_index)
+print(GYCH_WX_index)
 
-normalized_data_impute_ad = []
-for index in ad_index:
-    normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
-normalized_data_impute_ad = np.array(normalized_data_impute_ad)
 
-normalized_data_impute_hc =[]
-for index in hc_index:
-    normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
-normalized_data_impute_hc = np.array(normalized_data_impute_hc)
+normalized_data_impute_XYCH_WX = []
+for index in XYCH_WX_index:
+    normalized_data_impute_XYCH_WX.append(normalized_data_impute[:,index].T)
+normalized_data_impute_XYCH_WX = np.array(normalized_data_impute_XYCH_WX)
 
-data_impute_ad = normalized_data_impute_ad
-data_impute_hc = normalized_data_impute_hc
+normalized_data_impute_GYCH_WX =[]
+for index in GYCH_WX_index:
+    normalized_data_impute_GYCH_WX.append(normalized_data_impute[:,index].T)
+normalized_data_impute_GYCH_WX = np.array(normalized_data_impute_GYCH_WX)
+
+data_impute_XYCH_WX = normalized_data_impute_XYCH_WX
+data_impute_GYCH_WX = normalized_data_impute_GYCH_WX
 
 
 top_k = 20
 sum_list =[]
-for i in range(data_impute_ad.shape[1]):
-    sum = np.sum(data_impute_ad[:,i:i+1])
+for i in range(data_impute_XYCH_WX.shape[1]):
+    sum = np.sum(data_impute_XYCH_WX[:,i:i+1])
 
     sum_list.append(sum)
 sum_list = np.array(sum_list)
@@ -83,9 +89,9 @@ top_k_index = sum_list.argsort()[::-1][0:top_k]
 print(top_k_index)
 
 
-X_ad = np.array(data_impute_ad)
-X_hc = np.array(data_impute_hc)
-X = np.vstack((X_ad,X_hc))
+X_XYCH_WX = np.array(data_impute_XYCH_WX)
+X_GYCH_WX = np.array(data_impute_GYCH_WX)
+X = np.vstack((X_XYCH_WX,X_GYCH_WX))
 
 X_top = []
 sum_list = []
@@ -117,12 +123,23 @@ for i in top_k_index:
 # targets.append('others')
 # targets = np.array(targets)
 
+def get_random_color(color_exist):
+    r = lambda: random.randint(0, 255)
+    color = '#%02X%02X%02X' % (r(), r(), r())
+    while color in color_exist:
+        r = lambda: random.randint(0, 255)
+        color = '#%02X%02X%02X' % (r(), r(), r())
+    color_exist.append(color)
+    return color
+
+
+
 fig,ax = plt.subplots()
 
 plt.xticks(rotation = 90)
 ax.bar(targets,X_top[0],0.2,label=labels[0])
 for i in range(1,len(X_top)):
-    ax.bar(targets,X_top[i],0.2,bottom=X_top[i-1],label=labels[i])
+    ax.bar(targets,X_top[i],0.2,bottom=X_top[i-1],label=labels[i],color=get_random_color(color_exist))
 
 plt.title('Histogram of the top 20 metabolite percentage')
 ax.legend(bbox_to_anchor=(1, 1))

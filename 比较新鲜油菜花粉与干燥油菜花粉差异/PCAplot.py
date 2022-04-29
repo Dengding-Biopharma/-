@@ -1,6 +1,7 @@
 import math
 import random
-
+import matplotlib
+matplotlib.rc('font',family='Microsoft YaHei')
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -167,6 +168,8 @@ groups=['XYCH_WX_group','GYCH_WX_group']
 for i in range(len(groups)):
     print(groups[i])
     indicesToKeep = finalDf[0].values == groups[i]
+    print(indicesToKeep)
+    quit()
     if groups[i] == 'XYCH_WX_group':
         ax_XYCH_WX = ax.scatter(finalDf.loc[indicesToKeep ,'PC1'],
                finalDf.loc[indicesToKeep, 'PC2'],
