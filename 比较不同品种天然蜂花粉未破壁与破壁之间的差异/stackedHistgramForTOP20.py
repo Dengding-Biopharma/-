@@ -77,21 +77,21 @@ normalized_data_impute_GYCH_WX = np.array(normalized_data_impute_GYCH_WX)
 data_impute_XYCH_WX = normalized_data_impute_XYCH_WX
 data_impute_GYCH_WX = normalized_data_impute_GYCH_WX
 
-top_k = 20
-p_list =[]
-for i in range(data_impute_XYCH_WX.shape[1]):
-    t,p = ttest_ind(data_impute_XYCH_WX[:,i:i+1],data_impute_GYCH_WX[:,i:i+1],equal_var=True)
-    p_list.append(p[0])
-p_list = np.array(p_list)
 
-top_k_index = p_list.argsort()[::-1][len(p_list)-top_k:]
+top_k = 20
+sum_list =[]
+for i in range(data_impute_XYCH_WX.shape[1]):
+    sum = np.sum(data_impute_XYCH_WX[:,i:i+1])
+
+    sum_list.append(sum)
+sum_list = np.array(sum_list)
+top_k_index = sum_list.argsort()[::-1][0:top_k]
 print(top_k_index)
+
 
 X_XYCH_WX = np.array(data_impute_XYCH_WX)
 X_GYCH_WX = np.array(data_impute_GYCH_WX)
 X = np.vstack((X_XYCH_WX,X_GYCH_WX))
-
-
 
 X_top = []
 sum_list = []
@@ -108,8 +108,8 @@ for row in range(X.shape[0]):
 
 
 X_top = np.array(X_top)
-
-X_top = X_top.reshape(top_k,X_top.shape[0])
+print(X_top.shape)
+X_top = X_top.reshape(X_top.shape[1],X_top.shape[0])
 
 labels = []
 for i in top_k_index:
@@ -118,6 +118,10 @@ for i in top_k_index:
 
 
 
+#
+# targets = list(targets)
+# targets.append('others')
+# targets = np.array(targets)
 color_exist = []
 def get_random_color(color_exist):
     r = lambda: random.randint(0, 255)
@@ -129,12 +133,14 @@ def get_random_color(color_exist):
     return color
 
 
+
 fig,ax = plt.subplots()
+
 plt.xticks(rotation = 90)
 ax.bar(targets,X_top[0],0.2,label=labels[0])
 for i in range(1,len(X_top)):
     ax.bar(targets,X_top[i],0.2,bottom=X_top[i-1],label=labels[i],color=get_random_color(color_exist))
 
-plt.title('Histogram of the 20 most different metabolic distribution between groups')
-ax.legend(bbox_to_anchor=(1, 1),prop={'size': 8},loc='best')
+plt.title('Histogram of the top 20 metabolite percentage in 新鲜油菜花')
+ax.legend(bbox_to_anchor=(1, 1))
 plt.show()
