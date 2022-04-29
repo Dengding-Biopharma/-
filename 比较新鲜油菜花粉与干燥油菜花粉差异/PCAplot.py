@@ -136,11 +136,11 @@ for i in range(X_new.shape[0]):
 # ellipse_points_XYCH_WX.estimate(points_XYCH_WX)
 # XYCH_WX_x_mean,XYCH_WX_y_mean,XYCH_WX_a,XYCH_WX_b,XYCH_WX_theta = ellipse_points_XYCH_WX.params
 #
-points_GYCH_WX = np.array(points_GYCH_WX)
-ellipse_points_GYCH_WX = EllipseModel()
-ellipse_points_GYCH_WX.estimate(points_GYCH_WX)
-GYCH_WX_x_mean,GYCH_WX_y_mean,GYCH_WX_a,GYCH_WX_b,GYCH_WX_theta = ellipse_points_GYCH_WX.params
-
+# points_GYCH_WX = np.array(points_GYCH_WX)
+# ellipse_points_GYCH_WX = EllipseModel()
+# ellipse_points_GYCH_WX.estimate(points_GYCH_WX)
+# GYCH_WX_x_mean,GYCH_WX_y_mean,GYCH_WX_a,GYCH_WX_b,GYCH_WX_theta = ellipse_points_GYCH_WX.params
+#
 
 
 
@@ -154,7 +154,7 @@ ax.set_xlabel('Principal Component 1 {}%'.format(round(pca.explained_variance_ra
 ax.set_ylabel('Principal Component 2 {}%'.format(round(pca.explained_variance_ratio_[1]*100,2)), fontsize = 15)
 ax.set_title('2 component PCA', fontsize = 20)
 
-#
+
 # ellipse_XYCH_WX = Ellipse((XYCH_WX_x_mean, XYCH_WX_y_mean), 2*XYCH_WX_a, 2*XYCH_WX_b,XYCH_WX_theta,
 #                         edgecolor='r', fc='None', lw=2)
 # ax.XYCH_WXd_patch(ellipse_XYCH_WX)
@@ -162,18 +162,26 @@ ax.set_title('2 component PCA', fontsize = 20)
 #                         edgecolor='b', fc='None', lw=2)
 # ax.XYCH_WXd_patch(ellipse_GYCH_WX)
 
+groups=['XYCH_WX_group','GYCH_WX_group']
 
-
-for target, color in zip(targets,colors):
-    print(target)
-    indicesToKeep = finalDf[0].values == target
-    ax = ax.scatter(finalDf.loc[indicesToKeep, 'PC1']
-               , finalDf.loc[indicesToKeep, 'PC2']
-               , c = color
+for i in range(len(groups)):
+    print(groups[i])
+    indicesToKeep = finalDf[0].values == groups[i]
+    if groups[i] == 'XYCH_WX_group':
+        ax_XYCH_WX = ax.scatter(finalDf.loc[indicesToKeep ,'PC1'],
+               finalDf.loc[indicesToKeep, 'PC2'],
+               c = 'r'
                , s = 50)
+    if groups[i] == 'GYCH_WX_group':
+        ax_GYCH_WX = ax.scatter(finalDf.loc[indicesToKeep, 'PC1'],
+                                finalDf.loc[indicesToKeep, 'PC2'],
+                                c='r'
+                                , s=50)
 
 
-# ax.legend(['XYCH_WX_group','GYCH_WX_group'],loc='upper right',labelspacing=2,prop={'size': 12})
+
+
+plt.legend(['XYCH_WX_group','GYCH_WX_group'],loc='upper right',labelspacing=2,prop={'size': 12})
 ax.grid()
 
 
