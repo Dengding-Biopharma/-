@@ -110,8 +110,7 @@ for row in range(X.shape[0]):
 X_top = np.array(X_top)
 
 X_top = X_top.reshape(top_k,X_top.shape[0])
-print(X_top.shape)
-quit()
+
 labels = []
 for i in top_k_index:
     labels.append(saved_label[i])
