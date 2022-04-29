@@ -175,15 +175,14 @@ for i in range(len(groups)):
     if groups[i] == 'GYCH_WX_group':
         ax_GYCH_WX = ax.scatter(finalDf.loc[indicesToKeep, 'PC1'],
                                 finalDf.loc[indicesToKeep, 'PC2'],
-                                c='r'
+                                c='b'
                                 , s=50)
 
 
 
 
-plt.legend(['XYCH_WX_group','GYCH_WX_group'],loc='upper right',labelspacing=2,prop={'size': 12})
+plt.legend(handles=[ax_XYCH_WX,ax_GYCH_WX],labels=['XYCH_WX_group','GYCH_WX_group'],loc='upper right',labelspacing=2,prop={'size': 12})
 ax.grid()
-
 
 plt.show()
 
