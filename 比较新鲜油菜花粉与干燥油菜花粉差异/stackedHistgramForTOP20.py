@@ -142,5 +142,5 @@ for i in range(1,len(X_top)):
     ax.bar(targets,X_top[i],0.2,bottom=X_top[i-1],label=labels[i],color=get_random_color(color_exist))
 
 plt.title('Histogram of the top 20 metabolite percentage in 新鲜油菜花')
-ax.legend(color_exist,bbox_to_anchor=(1, 1))
+ax.legend(bbox_to_anchor=(1, 1))
 plt.show()
