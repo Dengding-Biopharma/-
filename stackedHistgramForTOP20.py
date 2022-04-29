@@ -1,4 +1,5 @@
 import math
+import random
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,7 +8,7 @@ import sklearn
 from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
 
-data = pd.read_excel('files/peaktablePOSout_POS_noid_replace_variable.xlsx')
+data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace_variable.xlsx')
 
 for column in data.columns.values:
     if '16' in column:
@@ -109,7 +110,15 @@ labels = []
 for i in top_k_index:
     labels.append(saved_label[i])
 
-
+color_exist = []
+def get_random_color(color_exist):
+    r = lambda: random.randint(0, 255)
+    color = '#%02X%02X%02X' % (r(), r(), r())
+    while color in color_exist:
+        r = lambda: random.randint(0, 255)
+        color = '#%02X%02X%02X' % (r(), r(), r())
+    color_exist.append(color)
+    return color
 
 
 #
@@ -122,7 +131,7 @@ fig,ax = plt.subplots()
 plt.xticks(rotation = 90)
 ax.bar(targets,X_top[0],0.2,label=labels[0])
 for i in range(1,len(X_top)):
-    ax.bar(targets,X_top[i],0.2,bottom=X_top[i-1],label=labels[i])
+    ax.bar(targets,X_top[i],0.2,bottom=X_top[i-1],label=labels[i],color=get_random_color(color_exist))
 
 plt.title('Histogram of the top 20 metabolite percentage')
 ax.legend(bbox_to_anchor=(1, 1))
