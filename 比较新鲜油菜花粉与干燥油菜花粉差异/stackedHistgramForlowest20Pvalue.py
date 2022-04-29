@@ -122,6 +122,7 @@ for i in top_k_index:
 # targets = list(targets)
 # targets.append('others')
 # targets = np.array(targets)
+color_exist = []
 def get_random_color(color_exist):
     r = lambda: random.randint(0, 255)
     color = '#%02X%02X%02X' % (r(), r(), r())
