@@ -25,7 +25,7 @@ targets = data.columns.values[1:]
 
 
 for i in range(len(targets)):
-    if 'XYCH_WX_' not in targets[i] and 'GYCH_WX_' not in targets[i]:
+    if 'WX' not in targets[i]:
         del data[targets[i]]
 targets = data.columns.values[1:]
 print(targets)
@@ -48,41 +48,63 @@ for i in range(data_impute.shape[1]):
 normalized_data_impute = data_impute
 print(normalized_data_impute)
 
-XYCH_WX_index=[]
-GYCH_WX_index=[]
+
+# 分别比较样本1和6、
+keywords1 = ['XYCH_WX_','XYCH_WXPB_']
+# 样本2和7、
+keywords2 = ['GYCH_WX_','GYCH_WXPB_']
+# 样本3和8、
+keywords3 = ['GWBZ_WX_','GWBZ_WXPB_']
+# 样本4和9、
+keywords4 = ['GHH_WX_','GHH_WXPB_']
+# 样本5和10
+keywords5 = ['GCH_WX_','GCH_WXPB_']
+# 研究单个样本破壁与未破壁的变化差异
+keywords6 = ['WX_','WXPB_']
+x_index=[]
+y_index=[]
+print(targets)
+keywords = keywords1
 for i in range(len(targets)):
-    if "XYCH_WX_" in targets[i]:
-        XYCH_WX_index.append(i)
-    else:
-        GYCH_WX_index.append(i)
+    if keywords[0] in targets[i]:
+        x_index.append(i)
+    elif keywords[1] in targets[i]:
+        y_index.append(i)
+
+print(x_index)
+print(y_index)
+targets = np.hstack((targets[x_index],targets[y_index]))
+print(targets)
 
 
-normalized_data_impute_XYCH_WX = []
-for index in XYCH_WX_index:
-    normalized_data_impute_XYCH_WX.append(normalized_data_impute[:,index].T)
-normalized_data_impute_XYCH_WX = np.array(normalized_data_impute_XYCH_WX)
+normalized_data_impute_x = []
+for index in x_index:
+    normalized_data_impute_x.append(normalized_data_impute[:,index].T)
+normalized_data_impute_x = np.array(normalized_data_impute_x)
 
-normalized_data_impute_GYCH_WX =[]
-for index in GYCH_WX_index:
-    normalized_data_impute_GYCH_WX.append(normalized_data_impute[:,index].T)
-normalized_data_impute_GYCH_WX = np.array(normalized_data_impute_GYCH_WX)
+normalized_data_impute_y =[]
+for index in y_index:
+    normalized_data_impute_y.append(normalized_data_impute[:,index].T)
+normalized_data_impute_y = np.array(normalized_data_impute_y)
 
 
-print(normalized_data_impute_XYCH_WX.shape)
-print(normalized_data_impute_GYCH_WX.shape)
-
+print(normalized_data_impute_x.shape)
+print(normalized_data_impute_y.shape)
+normalized_data_impute = np.vstack((normalized_data_impute_x,normalized_data_impute_y))
+print(normalized_data_impute.shape)
 
 
 
 # PCA
 pca = PCA(n_components=2)
-pca.fit(normalized_data_impute.T)
-X_new = pca.fit_transform(normalized_data_impute.T)
+pca.fit(normalized_data_impute)
+X_new = pca.fit_transform(normalized_data_impute)
 print(X_new)
 print(pca.explained_variance_ratio_)
 
 targets = pd.DataFrame(data = targets)
 print(targets[0].values)
+print(X_new.shape)
 
 df = pd.DataFrame()
 df['targets'] = targets[0].values

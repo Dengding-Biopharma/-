@@ -26,25 +26,9 @@ targets = data.columns.values[1:]
 
 
 for i in range(len(targets)):
-    if 'XYCH_WX_' not in targets[i] and 'GYCH_WX_' not in targets[i]:
+    if 'WX' not in targets[i]:
         del data[targets[i]]
 targets = data.columns.values[1:]
-print(targets)
-
-
-
-for i in range(len(targets)):
-    if 'XYCH_WX' in targets[i]:
-        targets[i] = 'XYCH_WX_group'
-    elif 'GYCH_WX' in targets[i]:
-        targets[i] = 'GYCH_WX_group'
-
-for i in range(len(targets)):
-    if targets[i] == 'XYCH_WX_group':
-        color_exist.append('r')
-    else:
-        color_exist.append('b')
-
 print(targets)
 
 
@@ -64,40 +48,60 @@ for i in range(data_impute.shape[1]):
 normalized_data_impute = data_impute
 print(normalized_data_impute)
 
-XYCH_WX_index=[]
-GYCH_WX_index=[]
+# 分别比较样本1和6、
+keywords1 = ['XYCH_WX_','XYCH_WXPB_']
+# 样本2和7、
+keywords2 = ['GYCH_WX_','GYCH_WXPB_']
+# 样本3和8、
+keywords3 = ['GWBZ_WX_','GWBZ_WXPB_']
+# 样本4和9、
+keywords4 = ['GHH_WX_','GHH_WXPB_']
+# 样本5和10
+keywords5 = ['GCH_WX_','GCH_WXPB_']
+# 研究单个样本破壁与未破壁的变化差异
+keywords6 = ['WX_','WXPB_']
+x_index=[]
+y_index=[]
+print(targets)
+keywords = keywords6
 for i in range(len(targets)):
-    if "XYCH_WX_" in targets[i]:
-        XYCH_WX_index.append(i)
-    else:
-        GYCH_WX_index.append(i)
-print(XYCH_WX_index)
-print(GYCH_WX_index)
+    if keywords[0] in targets[i]:
+        x_index.append(i)
+    elif keywords[1] in targets[i]:
+        y_index.append(i)
 
+print(x_index)
+print(y_index)
+targets = np.hstack((targets[x_index],targets[y_index]))
+print(targets)
+for i in range(len(targets)):
+    if 'WX_' in targets[i]:
+        targets[i] = 'WX_group'
+    elif 'WXPB_' in targets[i]:
+        targets[i] = 'WXPB_group'
 
-normalized_data_impute_XYCH_WX = []
-for index in XYCH_WX_index:
-    normalized_data_impute_XYCH_WX.append(normalized_data_impute[:,index].T)
-normalized_data_impute_XYCH_WX = np.array(normalized_data_impute_XYCH_WX)
+normalized_data_impute_x = []
+for index in x_index:
+    normalized_data_impute_x.append(normalized_data_impute[:,index].T)
+normalized_data_impute_x = np.array(normalized_data_impute_x)
 
-normalized_data_impute_GYCH_WX =[]
-for index in GYCH_WX_index:
-    normalized_data_impute_GYCH_WX.append(normalized_data_impute[:,index].T)
-normalized_data_impute_GYCH_WX = np.array(normalized_data_impute_GYCH_WX)
+normalized_data_impute_y =[]
+for index in y_index:
+    normalized_data_impute_y.append(normalized_data_impute[:,index].T)
+normalized_data_impute_y = np.array(normalized_data_impute_y)
 
+print(normalized_data_impute_x.shape)
+print(normalized_data_impute_y.shape)
 
-print(normalized_data_impute_XYCH_WX.shape)
-print(normalized_data_impute_GYCH_WX.shape)
-
-X_XYCH_WX = np.array(normalized_data_impute_XYCH_WX)
-X_GYCH_WX = np.array(normalized_data_impute_GYCH_WX)
+X_XYCH_WX = np.array(normalized_data_impute_x)
+X_GYCH_WX = np.array(normalized_data_impute_y)
 X = np.vstack((X_XYCH_WX,X_GYCH_WX))
 print(X)
 int_targets = []
 for i in targets:
-    if 'XYCH_WX' in i:
+    if 'WX_' in i:
         int_targets.append(0)
-    else:
+    elif 'WXPB_':
         int_targets.append(1)
 
 
@@ -116,9 +120,6 @@ for predict in plsr.predict(X):
 
 
 
-
-
-
 scores = pd.DataFrame(plsr.x_scores_)
 scores['index'] = targets
 
@@ -128,17 +129,18 @@ print(scores)
 ax = scores.plot(x=0, y=1, kind='scatter', s=50,
                     figsize=(6,6),c='r')
 
-groups=['XYCH_WX_group','GYCH_WX_group']
+groups=['WX_group','WXPB_group']
 
 for i in range(len(groups)):
     print(groups[i])
     indicesToKeep = scores['index'].values == groups[i]
-    if groups[i] == 'XYCH_WX_group':
+
+    if groups[i] == 'WX_group':
         ax_XYCH_WX = ax.scatter(scores.loc[indicesToKeep ,0],
                scores.loc[indicesToKeep, 1],
                c = 'r'
                , s = 50)
-    if groups[i] == 'GYCH_WX_group':
+    if groups[i] == 'WXPB_group':
         ax_GYCH_WX = ax.scatter(scores.loc[indicesToKeep, 0],
                                 scores.loc[indicesToKeep, 1],
                                 c='b'

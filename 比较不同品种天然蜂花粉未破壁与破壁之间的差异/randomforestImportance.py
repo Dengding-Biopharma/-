@@ -26,9 +26,22 @@ sample_labels = []
 color_exist = []
 targets = data.columns.values[1:]
 
+# 分别比较样本1和6、
+keywords1 = ['XYCH_WX_','XYCH_WXPB_']
+# 样本2和7、
+keywords2 = ['GYCH_WX_','GYCH_WXPB_']
+# 样本3和8、
+keywords3 = ['GWBZ_WX_','GWBZ_WXPB_']
+# 样本4和9、
+keywords4 = ['GHH_WX_','GHH_WXPB_']
+# 样本5和10
+keywords5 = ['GCH_WX_','GCH_WXPB_']
+# 研究单个样本破壁与未破壁的变化差异
+keywords6 = ['WX_','WXPB_']
+keywords = keywords1
 
 for i in range(len(targets)):
-    if 'XYCH_WX_' not in targets[i] and 'GYCH_WX_' not in targets[i]:
+    if keywords[0] not in targets[i] and keywords[1] not in targets[i]:
         del data[targets[i]]
 targets = data.columns.values[1:]
 print(targets)

@@ -25,13 +25,9 @@ targets = data.columns.values[1:]
 
 
 for i in range(len(targets)):
-    if 'XYCH_WX_' not in targets[i] and 'GYCH_WX_' not in targets[i]:
+    if 'WX' not in targets[i]:
         del data[targets[i]]
 targets = data.columns.values[1:]
-print(targets)
-
-
-
 print(targets)
 
 
@@ -51,32 +47,48 @@ for i in range(data_impute.shape[1]):
 normalized_data_impute = data_impute
 print(normalized_data_impute)
 
-XYCH_WX_index=[]
-GYCH_WX_index=[]
+# 分别比较样本1和6、
+keywords1 = ['XYCH_WX_','XYCH_WXPB_']
+# 样本2和7、
+keywords2 = ['GYCH_WX_','GYCH_WXPB_']
+# 样本3和8、
+keywords3 = ['GWBZ_WX_','GWBZ_WXPB_']
+# 样本4和9、
+keywords4 = ['GHH_WX_','GHH_WXPB_']
+# 样本5和10
+keywords5 = ['GCH_WX_','GCH_WXPB_']
+# 研究单个样本破壁与未破壁的变化差异
+keywords6 = ['WX_','WXPB_']
+x_index=[]
+y_index=[]
+print(targets)
+keywords = keywords6
 for i in range(len(targets)):
-    if "XYCH_WX_" in targets[i]:
-        XYCH_WX_index.append(i)
-    else:
-        GYCH_WX_index.append(i)
-print(XYCH_WX_index)
-print(GYCH_WX_index)
+    if keywords[0] in targets[i]:
+        x_index.append(i)
+    elif keywords[1] in targets[i]:
+        y_index.append(i)
 
+print(x_index)
+print(y_index)
+targets = np.hstack((targets[x_index],targets[y_index]))
+print(targets)
 
-normalized_data_impute_XYCH_WX = []
-for index in XYCH_WX_index:
-    normalized_data_impute_XYCH_WX.append(normalized_data_impute[:,index].T)
-normalized_data_impute_XYCH_WX = np.array(normalized_data_impute_XYCH_WX)
+normalized_data_impute_x = []
+for index in x_index:
+    normalized_data_impute_x.append(normalized_data_impute[:,index].T)
+normalized_data_impute_x = np.array(normalized_data_impute_x)
 
-normalized_data_impute_GYCH_WX =[]
-for index in GYCH_WX_index:
-    normalized_data_impute_GYCH_WX.append(normalized_data_impute[:,index].T)
-normalized_data_impute_GYCH_WX = np.array(normalized_data_impute_GYCH_WX)
+normalized_data_impute_y =[]
+for index in y_index:
+    normalized_data_impute_y.append(normalized_data_impute[:,index].T)
+normalized_data_impute_y = np.array(normalized_data_impute_y)
 
 
 top_k = 20
 p_list =[]
-for i in range(normalized_data_impute_XYCH_WX.shape[1]):
-    t,p = ttest_ind(normalized_data_impute_XYCH_WX[:,i:i+1],normalized_data_impute_GYCH_WX[:,i:i+1],equal_var=True)
+for i in range(normalized_data_impute_x.shape[1]):
+    t,p = ttest_ind(normalized_data_impute_x[:,i:i+1],normalized_data_impute_y[:,i:i+1],equal_var=True)
     p_list.append(p[0])
 p_list = np.array(p_list)
 count = 0
@@ -89,8 +101,8 @@ print(top_k_index)
 
 
 
-X_XYCH_WX = np.array(normalized_data_impute_XYCH_WX)
-X_GYCH_WX = np.array(normalized_data_impute_GYCH_WX)
+X_XYCH_WX = np.array(normalized_data_impute_x)
+X_GYCH_WX = np.array(normalized_data_impute_y)
 
 
 
@@ -157,38 +169,6 @@ for i in range(len(bp['boxes'])):
         bp['boxes'][i].set(color='r')
     else:
         bp['boxes'][i].set(color='b')
-plt.show()
-
-
-
-#
-# ax1 = fig.XYCH_WXd_subplot(211)
-# ax1.boxplot(data_XYCH_WX.T,  vert=0)
-# ax1.set_yticklabels(labels_XYCH_WX)
-# plt.title('boxplot for top 20 variables which have significant differences between groups\nXYCH_WX group')
-#
-# ax2 = fig.XYCH_WXd_subplot(212)
-# ax2.boxplot(data_GYCH_WX.T,  vert=0)
-# ax2.set_yticklabels(labels_GYCH_WX)
-# plt.title('GYCH_WX group')
-# for cap in bp['caps']:
-#     cap.set(color ='#8B008B',
-#             linewidth = 2)
-# ax2.get_xaxis().tick_bottom()
-# ax2.get_yaxis().tick_left()
-# for flier in bp['fliers']:
-#     flier.set(marker ='D',
-#               color ='#e7298a',
-#               alpha = 0.5)
-# for median in bp['medians']:
-#     median.set(color ='red',
-#                linewidth = 3)
-# for whisker in bp['whiskers']:
-#     whisker.set(color ='#8B008B',
-#                 linewidth = 1.5,
-#                 linestyle =":")
-
-
 plt.show()
 
 
