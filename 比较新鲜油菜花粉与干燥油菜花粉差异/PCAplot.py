@@ -11,52 +11,49 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
-data = pd.read_excel('files/peaktablePOSout_POS_noid_replace_variable.xlsx')
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
+# data = pd.reXYCH_WX_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+print(data)
 
-for column in data.columns.values:
-    if '16' in column:
-        del data[column]
+sample_labels = []
 
 
 color_exist = []
+targets = data.columns.values[1:]
+
+
+for i in range(len(targets)):
+    if 'XYCH_WX_' not in targets[i] and 'GYCH_WX_' not in targets[i]:
+        del data[targets[i]]
 targets = data.columns.values[1:]
 print(targets)
 
 
 
-for i in range(len(data)):
-    temp = []
-    for j in targets:
-        temp.append(data[j][i])
-    for k in range(len(temp)):
-        temp[k] = math.isnan(temp[k])
-    if temp.count(True) >= len(temp) /2:
-        data = data.drop(i)
-
+for i in range(len(targets)):
+    if 'XYCH_WX' in targets[i]:
+        targets[i] = 'XYCH_WX_group'
+    elif 'GYCH_WX' in targets[i]:
+        targets[i] = 'GYCH_WX_group'
 
 for i in range(len(targets)):
-    if 'AD' in targets[i]:
-        targets[i] = 'AD_Disease_group'
-    else:
-        targets[i] = 'HC_Control_group'
-
-for i in range(len(targets)):
-    if targets[i] == 'AD_Disease_group':
+    if targets[i] == 'XYCH_WX_group':
         color_exist.append('r')
     else:
         color_exist.append('b')
 
+print(targets)
 
 
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
 
-imputer_mean_ad = SimpleImputer(missing_values=np.nan,strategy='mean')
-data_impute = imputer_mean_ad.fit_transform(data)
+imputer_mean_XYCH_WX = SimpleImputer(missing_values=np.nan,strategy='mean')
+data_impute = imputer_mean_XYCH_WX.fit_transform(data)
 
 
-sum_baseline = 13800
+sum_baseline = 10000
 for i in range(data_impute.shape[1]):
     coe = sum_baseline/np.sum(data_impute[:,i])
     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
@@ -64,25 +61,26 @@ for i in range(data_impute.shape[1]):
 normalized_data_impute = data_impute
 print(normalized_data_impute)
 
-ad_index=[]
-hc_index=[]
+XYCH_WX_index=[]
+GYCH_WX_index=[]
 for i in range(len(targets)):
-    if "AD" in targets[i]:
-        ad_index.append(i)
+    if "XYCH_WX_" in targets[i]:
+        XYCH_WX_index.append(i)
     else:
-        hc_index.append(i)
-print(ad_index)
-print(hc_index)
+        GYCH_WX_index.append(i)
+print(XYCH_WX_index)
+print(GYCH_WX_index)
 
-normalized_data_impute_ad = []
-for index in ad_index:
-    normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
-normalized_data_impute_ad = np.array(normalized_data_impute_ad)
 
-normalized_data_impute_hc =[]
-for index in hc_index:
-    normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
-normalized_data_impute_hc = np.array(normalized_data_impute_hc)
+normalized_data_impute_XYCH_WX = []
+for index in XYCH_WX_index:
+    normalized_data_impute_XYCH_WX.append(normalized_data_impute[:,index].T)
+normalized_data_impute_XYCH_WX = np.array(normalized_data_impute_XYCH_WX)
+
+normalized_data_impute_GYCH_WX =[]
+for index in GYCH_WX_index:
+    normalized_data_impute_GYCH_WX.append(normalized_data_impute[:,index].T)
+normalized_data_impute_GYCH_WX = np.array(normalized_data_impute_GYCH_WX)
 
 
 # PCA
@@ -99,7 +97,7 @@ print(y_pred)
 group0 =[]
 outlier_index = []
 for i in range(len(y_pred)):
-    if y_pred[i] == 1:
+    if y_pred[i] == 2:
         group0.append(X_new[i])
         outlier_index.append(i)
 
@@ -119,29 +117,29 @@ principalDf = pd.DataFrame(data = X_new
              , columns = ['PC1', 'PC2'])
 finalDf = pd.concat([principalDf, targets], axis = 1)
 
-points_ad = []
-points_hc = []
+points_XYCH_WX = []
+points_GYCH_WX = []
 print(finalDf)
 
 for i in range(X_new.shape[0]):
     if i not in outlier_index:
-        if 'AD' in finalDf[0][i]:
-            points_ad.append([finalDf['PC1'][i],finalDf['PC2'][i]])
+        if 'XYCH_WX' in finalDf[0][i]:
+            points_XYCH_WX.append([finalDf['PC1'][i],finalDf['PC2'][i]])
         else:
-            points_hc.append([finalDf['PC1'][i], finalDf['PC2'][i]])
+            points_GYCH_WX.append([finalDf['PC1'][i], finalDf['PC2'][i]])
 
 
 
 
-points_ad = np.array(points_ad)
-ellipse_points_ad = EllipseModel()
-ellipse_points_ad.estimate(points_ad)
-ad_x_mean,ad_y_mean,ad_a,ad_b,ad_theta = ellipse_points_ad.params
-
-points_hc = np.array(points_hc)
-ellipse_points_hc = EllipseModel()
-ellipse_points_hc.estimate(points_hc)
-hc_x_mean,hc_y_mean,hc_a,hc_b,hc_theta = ellipse_points_hc.params
+# points_XYCH_WX = np.array(points_XYCH_WX)
+# ellipse_points_XYCH_WX = EllipseModel()
+# ellipse_points_XYCH_WX.estimate(points_XYCH_WX)
+# XYCH_WX_x_mean,XYCH_WX_y_mean,XYCH_WX_a,XYCH_WX_b,XYCH_WX_theta = ellipse_points_XYCH_WX.params
+#
+points_GYCH_WX = np.array(points_GYCH_WX)
+ellipse_points_GYCH_WX = EllipseModel()
+ellipse_points_GYCH_WX.estimate(points_GYCH_WX)
+GYCH_WX_x_mean,GYCH_WX_y_mean,GYCH_WX_a,GYCH_WX_b,GYCH_WX_theta = ellipse_points_GYCH_WX.params
 
 
 
@@ -156,26 +154,26 @@ ax.set_xlabel('Principal Component 1 {}%'.format(round(pca.explained_variance_ra
 ax.set_ylabel('Principal Component 2 {}%'.format(round(pca.explained_variance_ratio_[1]*100,2)), fontsize = 15)
 ax.set_title('2 component PCA', fontsize = 20)
 
-
-ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
-                        edgecolor='r', fc='None', lw=2)
-ax.add_patch(ellipse_ad)
-ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
-                        edgecolor='b', fc='None', lw=2)
-ax.add_patch(ellipse_hc)
+#
+# ellipse_XYCH_WX = Ellipse((XYCH_WX_x_mean, XYCH_WX_y_mean), 2*XYCH_WX_a, 2*XYCH_WX_b,XYCH_WX_theta,
+#                         edgecolor='r', fc='None', lw=2)
+# ax.XYCH_WXd_patch(ellipse_XYCH_WX)
+# ellipse_GYCH_WX = Ellipse((GYCH_WX_x_mean, GYCH_WX_y_mean), 2*GYCH_WX_a, 2*GYCH_WX_b,GYCH_WX_theta,
+#                         edgecolor='b', fc='None', lw=2)
+# ax.XYCH_WXd_patch(ellipse_GYCH_WX)
 
 
 
 for target, color in zip(targets,colors):
     print(target)
     indicesToKeep = finalDf[0].values == target
-    ax.scatter(finalDf.loc[indicesToKeep, 'PC1']
+    ax = ax.scatter(finalDf.loc[indicesToKeep, 'PC1']
                , finalDf.loc[indicesToKeep, 'PC2']
                , c = color
                , s = 50)
 
 
-ax.legend(['AD_Disease_group','HC_Control_group'],loc='upper right',borderpad=2,labelspacing=2,prop={'size': 12})
+# ax.legend(['XYCH_WX_group','GYCH_WX_group'],loc='upper right',labelspacing=2,prop={'size': 12})
 ax.grid()
 
 
