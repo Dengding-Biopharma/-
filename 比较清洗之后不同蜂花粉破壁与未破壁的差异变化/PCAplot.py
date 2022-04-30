@@ -7,13 +7,14 @@ import numpy as np
 import pandas as pd
 import sklearn.preprocessing
 from matplotlib.patches import Ellipse
+from scipy.stats import ttest_ind
 from sklearn.decomposition import PCA
 from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
 data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
-# data = pd.reXYCH_WX_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+# data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
 print(data)
 
 sample_labels = []
@@ -24,26 +25,11 @@ targets = data.columns.values[1:]
 
 
 for i in range(len(targets)):
-    if 'XYCH_WX_' not in targets[i] and 'GYCH_WX_' not in targets[i]:
+    if 'WX' not in targets[i]:
         del data[targets[i]]
 targets = data.columns.values[1:]
 print(targets)
 
-
-
-for i in range(len(targets)):
-    if 'XYCH_WX' in targets[i]:
-        targets[i] = 'XYCH_WX_group'
-    elif 'GYCH_WX' in targets[i]:
-        targets[i] = 'GYCH_WX_group'
-
-for i in range(len(targets)):
-    if targets[i] == 'XYCH_WX_group':
-        color_exist.append('r')
-    else:
-        color_exist.append('b')
-
-print(targets)
 
 
 saved_label = data['dataMatrix'].values
@@ -62,32 +48,57 @@ for i in range(data_impute.shape[1]):
 normalized_data_impute = data_impute
 print(normalized_data_impute)
 
-XYCH_WX_index=[]
-GYCH_WX_index=[]
+
+# 分别比较样本1和6、
+keywords1 = ['XYCH_WX_','XYCH_WXPB_']
+# 样本2和7、
+keywords2 = ['GYCH_WX_','GYCH_WXPB_']
+# 样本3和8、
+keywords3 = ['GWBZ_WX_','GWBZ_WXPB_']
+# 样本4和9、
+keywords4 = ['GHH_WX_','GHH_WXPB_']
+# 样本5和10
+keywords5 = ['GCH_WX_','GCH_WXPB_']
+# 研究单个样本破壁与未破壁的变化差异
+keywords6 = ['WX_','WXPB_']
+x_index=[]
+y_index=[]
+print(targets)
+keywords = keywords6
 for i in range(len(targets)):
-    if "XYCH_WX_" in targets[i]:
-        XYCH_WX_index.append(i)
-    else:
-        GYCH_WX_index.append(i)
-print(XYCH_WX_index)
-print(GYCH_WX_index)
+    if keywords[0] in targets[i]:
+        x_index.append(i)
+    elif keywords[1] in targets[i]:
+        y_index.append(i)
+
+print(x_index)
+print(y_index)
+targets = np.hstack((targets[x_index],targets[y_index]))
+print(targets)
 
 
-normalized_data_impute_XYCH_WX = []
-for index in XYCH_WX_index:
-    normalized_data_impute_XYCH_WX.append(normalized_data_impute[:,index].T)
-normalized_data_impute_XYCH_WX = np.array(normalized_data_impute_XYCH_WX)
+normalized_data_impute_x = []
+for index in x_index:
+    normalized_data_impute_x.append(normalized_data_impute[:,index].T)
+normalized_data_impute_x = np.array(normalized_data_impute_x)
 
-normalized_data_impute_GYCH_WX =[]
-for index in GYCH_WX_index:
-    normalized_data_impute_GYCH_WX.append(normalized_data_impute[:,index].T)
-normalized_data_impute_GYCH_WX = np.array(normalized_data_impute_GYCH_WX)
+normalized_data_impute_y =[]
+for index in y_index:
+    normalized_data_impute_y.append(normalized_data_impute[:,index].T)
+normalized_data_impute_y = np.array(normalized_data_impute_y)
+
+
+print(normalized_data_impute_x.shape)
+print(normalized_data_impute_y.shape)
+normalized_data_impute = np.vstack((normalized_data_impute_x,normalized_data_impute_y))
+print(normalized_data_impute.shape)
+
 
 
 # PCA
 pca = PCA(n_components=2)
-pca.fit(normalized_data_impute.T)
-X_new = pca.fit_transform(normalized_data_impute.T)
+pca.fit(normalized_data_impute)
+X_new = pca.fit_transform(normalized_data_impute)
 print(X_new)
 print(pca.explained_variance_ratio_)
 
@@ -111,8 +122,14 @@ group0 = np.array(group0)
 
 
 # plot
-
+print(targets)
+for i in range(len(targets)):
+    if 'WX_' in targets[i]:
+        targets[i] = 'WX_group'
+    elif 'WXPB_' in targets[i]:
+        targets[i] = 'WXPB_group'
 targets = pd.DataFrame(data = targets)
+print(targets)
 
 principalDf = pd.DataFrame(data = X_new
              , columns = ['PC1', 'PC2'])
@@ -163,19 +180,18 @@ ax.set_title('2 component PCA', fontsize = 20)
 #                         edgecolor='b', fc='None', lw=2)
 # ax.XYCH_WXd_patch(ellipse_GYCH_WX)
 
-groups=['XYCH_WX_group','GYCH_WX_group']
+groups=['WX_group','WXPB_group']
 
 for i in range(len(groups)):
     print(groups[i])
     indicesToKeep = finalDf[0].values == groups[i]
     print(indicesToKeep)
-    quit()
-    if groups[i] == 'XYCH_WX_group':
+    if groups[i] == 'WX_group':
         ax_XYCH_WX = ax.scatter(finalDf.loc[indicesToKeep ,'PC1'],
                finalDf.loc[indicesToKeep, 'PC2'],
                c = 'r'
                , s = 50)
-    if groups[i] == 'GYCH_WX_group':
+    if groups[i] == 'WXPB_group':
         ax_GYCH_WX = ax.scatter(finalDf.loc[indicesToKeep, 'PC1'],
                                 finalDf.loc[indicesToKeep, 'PC2'],
                                 c='b'
@@ -184,7 +200,7 @@ for i in range(len(groups)):
 
 
 
-plt.legend(handles=[ax_XYCH_WX,ax_GYCH_WX],labels=['XYCH_WX_group','GYCH_WX_group'],loc='upper right',labelspacing=2,prop={'size': 12})
+plt.legend(handles=[ax_XYCH_WX,ax_GYCH_WX],labels=['{}group'.format(keywords[0]),'{}group'.format(keywords[1])],loc='upper right',labelspacing=2,prop={'size': 12})
 ax.grid()
 
 plt.show()
