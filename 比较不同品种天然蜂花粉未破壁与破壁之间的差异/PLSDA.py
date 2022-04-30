@@ -149,8 +149,8 @@ for i in range(len(groups)):
 
 
 
-plt.legend(handles=[ax_XYCH_WX,ax_GYCH_WX],labels=['XYCH_WX_group','GYCH_WX_group'],loc='lower right',labelspacing=2,prop={'size': 10})
-plt.title('PLS-DA for 新鲜油菜花粉和干燥油菜花粉')
+plt.legend(handles=[ax_XYCH_WX,ax_GYCH_WX],labels=['WX_group','WXPB_group'],loc='lower right',labelspacing=2,prop={'size': 10})
+plt.title('PLS-DA for 未洗和未洗破壁')
 
 plt.show()
 # quit()

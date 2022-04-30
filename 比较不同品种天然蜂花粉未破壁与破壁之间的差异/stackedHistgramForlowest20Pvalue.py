@@ -39,7 +39,7 @@ keywords4 = ['GHH_WX_','GHH_WXPB_']
 keywords5 = ['GCH_WX_','GCH_WXPB_']
 # 研究单个样本破壁与未破壁的变化差异
 keywords6 = ['WX_','WXPB_']
-keywords = keywords6
+keywords = keywords3
 
 for i in range(len(targets)):
     if keywords[0] not in targets[i] and keywords[1] not in targets[i]:
