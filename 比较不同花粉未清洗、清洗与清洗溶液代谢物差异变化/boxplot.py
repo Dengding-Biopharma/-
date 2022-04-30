@@ -23,14 +23,7 @@ sample_labels = []
 color_exist = []
 targets = data.columns.values[1:]
 
-for i in range(len(targets)):
-    if 'QX' not in targets[i]:
-        del data[targets[i]]
-targets = data.columns.values[1:]
-for i in range(len(targets)):
-    if 'QXRY' in targets[i]:
-        del data[targets[i]]
-targets = data.columns.values[1:]
+
 print(targets)
 print(len(targets))
 
@@ -52,19 +45,20 @@ normalized_data_impute = data_impute
 print(normalized_data_impute)
 
 # 分别比较样本1和6、
-keywords1 = ['XYCH_QX_','XYCH_QXPB_']
+keywords1 = ['XYCH_WX_','XYCH_QX_','XYCH_QXRY_']
 # 样本2和7、
-keywords2 = ['GYCH_QX_','GYCH_QXPB_']
+keywords2 = ['GYCH_WX_','GYCH_QX_','GYCH_QXRY_']
 # 样本3和8、
-keywords3 = ['GWBZ_QX_','GWBZ_QXPB_']
+keywords3 = ['GWBZ_WX_','GWBZ_QX_','GWBZ_QXRY_']
 # 样本4和9、
-keywords4 = ['GHH_QX_','GHH_QXPB_']
+keywords4 = ['GHH_WX_','GHH_QX_','GHH_QXRY_']
 # 样本5和10
-keywords5 = ['GCH_QX_','GCH_QXPB_']
+keywords5 = ['GCH_WX_','GCH_QX_','GCH_QXRY_']
 # 研究单个样本破壁与未破壁的变化差异
-keywords6 = ['QX_','QXPB_']
+keywords6 = ['WX_','QX_','QXRY']
 x_index=[]
 y_index=[]
+z_index=[]
 print(targets)
 keywords = keywords5
 for i in range(len(targets)):
@@ -72,11 +66,15 @@ for i in range(len(targets)):
         x_index.append(i)
     elif keywords[1] in targets[i]:
         y_index.append(i)
+    elif keywords[2] in targets[i]:
+        z_index.append(i)
 
 print(x_index)
 print(y_index)
-targets = np.hstack((targets[x_index],targets[y_index]))
+print(z_index)
+targets = np.hstack((targets[x_index],targets[y_index],targets[z_index]))
 print(targets)
+print(len(targets))
 
 normalized_data_impute_x = []
 for index in x_index:
@@ -88,9 +86,10 @@ for index in y_index:
     normalized_data_impute_y.append(normalized_data_impute[:,index].T)
 normalized_data_impute_y = np.array(normalized_data_impute_y)
 
-print(normalized_data_impute_x.shape)
-print(normalized_data_impute_y.shape)
-
+normalized_data_impute_z =[]
+for index in z_index:
+    normalized_data_impute_z.append(normalized_data_impute[:,index].T)
+normalized_data_impute_z = np.array(normalized_data_impute_z)
 
 
 top_k = 20

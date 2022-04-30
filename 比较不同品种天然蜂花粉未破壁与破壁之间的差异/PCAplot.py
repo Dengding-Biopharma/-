@@ -138,13 +138,13 @@ finalDf = pd.concat([principalDf, targets], axis = 1)
 points_XYCH_WX = []
 points_GYCH_WX = []
 print(finalDf)
-
-for i in range(X_new.shape[0]):
-    if i not in outlier_index:
-        if 'XYCH_WX' in finalDf[0][i]:
-            points_XYCH_WX.append([finalDf['PC1'][i],finalDf['PC2'][i]])
-        else:
-            points_GYCH_WX.append([finalDf['PC1'][i], finalDf['PC2'][i]])
+#
+# for i in range(X_new.shape[0]):
+#     if i not in outlier_index:
+#         if 'XYCH_WX' in finalDf[0][i]:
+#             points_XYCH_WX.append([finalDf['PC1'][i],finalDf['PC2'][i]])
+#         else:
+#             points_GYCH_WX.append([finalDf['PC1'][i], finalDf['PC2'][i]])
 
 
 
