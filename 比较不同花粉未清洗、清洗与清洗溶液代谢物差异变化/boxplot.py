@@ -25,6 +25,11 @@ sample_labels = []
 color_exist = []
 targets = data.columns.values[1:]
 
+for i in range(len(targets)):
+    if 'WX_' not in targets[i] and 'QX_' not in targets[i] and 'QXRY_' not in targets[i]:
+        del data[targets[i]]
+targets = data.columns.values[1:]
+
 print(targets)
 print(len(targets))
 

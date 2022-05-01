@@ -14,59 +14,60 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
-data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
-# data = pd.reXYCH_WX_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+data = pd.read_excel(
+    '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
+# data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
 print(data)
 
 sample_labels = []
 
-
 color_exist = []
 targets = data.columns.values[1:]
 
-
 for i in range(len(targets)):
-    if 'QX' not in targets[i]:
+    if 'WX_' not in targets[i] and 'QX_' not in targets[i] and 'QXRY_' not in targets[i]:
         del data[targets[i]]
 targets = data.columns.values[1:]
-for i in range(len(targets)):
-    if 'QXRY' in targets[i]:
-        del data[targets[i]]
-targets = data.columns.values[1:]
-print(targets)
-print(len(targets))
 
+
+for i in range(len(targets)):
+    if 'WX_' in targets[i]:
+        targets[i] = 'WX_group'
+    elif 'QX_' in targets[i]:
+        targets[i] = 'QX_group'
+    elif 'QXRY_' in targets[i]:
+        targets[i] = 'QXRY_group'
 
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
 
-imputer_mean_XYCH_WX = SimpleImputer(missing_values=np.nan,strategy='mean')
+imputer_mean_XYCH_WX = SimpleImputer(missing_values=np.nan, strategy='mean')
 data_impute = imputer_mean_XYCH_WX.fit_transform(data)
-
 
 sum_baseline = 10000
 for i in range(data_impute.shape[1]):
-    coe = sum_baseline/np.sum(data_impute[:,i])
-    data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
+    coe = sum_baseline / np.sum(data_impute[:, i])
+    data_impute[:, i] = (data_impute[:, i] * coe) / sum_baseline
 
 normalized_data_impute = data_impute
 print(normalized_data_impute)
 
 # 分别比较样本1和6、
-keywords1 = ['XYCH_QX_','XYCH_QXPB_']
+keywords1 = ['XYCH_WX_', 'XYCH_QX_', 'XYCH_QXRY_']
 # 样本2和7、
-keywords2 = ['GYCH_QX_','GYCH_QXPB_']
+keywords2 = ['GYCH_WX_', 'GYCH_QX_', 'GYCH_QXRY_']
 # 样本3和8、
-keywords3 = ['GWBZ_QX_','GWBZ_QXPB_']
+keywords3 = ['GWBZ_WX_', 'GWBZ_QX_', 'GWBZ_QXRY_']
 # 样本4和9、
-keywords4 = ['GHH_QX_','GHH_QXPB_']
+keywords4 = ['GHH_WX_', 'GHH_QX_', 'GHH_QXRY_']
 # 样本5和10
-keywords5 = ['GCH_QX_','GCH_QXPB_']
+keywords5 = ['GCH_WX_', 'GCH_QX_', 'GCH_QXRY_']
 # 研究单个样本破壁与未破壁的变化差异
-keywords6 = ['QX_','QXPB_']
-x_index=[]
-y_index=[]
+keywords6 = ['WX_', 'QX_', 'QXRY']
+x_index = []
+y_index = []
+z_index = []
 print(targets)
 keywords = keywords6
 for i in range(len(targets)):
@@ -74,16 +75,16 @@ for i in range(len(targets)):
         x_index.append(i)
     elif keywords[1] in targets[i]:
         y_index.append(i)
+    elif keywords[2] in targets[i]:
+        z_index.append(i)
 
 print(x_index)
 print(y_index)
-targets = np.hstack((targets[x_index],targets[y_index]))
+print(z_index)
+targets = np.hstack((targets[x_index], targets[y_index], targets[z_index]))
 print(targets)
-for i in range(len(targets)):
-    if 'QX_' in targets[i]:
-        targets[i] = 'QX_group'
-    elif 'QXPB_' in targets[i]:
-        targets[i] = 'QXPB_group'
+print(len(targets))
+
 
 normalized_data_impute_x = []
 for index in x_index:
@@ -95,28 +96,37 @@ for index in y_index:
     normalized_data_impute_y.append(normalized_data_impute[:,index].T)
 normalized_data_impute_y = np.array(normalized_data_impute_y)
 
+normalized_data_impute_z = []
+for index in z_index:
+    normalized_data_impute_z.append(normalized_data_impute[:, index].T)
+normalized_data_impute_z = np.array(normalized_data_impute_z)
+
 print(normalized_data_impute_x.shape)
 print(normalized_data_impute_y.shape)
 
-X_XYCH_WX = np.array(normalized_data_impute_x)
-X_GYCH_WX = np.array(normalized_data_impute_y)
-X = np.vstack((X_XYCH_WX,X_GYCH_WX))
-print(X)
+
+X = np.vstack((normalized_data_impute_x,normalized_data_impute_y,normalized_data_impute_z))
+print(X.shape)
+
+
 int_targets = []
 for i in targets:
-    if 'QX_' in i:
+    if 'WX_' in i:
         int_targets.append(0)
-    elif 'QXPB_':
+    elif 'QX_' in i:
         int_targets.append(1)
-
+    elif 'QXRY_' in i:
+        int_targets.append(2)
 
 print(X.shape)
 
-plsr = PLSRegression(n_components=2,scale=False)
+plsr = PLSRegression(n_components=3,scale=False)
 plsr.fit(X,int_targets)
 
 print(plsr.predict(X))
+
 predicts = []
+
 for predict in plsr.predict(X):
     if predict >=0.5:
         predicts.append(1)
@@ -131,30 +141,35 @@ scores['index'] = targets
 print(scores)
 
 
-ax = scores.plot(x=0, y=1, kind='scatter', s=50,
-                    figsize=(6,6),c='r')
+fig = plt.figure()
+ax = fig.add_subplot(111)
 
-groups=['QX_group','QXPB_group']
+groups=['WX_group','QX_group','QXRY_group']
 
 for i in range(len(groups)):
-    print(groups[i])
+    print(scores['index'].values)
     indicesToKeep = scores['index'].values == groups[i]
-
-    if groups[i] == 'QX_group':
-        ax_XYCH_WX = ax.scatter(scores.loc[indicesToKeep ,0],
+    print(indicesToKeep)
+    if groups[i] == 'WX_group':
+        ax_x = ax.scatter(scores.loc[indicesToKeep ,0],
                scores.loc[indicesToKeep, 1],
                c = 'r'
                , s = 50)
-    if groups[i] == 'QXPB_group':
-        ax_GYCH_WX = ax.scatter(scores.loc[indicesToKeep, 0],
+    if groups[i] == 'QX_group':
+        ax_y = ax.scatter(scores.loc[indicesToKeep, 0],
                                 scores.loc[indicesToKeep, 1],
                                 c='b'
+                                , s=50)
+    if groups[i] == 'QXRY_group':
+        ax_z = ax.scatter(scores.loc[indicesToKeep, 0],
+                                scores.loc[indicesToKeep, 1],
+                                c='g'
                                 , s=50)
 
 
 
 
-plt.legend(handles=[ax_XYCH_WX,ax_GYCH_WX],labels=['QX_group','QXPB_group'],loc='lower right',labelspacing=2,prop={'size': 10})
+plt.legend(handles=[ax_x,ax_y,ax_z],labels=['{}group'.format(keywords[0]),'{}group'.format(keywords[1]),'{}group'.format(keywords[2])],loc='lower right',labelspacing=2,prop={'size': 10})
 plt.title('PLS-DA for 清洗洗和清洗破壁')
 
 plt.show()
