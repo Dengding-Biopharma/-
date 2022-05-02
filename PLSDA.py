@@ -14,7 +14,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.metrics import r2_score
 
 
-data = pd.read_excel('files/peaktablePOSout_POS_noid_replace_variable.xlsx')
+# data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace.xlsx')
+data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
 for column in data.columns.values:
     if '16' in column:
@@ -24,14 +25,6 @@ for column in data.columns.values:
 color_exist = []
 targets = data.columns.values[1:]
 
-for i in range(len(data)):
-    temp = []
-    for j in targets:
-        temp.append(data[j][i])
-    for k in range(len(temp)):
-        temp[k] = math.isnan(temp[k])
-    if temp.count(True) >= len(temp) /2:
-        data = data.drop(i)
 
 
 for i in range(len(targets)):

@@ -8,7 +8,8 @@ import sklearn
 from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
 
-data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace.xlsx')
+# data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace.xlsx')
+data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
 for column in data.columns.values:
     if '16' in column:
@@ -53,7 +54,8 @@ normalized_data_impute_hc =[]
 for index in hc_index:
     normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
 normalized_data_impute_hc = np.array(normalized_data_impute_hc)
-
+print(ad_index)
+print(hc_index)
 
 top_k = 20
 p_list =[]
@@ -68,7 +70,6 @@ for p in p_list:
 
 top_k_index = p_list.argsort()[::-1][len(p_list)-top_k:]
 print(top_k_index)
-
 
 
 X_ad = np.array(normalized_data_impute_ad)

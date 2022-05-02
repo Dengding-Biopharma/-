@@ -11,7 +11,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
-data = pd.read_excel('files/peaktablePOSout_POS_noid_replace_variable.xlsx')
+# data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace.xlsx')
+data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
 for column in data.columns.values:
     if '16' in column:
@@ -22,16 +23,6 @@ color_exist = []
 targets = data.columns.values[1:]
 print(targets)
 
-
-
-for i in range(len(data)):
-    temp = []
-    for j in targets:
-        temp.append(data[j][i])
-    for k in range(len(temp)):
-        temp[k] = math.isnan(temp[k])
-    if temp.count(True) >= len(temp) /2:
-        data = data.drop(i)
 
 
 for i in range(len(targets)):
@@ -175,7 +166,7 @@ for target, color in zip(targets,colors):
                , s = 50)
 
 
-ax.legend(['AD_Disease_group','HC_Control_group'],loc='upper right',borderpad=2,labelspacing=2,prop={'size': 12})
+ax.legend(['AD_Disease_group','HC_Control_group'],loc='best',borderpad=2,labelspacing=2,prop={'size': 12})
 ax.grid()
 
 
