@@ -157,6 +157,8 @@ for i in range(len(bp['boxes'])):
         bp['boxes'][i].set(color='r')
     else:
         bp['boxes'][i].set(color='b')
+plt.legend(handles=[bp['boxes'][0],bp['boxes'][0+count]],labels=['{}group'.format('XYCH_'),'{}group'.format('GYCH_')])
+plt.title('新鲜油菜花粉与干燥油菜花粉的差异（未洗）')
 plt.show()
 
 

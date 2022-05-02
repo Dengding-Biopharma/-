@@ -15,9 +15,9 @@ from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 from statsmodels.stats.anova import anova_lm
 
-data = pd.read_excel(
-    '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
-# data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+# data = pd.read_excel(
+#     '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
 print(data)
 
 sample_labels = []
@@ -189,4 +189,6 @@ for i in range(len(bp['boxes'])):
         bp['boxes'][i].set(color='g')
     else:
         bp['boxes'][i].set(color='b')
+plt.legend(handles=[bp['boxes'][0],bp['boxes'][0+top_k],bp['boxes'][0+2*top_k]],labels=['{}group'.format(keywords[0]),'{}group'.format(keywords[1]),'{}group'.format(keywords[2])])
+plt.title('比较不同花粉未清洗、清洗与清洗溶液代谢物差异变化(差异最大的20个小分子)')
 plt.show()

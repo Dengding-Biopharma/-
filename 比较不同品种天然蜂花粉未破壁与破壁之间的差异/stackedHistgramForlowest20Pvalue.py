@@ -16,8 +16,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
-data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
-# data = pd.reXYCH_WX_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+# data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
 print(data)
 
 sample_labels = []
@@ -39,7 +39,7 @@ keywords4 = ['GHH_WX_','GHH_WXPB_']
 keywords5 = ['GCH_WX_','GCH_WXPB_']
 # 研究单个样本破壁与未破壁的变化差异
 keywords6 = ['WX_','WXPB_']
-keywords = keywords3
+keywords = keywords6
 
 for i in range(len(targets)):
     if keywords[0] not in targets[i] and keywords[1] not in targets[i]:

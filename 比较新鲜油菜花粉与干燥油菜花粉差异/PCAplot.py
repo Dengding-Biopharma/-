@@ -168,8 +168,7 @@ groups=['XYCH_WX_group','GYCH_WX_group']
 for i in range(len(groups)):
     print(groups[i])
     indicesToKeep = finalDf[0].values == groups[i]
-    print(indicesToKeep)
-    quit()
+
     if groups[i] == 'XYCH_WX_group':
         ax_XYCH_WX = ax.scatter(finalDf.loc[indicesToKeep ,'PC1'],
                finalDf.loc[indicesToKeep, 'PC2'],

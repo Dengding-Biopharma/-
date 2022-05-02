@@ -14,8 +14,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
-data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
-# data = pd.reXYCH_WX_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+# data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
 print(data)
 
 sample_labels = []
@@ -149,10 +149,10 @@ for i in range(len(groups)):
 
 
 
-plt.legend(handles=[ax_XYCH_WX,ax_GYCH_WX],labels=['WX_group','WXPB_group'],loc='lower right',labelspacing=2,prop={'size': 10})
+plt.legend(handles=[ax_XYCH_WX,ax_GYCH_WX],labels=['WX_group','WXPB_group'],loc='best',labelspacing=2,prop={'size': 10})
 plt.title('PLS-DA for 未洗和未洗破壁')
+plt.savefig('figures/neg_plots/整体未破壁样本与破壁样本的变化PLS-DA.png')
 
-plt.show()
 # quit()
 # print(ax)
 # plt.show()

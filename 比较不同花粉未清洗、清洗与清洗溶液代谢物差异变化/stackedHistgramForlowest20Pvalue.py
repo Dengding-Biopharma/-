@@ -16,9 +16,9 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
-data = pd.read_excel(
-    '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
-# data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+# data = pd.read_excel(
+#     '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
 print(data)
 
 sample_labels = []
@@ -47,7 +47,7 @@ keywords6 = ['WX_', 'QX_', 'QXRY']
 x_index = []
 y_index = []
 z_index = []
-keywords = keywords1
+keywords = keywords6
 
 saved_label = data['dataMatrix'].values
 print(saved_label)
@@ -69,7 +69,7 @@ x_index = []
 y_index = []
 z_index = []
 print(targets)
-keywords = keywords4
+
 for i in range(len(targets)):
     if keywords[0] in targets[i]:
         x_index.append(i)

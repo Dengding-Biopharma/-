@@ -13,8 +13,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
-data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
-# data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+# data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
 print(data)
 
 sample_labels = []
@@ -160,8 +160,6 @@ for i in range(data_GYCH_WX.shape[0]):
     data.append(data_GYCH_WX[i, :])
 
 
-
-print(data)
 bp = plt.boxplot(data,labels=labels_XYCH_WX+labels_GYCH_WX,patch_artist=True)
 plt.xticks(rotation = 90)
 for i in range(len(bp['boxes'])):
@@ -169,7 +167,11 @@ for i in range(len(bp['boxes'])):
         bp['boxes'][i].set(color='r')
     else:
         bp['boxes'][i].set(color='b')
+plt.legend(handles=[bp['boxes'][0],bp['boxes'][0+count]],labels=['{}group'.format(keywords[0]),'{}group'.format(keywords[1])])
+plt.title('不同品种天然蜂花粉未破壁与破壁之间的差异（未洗）')
 plt.show()
+# plt.savefig('figures/pos_plots/干燥油菜花粉.png')
+
 
 
 

@@ -13,8 +13,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
-data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
-# data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+# data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
 print(data)
 
 sample_labels = []
@@ -66,7 +66,7 @@ keywords6 = ['QX_','QXPB_']
 x_index=[]
 y_index=[]
 print(targets)
-keywords = keywords5
+keywords = keywords6
 for i in range(len(targets)):
     if keywords[0] in targets[i]:
         x_index.append(i)
@@ -177,6 +177,8 @@ for i in range(len(bp['boxes'])):
         bp['boxes'][i].set(color='r')
     else:
         bp['boxes'][i].set(color='b')
+plt.legend(handles=[bp['boxes'][0],bp['boxes'][0+count]],labels=['{}group'.format(keywords[0]),'{}group'.format(keywords[1])])
+plt.title('清洗之后不同蜂花粉破壁与未破壁的差异变化')
 plt.show()
 
 

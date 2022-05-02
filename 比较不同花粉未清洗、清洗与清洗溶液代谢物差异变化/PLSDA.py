@@ -14,9 +14,9 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
-data = pd.read_excel(
-    '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
-# data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+# data = pd.read_excel(
+#     '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
 print(data)
 
 sample_labels = []
@@ -28,15 +28,6 @@ for i in range(len(targets)):
     if 'WX_' not in targets[i] and 'QX_' not in targets[i] and 'QXRY_' not in targets[i]:
         del data[targets[i]]
 targets = data.columns.values[1:]
-
-
-for i in range(len(targets)):
-    if 'WX_' in targets[i]:
-        targets[i] = 'WX_group'
-    elif 'QX_' in targets[i]:
-        targets[i] = 'QX_group'
-    elif 'QXRY_' in targets[i]:
-        targets[i] = 'QXRY_group'
 
 saved_label = data['dataMatrix'].values
 print(saved_label)
@@ -136,6 +127,15 @@ for predict in plsr.predict(X):
 
 
 scores = pd.DataFrame(plsr.x_scores_)
+
+for i in range(len(targets)):
+    if 'WX_' in targets[i]:
+        targets[i] = 'WX_group'
+    elif 'QX_' in targets[i]:
+        targets[i] = 'QX_group'
+    elif 'QXRY_' in targets[i]:
+        targets[i] = 'QXRY_group'
+
 scores['index'] = targets
 
 print(scores)
@@ -169,10 +169,9 @@ for i in range(len(groups)):
 
 
 
-plt.legend(handles=[ax_x,ax_y,ax_z],labels=['{}group'.format(keywords[0]),'{}group'.format(keywords[1]),'{}group'.format(keywords[2])],loc='lower right',labelspacing=2,prop={'size': 10})
-plt.title('PLS-DA for 清洗洗和清洗破壁')
-
-plt.show()
+plt.legend(handles=[ax_x,ax_y,ax_z],labels=['{}group'.format(keywords[0]),'{}group'.format(keywords[1]),'{}group'.format(keywords[2])],loc='best',labelspacing=2,prop={'size': 10})
+plt.title('PLS-DA for 比较不同花粉未清洗、清洗与清洗溶液代谢物差异变化')
+plt.savefig('figures/neg_plots/整体未破壁样本与破壁样本的变化PLS-DA.png')
 # quit()
 # print(ax)
 # plt.show()
