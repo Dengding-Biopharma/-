@@ -62,7 +62,7 @@ keywords6 = ['WX_','WXPB_']
 x_index=[]
 y_index=[]
 print(targets)
-keywords = keywords2
+keywords = keywords6
 for i in range(len(targets)):
     if keywords[0] in targets[i]:
         x_index.append(i)
@@ -99,7 +99,7 @@ for p in p_list:
 top_k_index = p_list.argsort()[::-1][len(p_list)-count:]
 print(top_k_index)
 
-
+quit()
 
 X_XYCH_WX = np.array(normalized_data_impute_x)
 X_GYCH_WX = np.array(normalized_data_impute_y)

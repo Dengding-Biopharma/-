@@ -108,7 +108,7 @@ for k in top_k_index:
     name = saved_label[k]
     print(name)
     for i in range(len(table['name'].values)):
-        if name == table['name'].values[i]:
+        if name == table['name'].values[i][2:-1]:
             try:
                 ids.append(str(table['accession'].values[i]))
             except:
