@@ -6,13 +6,12 @@ context = etree.iterparse(xml, tag='metabolite')
 
 csvfile = open('hmdb_metabolites.csv', 'w')
 #csvfile=open('tmp.csv','w')
-fieldnames = ['accession', 'monisotopic_molecular_weight', 'iupac_name', 'name', 'chemical_formula', 'cas_registry_number', 'smiles','inchi','inchikey','pubchem_compound_id','kingdom', 'direct_parent', 'super_class', 'class', 'sub_class', 'molecular_framework','pathway']
-writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+fieldnames = ['accession', 'monisotopic_molecular_weight', 'iupac_name', 'name', 'chemical_formula', 'cas_registry_number','kegg_id', 'smiles','inchi','inchikey','pubchem_compound_id','kingdom', 'direct_parent', 'super_class', 'class', 'sub_class', 'molecular_framework','pathway']
+writer = csv.DictWriter(csvfile, fieldnames=fieldnames,delimiter='\t')
 writer.writeheader()
 
 for event,elem in context:
     accession = elem.xpath('accession/text()')[0]
-    print(accession)
     try:
         monisotopic_molecular_weight = elem.xpath('monisotopic_molecular_weight/text()')[0]
     except:
@@ -31,23 +30,29 @@ for event,elem in context:
         cas_registry_number = elem.xpath('cas_registry_number/text()')[0]
     except:
         cas_registry_number = 'NA'
+
+    try:
+        kegg_id = elem.xpath('kegg_id/text()')[0]
+        print(kegg_id)
+    except:
+        kegg_id = 'NA'
     try:
         smiles = elem.xpath('smiles/text()')[0]
     except:
         smiles = 'NA'
     try:
         inchi = elem.xpath('inchi/text()')[0]
-        print(inchi)
+
     except:
         inchi = 'NA'
     try:
         inchikey = elem.xpath('inchikey/text()')[0]
-        print(inchikey)
+
     except:
         inchikey = 'NA'
     try:
         pubchem = elem.xpath('pubchem_compound_id/text()')[0]
-        print(pubchem)
+
     except:
         pubchem = 'NA'
     try:
@@ -79,7 +84,7 @@ for event,elem in context:
     except:
         pathway = 'NA'
 
-    writer.writerow({'accession': accession, 'monisotopic_molecular_weight': monisotopic_molecular_weight, 'iupac_name': iupac_name, 'name': name, 'chemical_formula': chemical_formula, 'cas_registry_number': cas_registry_number, 'smiles': smiles,'inchi':inchi,'inchikey':inchikey,'pubchem_compound_id':pubchem, 'kingdom': kingdom, 'direct_parent': direct_parent, 'super_class': super_class, 'class': classorg, 'sub_class': sub_class, 'molecular_framework': molecular_framework,'pathway':pathway})
+    writer.writerow({'accession': accession, 'monisotopic_molecular_weight': monisotopic_molecular_weight, 'iupac_name': iupac_name, 'name': name, 'chemical_formula': chemical_formula, 'cas_registry_number': cas_registry_number,'kegg_id':kegg_id, 'smiles': smiles,'inchi':inchi,'inchikey':inchikey,'pubchem_compound_id':pubchem, 'kingdom': kingdom, 'direct_parent': direct_parent, 'super_class': super_class, 'class': classorg, 'sub_class': sub_class, 'molecular_framework': molecular_framework,'pathway':pathway})
     # It's safe to call clear() here because no descendants will be
     # accessed
     elem.clear()

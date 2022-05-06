@@ -12,7 +12,8 @@ for i in range(len(data)):
         data['Max_SMILES'][i] = data['HMDB_SMILES'][i]
         data['Max_Score'][i] = data['HMDB_Score' ][i]
         data['Max_Source'][i] = 'HMDB'
+        data['Max_INCHI'][i] = data['HMDB_INCHI'][i]
 
 print(data)
-data.to_excel('ad files/Pos-summary-0313-16.xlsx',index=False,na_rep=np.nan)
+data.to_excel('ad files/Pos-summary-0313-16_hmdb.xlsx',index=False,na_rep=np.nan)
 
