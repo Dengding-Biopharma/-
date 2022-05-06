@@ -10,7 +10,7 @@ from rdkit import Chem
 import math
 from math import nan
 
-table = pd.read_csv('hmdb_metabolites.csv',sep='\t')
+table = pd.read_csv('../hmdb_metabolites.csv',sep='\t')
 
 
 data = pd.read_excel(
