@@ -6,6 +6,10 @@ from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
 import csv
 from rdkit import Chem
+import math
+from math import nan
+
+table = pd.read_csv('hmdb_metabolites.csv',sep='\t')
 
 
 data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
