@@ -1,19 +1,10 @@
-import math
-import random
 import matplotlib
 
 matplotlib.rc('font', family='Microsoft YaHei')
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sklearn.preprocessing
-from matplotlib.patches import Ellipse
-from scipy.stats import ttest_ind, stats
-from sklearn.decomposition import PCA
+from scipy.stats import stats
 from sklearn.impute import SimpleImputer
-from sklearn.cluster import KMeans
-from skimage.measure import EllipseModel
-from statsmodels.stats.anova import anova_lm
 
 data = pd.read_excel(
     '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
