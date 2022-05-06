@@ -111,16 +111,16 @@ print(top_k_index)
 ids=[]
 names = []
 for k in top_k_index:
-    smile = saved_label[k]
-    m = Chem.MolFromSmiles(smile)
-    inchikey = Chem.MolToInchiKey(m)
-    print(inchikey)
-
+    # smile = saved_label[k]
+    # m = Chem.MolFromSmiles(smile)
+    # inchikey = Chem.MolToInchiKey(m)
+    # print(inchikey)
+    name = saved_label[k]
+    print(name)
     for i in range(len(table['name'].values)):
-        if inchikey == table['inchikey'].values[i]:
+        if name == table['name'].values[i]:
             try:
                 ids.append(str(table['accession'].values[i]))
-
             except:
                 continue
 
