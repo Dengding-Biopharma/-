@@ -14,7 +14,7 @@ from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
 data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
-# data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+
 print(data)
 
 sample_labels = []
@@ -23,12 +23,16 @@ sample_labels = []
 color_exist = []
 targets = data.columns.values[1:]
 
-
 for i in range(len(targets)):
-    if 'WX' not in targets[i]:
+    if 'QX' not in targets[i]:
+        del data[targets[i]]
+targets = data.columns.values[1:]
+for i in range(len(targets)):
+    if 'QXRY' in targets[i]:
         del data[targets[i]]
 targets = data.columns.values[1:]
 print(targets)
+print(len(targets))
 
 
 saved_label = data['dataMatrix'].values
@@ -48,21 +52,21 @@ normalized_data_impute = data_impute
 print(normalized_data_impute)
 
 # 分别比较样本1和6、
-keywords1 = ['XYCH_WX_','XYCH_WXPB_']
+keywords1 = ['XYCH_QX_','XYCH_QXPB_']
 # 样本2和7、
-keywords2 = ['GYCH_WX_','GYCH_WXPB_']
+keywords2 = ['GYCH_QX_','GYCH_QXPB_']
 # 样本3和8、
-keywords3 = ['GWBZ_WX_','GWBZ_WXPB_']
+keywords3 = ['GWBZ_QX_','GWBZ_QXPB_']
 # 样本4和9、
-keywords4 = ['GHH_WX_','GHH_WXPB_']
+keywords4 = ['GHH_QX_','GHH_QXPB_']
 # 样本5和10
-keywords5 = ['GCH_WX_','GCH_WXPB_']
+keywords5 = ['GCH_QX_','GCH_QXPB_']
 # 研究单个样本破壁与未破壁的变化差异
-keywords6 = ['WX_','WXPB_']
+keywords6 = ['QX_','QXPB_']
 x_index=[]
 y_index=[]
 print(targets)
-keywords = keywords2
+keywords = keywords6
 for i in range(len(targets)):
     if keywords[0] in targets[i]:
         x_index.append(i)
@@ -84,6 +88,10 @@ for index in y_index:
     normalized_data_impute_y.append(normalized_data_impute[:,index].T)
 normalized_data_impute_y = np.array(normalized_data_impute_y)
 
+print(normalized_data_impute_x.shape)
+print(normalized_data_impute_y.shape)
+
+
 
 top_k = 20
 p_list =[]
@@ -98,81 +106,3 @@ for p in p_list:
 
 top_k_index = p_list.argsort()[::-1][len(p_list)-count:]
 print(top_k_index)
-
-
-
-X_XYCH_WX = np.array(normalized_data_impute_x)
-X_GYCH_WX = np.array(normalized_data_impute_y)
-
-
-
-X_diff_XYCH_WX = []
-for i in top_k_index:
-    X_diff_XYCH_WX.append(X_XYCH_WX[:,i:i+1])
-
-
-
-X_diff_GYCH_WX = []
-for i in top_k_index:
-    X_diff_GYCH_WX.append(X_GYCH_WX[:,i:i+1])
-
-
-
-data_XYCH_WX = []
-labels_XYCH_WX = []
-for i in range(len(X_diff_XYCH_WX)):
-    data_XYCH_WX.append(X_diff_XYCH_WX[i])
-    labels_XYCH_WX.append(saved_label[top_k_index[i]])
-
-data_GYCH_WX = []
-labels_GYCH_WX = []
-for i in range(len(X_diff_GYCH_WX)):
-    data_GYCH_WX.append(X_diff_GYCH_WX[i])
-    labels_GYCH_WX.append(saved_label[top_k_index[i]])
-
-
-
-
-# Creating axes instance
-data_XYCH_WXs = []
-for i in data_XYCH_WX:
-    data_XYCH_WXs.append(i.reshape(i.shape[0]))
-data_XYCH_WX = data_XYCH_WXs
-
-data_GYCH_WXs = []
-for i in data_GYCH_WX:
-    data_GYCH_WXs.append(i.reshape(i.shape[0]))
-data_GYCH_WX = data_GYCH_WXs
-
-data_XYCH_WX = np.array(data_XYCH_WX)
-data_GYCH_WX = np.array(data_GYCH_WX)
-print(data_XYCH_WX.shape)
-print(data_GYCH_WX.shape)
-data = np.hstack((data_XYCH_WX,data_GYCH_WX))
-
-data = []
-color_list=[]
-for i in range(data_XYCH_WX.shape[0]):
-    color_list.append('r')
-    data.append(data_XYCH_WX[i,:])
-for i in range(data_GYCH_WX.shape[0]):
-    color_list.append('b')
-    data.append(data_GYCH_WX[i, :])
-
-
-bp = plt.boxplot(data,labels=labels_XYCH_WX+labels_GYCH_WX,patch_artist=True)
-plt.xticks(rotation = 90)
-for i in range(len(bp['boxes'])):
-    if i < len(bp['boxes'])/2:
-        bp['boxes'][i].set(color='r')
-    else:
-        bp['boxes'][i].set(color='b')
-plt.legend(handles=[bp['boxes'][0],bp['boxes'][0+count]],labels=['{}group'.format(keywords[0]),'{}group'.format(keywords[1])])
-plt.title('不同品种天然蜂花粉未破壁与破壁之间的差异（未洗）')
-plt.show()
-# plt.savefig('figures/pos_plots/干燥油菜花粉.png')
-
-
-
-
-

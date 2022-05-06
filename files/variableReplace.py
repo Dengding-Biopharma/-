@@ -11,7 +11,7 @@ table = pd.read_excel('pollen files/results/process_output_quantid_pos_camera_no
 # data = pd.read_excel('pollen files/0325-pollen-Neg.xlsx')
 # table = pd.read_excel('pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid.xlsx')
 
-
+print(table)
 
 variable_name_list = []
 variable_smile_list = []
@@ -74,15 +74,7 @@ for i in range(variable_num):
         most_common_count_list.append(most_common_count)
         candidate_count_list.append(candidates_count)
 
-print(count_hmdb)
-print(count_others)
-print(count_hmdb/(count_others+count_hmdb))
 
-# data_dic['gnps_name'] = variable_name_list
-# data_dic['gnps_smile'] = variable_smile_list
-# data_dic['gnps_most_common_count']=most_common_count_list
-# data_dic['gnps_candidate_count']=candidate_count_list
-#
 
 
 table = table.drop(columns='dataMatrix')
