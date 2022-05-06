@@ -4,6 +4,9 @@ import numpy as np
 import pandas as pd
 from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
+import csv
+from rdkit import Chem
+
 
 data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
 
@@ -90,3 +93,29 @@ for p in p_list:
 
 top_k_index = p_list.argsort()[::-1][len(p_list)-count:]
 print(top_k_index)
+
+ids=[]
+names = []
+for k in top_k_index:
+    smile = saved_label[k]
+    m = Chem.MolFromSmiles(smile)
+    inchikey = Chem.MolToInchiKey(m)
+    print(inchikey)
+
+    for i in range(len(table['name'].values)):
+        if inchikey == table['inchikey'].values[i]:
+            try:
+                ids.append(str(table['accession'].values[i]))
+
+            except:
+                continue
+
+            print(ids[-1])
+# df = pd.DataFrame()
+# df['name']=names
+# df['id'] = ids
+# df.to_excel('POS_pubchem_compound_id.xlsx',index=False,na_rep=np.nan)
+print(ids)
+print(len(ids))
+for id in ids:
+    print(id)
