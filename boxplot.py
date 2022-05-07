@@ -8,8 +8,8 @@ import sklearn
 from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
 
-# data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace.xlsx')
-data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
+data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_more_puring.xlsx')
+# data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
 for column in data.columns.values:
     if '16' in column:
@@ -133,6 +133,7 @@ for i in range(data_hc.shape[0]):
 
 
 print(data)
+print(labels_hc)
 bp = plt.boxplot(data,labels=labels_ad+labels_hc,patch_artist=True)
 plt.xticks(rotation = 90)
 for i in range(len(bp['boxes'])):

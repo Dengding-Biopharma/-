@@ -21,7 +21,7 @@ for i in range(len(data_dic)):
     if temp.empty:
         continue
     try:
-        data_dic['max_name'][i] = str(random.choice(temp['name'].values))
+        data_dic['max_name'][i] = str(random.choice(temp['name'].values))[2:-1]
 
     except:
         continue
@@ -52,6 +52,10 @@ print(data)
 data.to_excel('ad files/peaktablePOSout_POS_noid_more.xlsx',index=False,na_rep=np.nan)
 table = pd.read_excel('ad files/peaktablePOSout_POS_noid_more.xlsx')
 for i in range(len(table)):
+    if '}' in table['dataMatrix'][i]:
+        print(table['dataMatrix'][i])
+
+
     if 'no_match' in table['dataMatrix'][i]:
         table = table.drop(i)
     elif 'Massbank' in table['dataMatrix'][i]:
@@ -66,11 +70,17 @@ for i in range(len(table)):
     elif 'HMDB' in table['dataMatrix'][i]:
         temp = table['dataMatrix'][i].split(' ',1)[1].split('|')[0]
         table['dataMatrix'][i] = temp
-    elif 'Spectral Match to' in table['dataMatrix'][i]:
-        temp = table['dataMatrix'][i].split('Spectral Match to ',1)[1]
-        table['dataMatrix'][i] = temp
     elif table['dataMatrix'][i] == ' ':
         table = table.drop(i)
+    elif 'NIST14' in table['dataMatrix'][i]:
+        temp = table['dataMatrix'][i].split('Spectral Match to ',1)[1].split(' from NIST14',1)[0]
+        table['dataMatrix'][i] = temp
+    elif '[M+Na]+' in table['dataMatrix'][i]:
+        temp = table['dataMatrix'][i].split(' [M+Na]+',1)[0]
+        table['dataMatrix'][i] = temp
 
+
+
+quit()
 print(table)
 table.to_excel('ad files/peaktablePOSout_POS_noid_more_puring.xlsx',index=False,na_rep=np.nan)
