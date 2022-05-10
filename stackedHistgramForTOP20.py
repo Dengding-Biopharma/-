@@ -7,107 +7,107 @@ import pandas as pd
 import sklearn
 from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
-
-data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
-# data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
-
-
-targets = data.columns.values[1:]
+def stackedHistgramTop20(data):
+    data = pd.read_excel(data)
+    # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
 
-saved_label = data['dataMatrix'].values
-print(saved_label)
-del data['dataMatrix']
-
-# print(data_impute)
-# sum_baseline = 30000
-# for i in range(data_impute.shape[1]):
-#     coe = sum_baseline/np.sum(data_impute[:,i])
-#     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
-
-data_impute = data.values
-normalized_data_impute = data_impute
-print(normalized_data_impute.shape)
-
-ad_index=[]
-hc_index=[]
-for i in range(len(targets)):
-    if "AD" in targets[i]:
-        ad_index.append(i)
-    else:
-        hc_index.append(i)
-print(ad_index)
-print(hc_index)
-
-normalized_data_impute_ad = []
-for index in ad_index:
-    normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
-normalized_data_impute_ad = np.array(normalized_data_impute_ad)
-
-normalized_data_impute_hc =[]
-for index in hc_index:
-    normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
-normalized_data_impute_hc = np.array(normalized_data_impute_hc)
-
-data_impute_ad = normalized_data_impute_ad
-data_impute_hc = normalized_data_impute_hc
+    targets = data.columns.values[1:]
 
 
-top_k = 20
-sum_list =[]
-for i in range(data_impute_ad.shape[1]):
-    sum = np.sum(data_impute_ad[:,i:i+1])
+    saved_label = data['dataMatrix'].values
+    print(saved_label)
+    del data['dataMatrix']
 
-    sum_list.append(sum)
-sum_list = np.array(sum_list)
-top_k_index = sum_list.argsort()[::-1][0:top_k]
-print(top_k_index)
+    # print(data_impute)
+    # sum_baseline = 30000
+    # for i in range(data_impute.shape[1]):
+    #     coe = sum_baseline/np.sum(data_impute[:,i])
+    #     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
+
+    data_impute = data.values
+    normalized_data_impute = data_impute
+    print(normalized_data_impute.shape)
+
+    ad_index=[]
+    hc_index=[]
+    for i in range(len(targets)):
+        if "AD" in targets[i]:
+            ad_index.append(i)
+        else:
+            hc_index.append(i)
+    print(ad_index)
+    print(hc_index)
+
+    normalized_data_impute_ad = []
+    for index in ad_index:
+        normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
+    normalized_data_impute_ad = np.array(normalized_data_impute_ad)
+
+    normalized_data_impute_hc =[]
+    for index in hc_index:
+        normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
+    normalized_data_impute_hc = np.array(normalized_data_impute_hc)
+
+    data_impute_ad = normalized_data_impute_ad
+    data_impute_hc = normalized_data_impute_hc
 
 
-X_ad = np.array(data_impute_ad)
-X_hc = np.array(data_impute_hc)
-X = np.vstack((X_ad,X_hc))
+    top_k = 20
+    sum_list =[]
+    for i in range(data_impute_ad.shape[1]):
+        sum = np.sum(data_impute_ad[:,i:i+1])
 
-X_top = []
-sum_list = []
-
-for row in range(X.shape[0]):
-    sum = np.sum(X[row,:])
-    temp = []
-    for k in top_k_index:
-        percentage = (X[row, k:k + 1]/sum) * 100
-        temp.append(percentage[0])
-
-    X_top.append(temp)
+        sum_list.append(sum)
+    sum_list = np.array(sum_list)
+    top_k_index = sum_list.argsort()[::-1][0:top_k]
+    print(top_k_index)
 
 
+    X_ad = np.array(data_impute_ad)
+    X_hc = np.array(data_impute_hc)
+    X = np.vstack((X_ad,X_hc))
 
-X_top = np.array(X_top)
-print(X_top.shape)
-X_top = X_top.reshape(X_top.shape[1],X_top.shape[0])
+    X_top = []
+    sum_list = []
 
-labels = []
-for i in top_k_index:
-    labels.append(saved_label[i])
+    for row in range(X.shape[0]):
+        sum = np.sum(X[row,:])
+        temp = []
+        for k in top_k_index:
+            percentage = (X[row, k:k + 1]/sum) * 100
+            temp.append(percentage[0])
 
-color_exist = []
-def get_random_color(color_exist):
-    r = lambda: random.randint(0, 255)
-    color = '#%02X%02X%02X' % (r(), r(), r())
-    while color in color_exist:
+        X_top.append(temp)
+
+
+
+    X_top = np.array(X_top)
+    print(X_top.shape)
+    X_top = X_top.reshape(X_top.shape[1],X_top.shape[0])
+
+    labels = []
+    for i in top_k_index:
+        labels.append(saved_label[i])
+
+    color_exist = []
+    def get_random_color(color_exist):
         r = lambda: random.randint(0, 255)
         color = '#%02X%02X%02X' % (r(), r(), r())
-    color_exist.append(color)
-    return color
+        while color in color_exist:
+            r = lambda: random.randint(0, 255)
+            color = '#%02X%02X%02X' % (r(), r(), r())
+        color_exist.append(color)
+        return color
 
 
-fig,ax = plt.subplots()
+    fig,ax = plt.subplots()
 
-plt.xticks(rotation = 90)
-ax.bar(targets,X_top[0],0.2,label=labels[0])
-for i in range(1,len(X_top)):
-    ax.bar(targets,X_top[i],0.2,bottom=X_top[i-1],label=labels[i],color=get_random_color(color_exist))
+    plt.xticks(rotation = 90)
+    ax.bar(targets,X_top[0],0.2,label=labels[0])
+    for i in range(1,len(X_top)):
+        ax.bar(targets,X_top[i],0.2,bottom=X_top[i-1],label=labels[i],color=get_random_color(color_exist))
 
-plt.title('Histogram of the top 20 metabolite percentage')
-ax.legend(bbox_to_anchor=(1, 1))
-plt.show()
+    plt.title('Histogram of the top 20 metabolite percentage')
+    ax.legend(bbox_to_anchor=(1, 1))
+    plt.show()
