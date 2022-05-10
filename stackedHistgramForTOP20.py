@@ -8,36 +8,24 @@ import sklearn
 from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
 
-# data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace.xlsx')
-data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
+data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
+# data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
-for column in data.columns.values:
-    if '16' in column:
-        del data[column]
 
-color_exist = []
 targets = data.columns.values[1:]
-
-
-print(data)
-print(targets)
-
 
 
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
-# 分别插值,根据column mean（所有sample这个variable的mean）插值
-imputer_mean_ad = SimpleImputer(missing_values=np.nan,strategy='mean')
-data_impute = imputer_mean_ad.fit_transform(data)
-# imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
-# data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
-print(data_impute)
-sum_baseline = 30000
-for i in range(data_impute.shape[1]):
-    coe = sum_baseline/np.sum(data_impute[:,i])
-    data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
 
+# print(data_impute)
+# sum_baseline = 30000
+# for i in range(data_impute.shape[1]):
+#     coe = sum_baseline/np.sum(data_impute[:,i])
+#     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
+
+data_impute = data.values
 normalized_data_impute = data_impute
 print(normalized_data_impute.shape)
 
@@ -112,11 +100,6 @@ def get_random_color(color_exist):
     color_exist.append(color)
     return color
 
-
-#
-# targets = list(targets)
-# targets.append('others')
-# targets = np.array(targets)
 
 fig,ax = plt.subplots()
 

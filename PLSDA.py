@@ -12,17 +12,11 @@ from matplotlib.patches import Ellipse
 from sklearn.decomposition import PCA
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import r2_score
+from sklearn.preprocessing import StandardScaler
 
+data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
+# data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
-# data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace.xlsx')
-data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
-
-for column in data.columns.values:
-    if '16' in column:
-        del data[column]
-
-
-color_exist = []
 targets = data.columns.values[1:]
 
 
@@ -32,14 +26,6 @@ for i in range(len(targets)):
         targets[i] = 'AD_Disease_group'
     else:
         targets[i] = 'HC_Control_group'
-
-for i in range(len(targets)):
-    if targets[i] == 'AD_Disease_group':
-        color_exist.append('r')
-    else:
-        color_exist.append('b')
-
-
 print(targets)
 
 
@@ -48,17 +34,17 @@ print(targets)
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
-# 分别插值,根据column mean（所有sample这个variable的mean）插值
-imputer_mean_ad = SimpleImputer(missing_values=np.nan,strategy='mean')
-data_impute = imputer_mean_ad.fit_transform(data)
+
 # imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
 # data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
-print(data_impute)
-sum_baseline = 13800
-for i in range(data_impute.shape[1]):
-    coe = sum_baseline/np.sum(data_impute[:,i])
-    data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
-
+# print(data_impute)
+# sum_baseline = 13800
+# for i in range(data_impute.shape[1]):
+#     coe = sum_baseline/np.sum(data_impute[:,i])
+#     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
+data_impute = data.values
+scaler = StandardScaler()
+data_impute = scaler.fit_transform(data_impute)
 normalized_data_impute = data_impute
 print(normalized_data_impute)
 
@@ -179,5 +165,6 @@ print(targets)
 ax.set_xlabel('PLS-DA axis 1')
 ax.set_ylabel('PLS-DA axis 2')
 ax.legend(handles=[ellipse_ad,ellipse_hc],labels=['AD_group','HC_group'])
+ax.grid()
 plt.title('PLS-DA')
 plt.show()

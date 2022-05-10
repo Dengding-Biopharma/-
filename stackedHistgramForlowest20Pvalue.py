@@ -7,12 +7,8 @@ import sklearn
 from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
 
-# data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace.xlsx')
-data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
-
-for column in data.columns.values:
-    if '16' in column:
-        del data[column]
+data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
+# data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
 color_exist = []
 targets = data.columns.values[1:]
@@ -22,17 +18,7 @@ print(targets)
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
-# 分别插值,根据column mean（所有sample这个variable的mean）插值
-imputer_mean_ad = SimpleImputer(missing_values=np.nan,strategy='mean')
-data_impute = imputer_mean_ad.fit_transform(data)
-# imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
-# data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
-print(data_impute)
-sum_baseline = 13800
-for i in range(data_impute.shape[1]):
-    coe = sum_baseline/np.sum(data_impute[:,i])
-    data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
-
+data_impute = data.values
 normalized_data_impute = data_impute
 print(normalized_data_impute.shape)
 ad_index=[]
@@ -53,8 +39,6 @@ normalized_data_impute_hc =[]
 for index in hc_index:
     normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
 normalized_data_impute_hc = np.array(normalized_data_impute_hc)
-print(ad_index)
-print(hc_index)
 data_impute_ad = normalized_data_impute_ad
 data_impute_hc = normalized_data_impute_hc
 
@@ -75,15 +59,12 @@ X = np.vstack((X_ad,X_hc))
 
 
 X_top = []
-sum_list = []
-
 for row in range(X.shape[0]):
     sum = np.sum(X[row,:])
     temp = []
     for k in top_k_index:
-        percentage = (X[row, k:k + 1]/sum) * 100
-        temp.append(percentage[0])
-
+        percentage = (X[row, k]/sum) * 100
+        temp.append(percentage)
     X_top.append(temp)
 
 
@@ -96,6 +77,7 @@ labels = []
 for i in top_k_index:
     labels.append(saved_label[i])
 
+print(X_top[0].shape)
 
 
 
@@ -118,8 +100,10 @@ fig,ax = plt.subplots()
 
 plt.xticks(rotation = 90)
 ax.bar(targets,X_top[0],0.2,label=labels[0])
+
 for i in range(1,len(X_top)):
     ax.bar(targets,X_top[i],0.2,bottom=X_top[i-1],label=labels[i],color=get_random_color(color_exist))
+
 
 plt.title('Histogram of the 20 most different metabolic distribution between groups')
 ax.legend(bbox_to_anchor=(1, 1),prop={'size': 8},loc='best')

@@ -17,7 +17,7 @@ data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_f
 
 targets = data.columns.values[1:]
 print(targets)
-color_exist=[]
+
 
 
 for i in range(len(targets)):
@@ -26,11 +26,6 @@ for i in range(len(targets)):
     else:
         targets[i] = 'HC_Control_group'
 
-for i in range(len(targets)):
-    if targets[i] == 'AD_Disease_group':
-        color_exist.append('r')
-    else:
-        color_exist.append('b')
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
@@ -118,20 +113,20 @@ hc_x_mean,hc_y_mean,hc_a,hc_b,hc_theta = ellipse_points_hc.params
 
 targets = list(targets[0])
 
-colors = color_exist
+
 fig = plt.figure(figsize = (20,20))
 ax = fig.add_subplot(1,1,1)
 ax.set_xlabel('Principal Component 1 {}%'.format(round(pca.explained_variance_ratio_[0]*100,2)), fontsize = 15)
 ax.set_ylabel('Principal Component 2 {}%'.format(round(pca.explained_variance_ratio_[1]*100,2)), fontsize = 15)
 ax.set_title('2 component PCA', fontsize = 20)
 
-
-ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
-                        edgecolor='r', fc='None', lw=2)
-ax.add_patch(ellipse_ad)
-ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
-                        edgecolor='b', fc='None', lw=2)
-ax.add_patch(ellipse_hc)
+#
+# ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
+#                         edgecolor='r', fc='None', lw=2)
+# ax.add_patch(ellipse_ad)
+# ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
+#                         edgecolor='b', fc='None', lw=2)
+# ax.add_patch(ellipse_hc)
 
 
 groups=['AD_Disease_group','HC_Control_group']
@@ -151,7 +146,7 @@ for i in range(len(groups)):
                                 c='b'
                                 , s=50)
 
-ax.legend(labels=['AD','HC'],handle=[ax_ad,ax_hc],loc='best',borderpad=2,labelspacing=2,prop={'size': 12})
+ax.legend(labels=['AD','HC'],handles=[ax_ad,ax_hc],loc='best',borderpad=2,labelspacing=2,prop={'size': 12})
 ax.grid()
 
 
