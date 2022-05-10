@@ -10,19 +10,14 @@ from sklearn.decomposition import PCA
 from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
+from sklearn.preprocessing import StandardScaler
 
-# data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace.xlsx')
-data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
+data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
+# data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
-for column in data.columns.values:
-    if '16' in column:
-        del data[column]
-
-
-color_exist = []
 targets = data.columns.values[1:]
 print(targets)
-
+color_exist=[]
 
 
 for i in range(len(targets)):
@@ -36,24 +31,16 @@ for i in range(len(targets)):
         color_exist.append('r')
     else:
         color_exist.append('b')
-
-
-
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
+#
+# sum_baseline = 13800
+# for i in range(data_impute.shape[1]):
+#     coe = sum_baseline/np.sum(data_impute[:,i])
+#     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
 
-imputer_mean_ad = SimpleImputer(missing_values=np.nan,strategy='mean')
-data_impute = imputer_mean_ad.fit_transform(data)
-
-
-sum_baseline = 13800
-for i in range(data_impute.shape[1]):
-    coe = sum_baseline/np.sum(data_impute[:,i])
-    data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
-
-normalized_data_impute = data_impute
-print(normalized_data_impute)
+data_impute = data.values
 
 ad_index=[]
 hc_index=[]
@@ -65,32 +52,23 @@ for i in range(len(targets)):
 print(ad_index)
 print(hc_index)
 
-normalized_data_impute_ad = []
-for index in ad_index:
-    normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
-normalized_data_impute_ad = np.array(normalized_data_impute_ad)
-
-normalized_data_impute_hc =[]
-for index in hc_index:
-    normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
-normalized_data_impute_hc = np.array(normalized_data_impute_hc)
-
+scaler = StandardScaler()
+data_impute = scaler.fit_transform(data_impute)
 
 # PCA
 pca = PCA(n_components=2)
-pca.fit(normalized_data_impute.T)
-X_new = pca.fit_transform(normalized_data_impute.T)
+pca.fit(data_impute.T)
+X_new = pca.fit_transform(data_impute.T)
 print(X_new)
 print(pca.explained_variance_ratio_)
-
-y_pred = KMeans(n_clusters=2,random_state=8).fit_predict(X_new)
-
+y_pred = KMeans(n_clusters=3,random_state=8).fit_predict(X_new)
 print(y_pred)
+
 
 group0 =[]
 outlier_index = []
 for i in range(len(y_pred)):
-    if y_pred[i] == 1:
+    if y_pred[i] == 2:
         group0.append(X_new[i])
         outlier_index.append(i)
 
@@ -166,7 +144,7 @@ for target, color in zip(targets,colors):
                , s = 50)
 
 
-ax.legend(['AD_Disease_group','HC_Control_group'],loc='best',borderpad=2,labelspacing=2,prop={'size': 12})
+ax.legend(labels=['AD','HC'],handles=[bp['boxes'][0],bp['boxes'][1]],loc='best',borderpad=2,labelspacing=2,prop={'size': 12})
 ax.grid()
 
 

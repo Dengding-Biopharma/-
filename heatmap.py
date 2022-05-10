@@ -6,39 +6,24 @@ import sklearn
 from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
 import dash_bio
+from sklearn.preprocessing import StandardScaler
 
-# data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_replace.xlsx')
-data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
-
-for column in data.columns.values:
-    if '16' in column:
-        del data[column]
-
-color_exist = []
-targets = data.columns.values[1:]
+data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')  # loading data
+# data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
 
-print(data)
+targets = data.columns.values[1:] # 保存病人名称
+
 print(targets)
 
-
-saved_label = data['dataMatrix'].values
+saved_label = data['dataMatrix'].values # 保存小分子名称
 print(saved_label)
+
 del data['dataMatrix']
-# 分别插值,根据column mean（所有sample这个variable的mean）插值
-imputer_mean_ad = SimpleImputer(missing_values=np.nan,strategy='mean')
-data_impute = imputer_mean_ad.fit_transform(data)
-# imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
-# data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
+data_impute = data.values
 print(data_impute)
-sum_baseline = 13800
-for i in range(data_impute.shape[1]):
-    coe = sum_baseline/np.sum(data_impute[:,i])
-    data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
 
-normalized_data_impute = data_impute
-print(normalized_data_impute.shape)
-
+# 拿到组别索引
 ad_index=[]
 hc_index=[]
 for i in range(len(targets)):
@@ -46,9 +31,31 @@ for i in range(len(targets)):
         ad_index.append(i)
     else:
         hc_index.append(i)
-print(ad_index)
-print(hc_index)
 
+# 分别拿出AD和HC的数据做差异性分析
+data_impute_ad = []
+for index in ad_index:
+    data_impute_ad.append(data_impute[:,index].T)
+data_impute_ad = np.array(data_impute_ad)
+
+data_impute_hc =[]
+for index in hc_index:
+    data_impute_hc.append(data_impute[:,index].T)
+data_impute_hc = np.array(data_impute_hc)
+
+top_k = 20
+sum_list =[]
+for i in range(data_impute_ad.shape[1]):
+    sum = np.sum(data_impute_ad[:,i:i+1])
+    sum_list.append(sum)
+sum_list = np.array(sum_list)
+top_k_index = sum_list.argsort()[::-1][0:top_k]
+
+# 做完了数值分析，开始归一化画图
+scaler = StandardScaler()
+normalized_data_impute = scaler.fit_transform(data_impute)
+
+# 归一化之后还要分别取一次组别数据，用来画图
 normalized_data_impute_ad = []
 for index in ad_index:
     normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
@@ -59,23 +66,8 @@ for index in hc_index:
     normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
 normalized_data_impute_hc = np.array(normalized_data_impute_hc)
 
-data_impute_ad = normalized_data_impute_ad
-data_impute_hc = normalized_data_impute_hc
-
-
-
-top_k = 20
-sum_list =[]
-for i in range(normalized_data_impute_ad.shape[1]):
-    sum = np.sum(data_impute_ad[:,i:i+1])
-
-    sum_list.append(sum)
-sum_list = np.array(sum_list)
-top_k_index = sum_list.argsort()[::-1][0:top_k]
-print(top_k_index)
-
-X_ad = np.array(normalized_data_impute_ad)
-X_hc = np.array(normalized_data_impute_hc)
+X_ad = normalized_data_impute_ad
+X_hc = normalized_data_impute_hc
 X = np.vstack((X_ad,X_hc))
 X = X.transpose()
 print(X)
@@ -116,7 +108,7 @@ clustergram = dashbio.Clustergram(
     column_labels=list(df.columns.values),
     row_labels=list(df.index),
     height=1000,
-    width=3000,
+    width=1500,
 )
 
 clustergram.show()

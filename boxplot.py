@@ -7,35 +7,23 @@ import pandas as pd
 import sklearn
 from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
 
-data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_more_puring.xlsx')
+data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')  # loading data
 # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
-for column in data.columns.values:
-    if '16' in column:
-        del data[column]
 
-color_exist = []
-targets = data.columns.values[1:]
-
+targets = data.columns.values[1:] # 保存病人名称
 print(targets)
 
-saved_label = data['dataMatrix'].values
+saved_label = data['dataMatrix'].values # 保存小分子名称
 print(saved_label)
-del data['dataMatrix']
-# 分别插值,根据column mean（所有sample这个variable的mean）插值
-imputer_mean_ad = SimpleImputer(missing_values=np.nan,strategy='mean')
-data_impute = imputer_mean_ad.fit_transform(data)
-# imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
-# data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
-print(data_impute)
-sum_baseline = 13800
-for i in range(data_impute.shape[1]):
-    coe = sum_baseline/np.sum(data_impute[:,i])
-    data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
 
-normalized_data_impute = data_impute
-print(normalized_data_impute.shape)
+del data['dataMatrix']
+data_impute = data.values
+print(data_impute)
+
+# 拿到组别索引
 ad_index=[]
 hc_index=[]
 for i in range(len(targets)):
@@ -44,7 +32,34 @@ for i in range(len(targets)):
     else:
         hc_index.append(i)
 
+# 分别拿出AD和HC的数据做差异性分析
+data_impute_ad = []
+for index in ad_index:
+    data_impute_ad.append(data_impute[:,index].T)
+data_impute_ad = np.array(data_impute_ad)
 
+data_impute_hc =[]
+for index in hc_index:
+    data_impute_hc.append(data_impute[:,index].T)
+data_impute_hc = np.array(data_impute_hc)
+
+
+top_k = 20 # top几，可调
+p_list =[]
+for i in range(data_impute_ad.shape[1]):
+    t,p = ttest_ind(data_impute_ad[:,i:i+1],data_impute_hc[:,i:i+1],equal_var=True)
+    p_list.append(p[0])
+p_list = np.array(p_list)
+count = 0
+for p in p_list:
+    if p < 0.05:
+        count +=1
+top_k_index = p_list.argsort()[::-1][len(p_list)-top_k:]
+# 做完了数值分析，开始归一化画图
+scaler = StandardScaler()
+normalized_data_impute = scaler.fit_transform(data_impute)
+
+# 归一化之后还要分别取一次组别数据，用来画图
 normalized_data_impute_ad = []
 for index in ad_index:
     normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
@@ -54,26 +69,9 @@ normalized_data_impute_hc =[]
 for index in hc_index:
     normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
 normalized_data_impute_hc = np.array(normalized_data_impute_hc)
-print(ad_index)
-print(hc_index)
 
-top_k = 20
-p_list =[]
-for i in range(normalized_data_impute_ad.shape[1]):
-    t,p = ttest_ind(normalized_data_impute_ad[:,i:i+1],normalized_data_impute_hc[:,i:i+1],equal_var=True)
-    p_list.append(p[0])
-p_list = np.array(p_list)
-count = 0
-for p in p_list:
-    if p < 0.05:
-        count +=1
-
-top_k_index = p_list.argsort()[::-1][len(p_list)-top_k:]
-print(top_k_index)
-
-
-X_ad = np.array(normalized_data_impute_ad)
-X_hc = np.array(normalized_data_impute_hc)
+X_ad = normalized_data_impute_ad
+X_hc = normalized_data_impute_hc
 
 
 
@@ -90,21 +88,34 @@ for i in top_k_index:
 
 
 data_ad = []
-labels_ad = []
+labels = []
+
 for i in range(len(X_diff_ad)):
     data_ad.append(X_diff_ad[i])
-    labels_ad.append(saved_label[top_k_index[i]])
+    labels += [saved_label[top_k_index[i]],'']
+
+
+for i in range(len(labels)):
+    if labels[i] == '(2R,3S)-3-(6-Amino-9H-purin-9-yl)nonan-2-ol':
+        labels[i] = '(2R,3S)-EHNA'
+    if labels[i] == '12-[Methyl-(4-nitro-2,1,3-benzoxadiazol-7-yl)amino]octadecanoic acid':
+        labels[i] = 'NBD-stearic acid'
+    if labels[i] == 'N-((2,2-Dimethyl-2,3-dihydro-benzofuran-7-yloxy)ethyl)-3-(cyclopent-1-enyl)benzylamine':
+        labels[i] = 'DDEC-benzylamine'
+    if labels[i] == '2-Oxo-4-methylthiobutanoic acid':
+        labels[i] = '2-Oxomethionine'
+    if labels[i] == 'NCGC00385952-01_C15H26O_1,7-Dimethyl-7-(4-methyl-3-penten-1-yl)bicyclo[2.2.1]heptan-2-ol M-H2O+H':
+        labels[i] = 'NCGC00385952-01'
+
+for i in range(len(labels)):
+    labels[i] = '\n\n'+labels[i]
+print(labels)
 
 data_hc = []
-labels_hc = []
 for i in range(len(X_diff_hc)):
     data_hc.append(X_diff_hc[i])
-    labels_hc.append(saved_label[top_k_index[i]])
 
 
-
-
-# Creating axes instance
 data_ads = []
 for i in data_ad:
     data_ads.append(i.reshape(i.shape[0]))
@@ -119,65 +130,31 @@ data_ad = np.array(data_ad)
 data_hc = np.array(data_hc)
 print(data_ad.shape)
 print(data_hc.shape)
-data = np.hstack((data_ad,data_hc))
 
 data = []
 color_list=[]
 for i in range(data_ad.shape[0]):
-    color_list.append('r')
     data.append(data_ad[i,:])
-for i in range(data_hc.shape[0]):
-    color_list.append('b')
     data.append(data_hc[i, :])
 
-
-
 print(data)
-print(labels_hc)
-bp = plt.boxplot(data,labels=labels_ad+labels_hc,patch_artist=True)
+for i in range(len(labels)):
+    if i %2==0:
+        print(labels[i])
+        print()
+
+bp = plt.boxplot(data,labels=labels,patch_artist=True)
 plt.xticks(rotation = 90)
 for i in range(len(bp['boxes'])):
-    if i < len(bp['boxes'])/2:
+    if i%2 == 0:
         bp['boxes'][i].set(color='r')
     else:
         bp['boxes'][i].set(color='b')
 
 plt.title('boxplot for top 20 variables which have significant differences between groups')
-plt.legend(handles=[bp['boxes'][0],bp['boxes'][0+top_k]],labels=['AD_group','HC_group'])
+plt.legend(handles=[bp['boxes'][0],bp['boxes'][1]],labels=['AD_group','HC_group'])
 plt.show()
 
-
-
-
-#
-# ax1 = fig.add_subplot(211)
-# ax1.boxplot(data_ad.T,  vert=0)
-# ax1.set_yticklabels(labels_ad)
-# plt.title('boxplot for top 20 variables which have significant differences between groups\nAD group')
-#
-# ax2 = fig.add_subplot(212)
-# ax2.boxplot(data_hc.T,  vert=0)
-# ax2.set_yticklabels(labels_hc)
-# plt.title('HC group')
-# for cap in bp['caps']:
-#     cap.set(color ='#8B008B',
-#             linewidth = 2)
-# ax2.get_xaxis().tick_bottom()
-# ax2.get_yaxis().tick_left()
-# for flier in bp['fliers']:
-#     flier.set(marker ='D',
-#               color ='#e7298a',
-#               alpha = 0.5)
-# for median in bp['medians']:
-#     median.set(color ='red',
-#                linewidth = 3)
-# for whisker in bp['whiskers']:
-#     whisker.set(color ='#8B008B',
-#                 linewidth = 1.5,
-#                 linestyle =":")
-
-
-plt.show()
 
 
 
