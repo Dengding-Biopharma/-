@@ -9,9 +9,10 @@ data_dic = pd.read_excel('ad files/varsPOSout_pos_noid_more_from_gnps.xlsx')
 table = pd.read_excel('ad files/peaktablePOSout_POS_noid.xlsx')
 print(data.columns.values)
 print(data_dic.columns.values)
-data['dataMatrix'] = data_dic['max_name']
+
 
 for i in range(len(data_dic)):
+
     mz = data_dic['xcmsCamera_mz'][i]-1.0032 # POS mode
     # mz = data_dic['xcmsCamera_mz'][i]+1.0032 # NEG mode
     mzmin = mz-((15/1000000) * mz)
@@ -21,8 +22,9 @@ for i in range(len(data_dic)):
     if temp.empty:
         continue
     try:
+        assert 'no_match' in data_dic['max_name'][i]
         data_dic['max_name'][i] = str(random.choice(temp['name'].values))[2:-1]
-
+        # data_dic['max_smile'][i] = str(random.choice(temp['smiles'].values))
     except:
         continue
 
@@ -34,6 +36,7 @@ for i in range(len(table)):
             table = table.drop(i)
     except:
         continue
+
 table.to_excel('ad files/temp.xlsx',index=False,na_rep=np.nan)
 print(table)
 data = pd.read_excel('ad files/temp.xlsx')
@@ -81,6 +84,7 @@ for i in range(len(table)):
 
 
 
-quit()
+
 print(table)
+
 table.to_excel('ad files/peaktablePOSout_POS_noid_more_puring.xlsx',index=False,na_rep=np.nan)

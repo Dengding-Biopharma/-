@@ -50,7 +50,15 @@ def boxplot(data):
     for p in p_list:
         if p < 0.05:
             count += 1
-    top_k_index = p_list.argsort()[::-1][len(p_list) - top_k:]
+    top_k_index = p_list.argsort()[::-1][len(p_list) - count:]
+    print(count)
+    df = pd.DataFrame()
+    df['P']=p_list[top_k_index]
+    df['name']=saved_label[top_k_index]
+
+    df.to_excel('pos_significant.xlsx', index=False)
+    print(df)
+    quit()
     # 做完了数值分析，开始归一化画图
 
     normalized_data_impute = data_impute

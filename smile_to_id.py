@@ -17,13 +17,8 @@ import numpy as np
 from scipy.stats import ttest_ind
 from sklearn.impute import SimpleImputer
 
-data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_more_puring.xlsx')
-print(data)
-for column in data.columns.values:
-    if '16' in column:
-        del data[column]
+data = pd.read_excel('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full_smile.xlsx')
 
-color_exist = []
 targets = data.columns.values[1:]
 
 print(targets)
@@ -31,17 +26,10 @@ print(targets)
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
-# 分别插值,根据column mean（所有sample这个variable的mean）插值
-imputer_mean_ad = SimpleImputer(missing_values=np.nan,strategy='mean')
-data_impute = imputer_mean_ad.fit_transform(data)
-# imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
-# data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
-print(data_impute)
-sum_baseline = 30000
+data_impute = data.values
 for i in range(data_impute.shape[1]):
-    coe = sum_baseline/np.sum(data_impute[:,i])
-
-    data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
+    data_impute[:, i] = data_impute[:, i] / np.sum(data_impute[:, i])
+print(data_impute)
 
 normalized_data_impute = data_impute
 print(normalized_data_impute.shape)
@@ -73,36 +61,32 @@ for i in range(normalized_data_impute_ad.shape[1]):
 p_list = np.array(p_list)
 count = 0
 for p in p_list:
-    if p < 0.05:
+    if p < 0.005:
         count +=1
 
 top_k_index = p_list.argsort()[::-1][len(p_list)-count:]
 #top_k_index = p_list.argsort()[::-1][:]
 print(top_k_index)
 print(len(top_k_index))
+
 ids=[]
 names = []
 for k in top_k_index:
-    # smile = saved_label[k]
-    # m = Chem.MolFromSmiles(smile)
-    # inchikey = Chem.MolToInchiKey(m)
-    # print(inchikey)
-    name = saved_label[k]
-
+    smile = saved_label[k]
+    m = Chem.MolFromSmiles(smile)
+    inchikey = Chem.MolToInchiKey(m)
+    # name = saved_label[k]
     for i in range(len(table['name'].values)):
-        if name == table['name'].values[i][2:-1]:
+        # if name == table['name'].values[i]:
+        if inchikey == table['inchikey'].values[i]:
             try:
-                ids.append(str(table['name'].values[i][2:-1]))
-
+                # assert str(table['name'].values[i][2:-1]) not in ids
+                # ids.append(str(table['name'].values[i][2:-1]))
+                assert table['accession'].values[i] not in ids
+                ids.append(table['accession'].values[i])
             except:
                 continue
-
             print(ids[-1])
-# df = pd.DataFrame()
-# df['name']=names
-# df['id'] = ids
-# df.to_excel('POS_pubchem_compound_id.xlsx',index=False,na_rep=np.nan)
+
 print(ids)
 print(len(ids))
-for id in ids:
-    print(id)
