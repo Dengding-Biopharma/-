@@ -1,14 +1,9 @@
-import math
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sklearn
-from scipy.stats import ttest_ind
-from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+
+
 def randomforestimportance(data):
     data = pd.read_excel(data)
     # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
@@ -24,16 +19,11 @@ def randomforestimportance(data):
     print(saved_label)
     del data['dataMatrix']
 
-    # imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
-    # data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
-    # print(data_impute)
-    # sum_baseline = 13800
-    # for i in range(data_impute.shape[1]):
-    #     coe = sum_baseline/np.sum(data_impute[:,i])
-    #     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
+
     data_impute = data.values
-    # scaler = StandardScaler()
-    # data_impute = scaler.fit_transform(data_impute)
+    for i in range(data_impute.shape[1]):
+        data_impute[:, i] = data_impute[:, i]/np.sum(data_impute[:,i])
+
     normalized_data_impute = data_impute
     normalized_data_impute = normalized_data_impute.T
 
@@ -58,3 +48,6 @@ def randomforestimportance(data):
     plt.yticks(range(20),top_20_labels)
     plt.title('Randomforest Importance graph for top 20 variables')
     plt.show()
+
+if __name__ == '__main__':
+    randomforestimportance('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')

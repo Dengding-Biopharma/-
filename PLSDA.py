@@ -1,18 +1,11 @@
-from skimage.measure import EllipseModel
-from sklearn.cluster import KMeans
-from sklearn.cross_decomposition import PLSRegression
-import math
-import random
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sklearn.preprocessing
 from matplotlib.patches import Ellipse
-from sklearn.decomposition import PCA
-from sklearn.impute import SimpleImputer
-from sklearn.metrics import r2_score
-from sklearn.preprocessing import StandardScaler
+from skimage.measure import EllipseModel
+from sklearn.cluster import KMeans
+from sklearn.cross_decomposition import PLSRegression
+
 
 def plsda(data):
     data = pd.read_excel(data)
@@ -42,8 +35,8 @@ def plsda(data):
     #     coe = sum_baseline/np.sum(data_impute[:,i])
     #     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
     data_impute = data.values
-    scaler = StandardScaler()
-    data_impute = scaler.fit_transform(data_impute)
+    for i in range(data_impute.shape[1]):
+        data_impute[:, i] = data_impute[:, i] / np.sum(data_impute[:, i])
     normalized_data_impute = data_impute
     print(normalized_data_impute)
 
@@ -168,3 +161,5 @@ def plsda(data):
     plt.title('PLS-DA')
     plt.show()
 
+if __name__ == '__main__':
+    plsda('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')

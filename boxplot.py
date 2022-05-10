@@ -1,31 +1,28 @@
-import math
-from math import nan
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sklearn
 from scipy.stats import ttest_ind
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler
+
+
 def boxplot(data):
     data = pd.read_excel(data)  # loading data
     # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
-
-    targets = data.columns.values[1:] # 保存病人名称
+    targets = data.columns.values[1:]  # 保存病人名称
     print(targets)
 
-    saved_label = data['dataMatrix'].values # 保存小分子名称
+    saved_label = data['dataMatrix'].values  # 保存小分子名称
     print(saved_label)
 
     del data['dataMatrix']
     data_impute = data.values
+    for i in range(data_impute.shape[1]):
+        data_impute[:, i] = data_impute[:, i] / np.sum(data_impute[:, i])
     print(data_impute)
 
     # 拿到组别索引
-    ad_index=[]
-    hc_index=[]
+    ad_index = []
+    hc_index = []
     for i in range(len(targets)):
         if "AD" in targets[i]:
             ad_index.append(i)
@@ -35,65 +32,57 @@ def boxplot(data):
     # 分别拿出AD和HC的数据做差异性分析
     data_impute_ad = []
     for index in ad_index:
-        data_impute_ad.append(data_impute[:,index].T)
+        data_impute_ad.append(data_impute[:, index].T)
     data_impute_ad = np.array(data_impute_ad)
 
-    data_impute_hc =[]
+    data_impute_hc = []
     for index in hc_index:
-        data_impute_hc.append(data_impute[:,index].T)
+        data_impute_hc.append(data_impute[:, index].T)
     data_impute_hc = np.array(data_impute_hc)
 
-
-    top_k = 20 # top几，可调
-    p_list =[]
+    top_k = 20  # top几，可调
+    p_list = []
     for i in range(data_impute_ad.shape[1]):
-        t,p = ttest_ind(data_impute_ad[:,i:i+1],data_impute_hc[:,i:i+1],equal_var=True)
+        t, p = ttest_ind(data_impute_ad[:, i:i + 1], data_impute_hc[:, i:i + 1], equal_var=True)
         p_list.append(p[0])
     p_list = np.array(p_list)
     count = 0
     for p in p_list:
         if p < 0.05:
-            count +=1
-    top_k_index = p_list.argsort()[::-1][len(p_list)-top_k:]
+            count += 1
+    top_k_index = p_list.argsort()[::-1][len(p_list) - top_k:]
     # 做完了数值分析，开始归一化画图
-    scaler = StandardScaler()
-    normalized_data_impute = scaler.fit_transform(data_impute)
+
+    normalized_data_impute = data_impute
 
     # 归一化之后还要分别取一次组别数据，用来画图
     normalized_data_impute_ad = []
     for index in ad_index:
-        normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
+        normalized_data_impute_ad.append(normalized_data_impute[:, index].T)
     normalized_data_impute_ad = np.array(normalized_data_impute_ad)
 
-    normalized_data_impute_hc =[]
+    normalized_data_impute_hc = []
     for index in hc_index:
-        normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
+        normalized_data_impute_hc.append(normalized_data_impute[:, index].T)
     normalized_data_impute_hc = np.array(normalized_data_impute_hc)
 
     X_ad = normalized_data_impute_ad
     X_hc = normalized_data_impute_hc
 
-
-
     X_diff_ad = []
     for i in top_k_index:
-        X_diff_ad.append(X_ad[:,i:i+1])
-
-
+        X_diff_ad.append(X_ad[:, i:i + 1])
 
     X_diff_hc = []
     for i in top_k_index:
-        X_diff_hc.append(X_hc[:,i:i+1])
-
-
+        X_diff_hc.append(X_hc[:, i:i + 1])
 
     data_ad = []
     labels = []
 
     for i in range(len(X_diff_ad)):
         data_ad.append(X_diff_ad[i])
-        labels += [saved_label[top_k_index[i]],'']
-
+        labels += [saved_label[top_k_index[i]], '']
 
     for i in range(len(labels)):
         if labels[i] == '(2R,3S)-3-(6-Amino-9H-purin-9-yl)nonan-2-ol':
@@ -104,17 +93,17 @@ def boxplot(data):
             labels[i] = 'DDEC-benzylamine'
         if labels[i] == '2-Oxo-4-methylthiobutanoic acid':
             labels[i] = '2-Oxomethionine'
-        if labels[i] == 'NCGC00385952-01_C15H26O_1,7-Dimethyl-7-(4-methyl-3-penten-1-yl)bicyclo[2.2.1]heptan-2-ol M-H2O+H':
+        if labels[
+            i] == 'NCGC00385952-01_C15H26O_1,7-Dimethyl-7-(4-methyl-3-penten-1-yl)bicyclo[2.2.1]heptan-2-ol M-H2O+H':
             labels[i] = 'NCGC00385952-01'
 
     for i in range(len(labels)):
-        labels[i] = '\n\n'+labels[i]
+        labels[i] = '\n\n' + labels[i]
     print(labels)
 
     data_hc = []
     for i in range(len(X_diff_hc)):
         data_hc.append(X_diff_hc[i])
-
 
     data_ads = []
     for i in data_ad:
@@ -132,30 +121,29 @@ def boxplot(data):
     print(data_hc.shape)
 
     data = []
-    color_list=[]
+    color_list = []
     for i in range(data_ad.shape[0]):
-        data.append(data_ad[i,:])
+        data.append(data_ad[i, :])
         data.append(data_hc[i, :])
 
     print(data)
     for i in range(len(labels)):
-        if i %2==0:
+        if i % 2 == 0:
             print(labels[i])
             print()
 
-    bp = plt.boxplot(data,labels=labels,patch_artist=True)
-    plt.xticks(rotation = 90)
+    bp = plt.boxplot(data, labels=labels, patch_artist=True)
+    plt.xticks(rotation=90)
     for i in range(len(bp['boxes'])):
-        if i%2 == 0:
+        if i % 2 == 0:
             bp['boxes'][i].set(color='r')
         else:
             bp['boxes'][i].set(color='b')
 
     plt.title('boxplot for top 20 variables which have significant differences between groups')
-    plt.legend(handles=[bp['boxes'][0],bp['boxes'][1]],labels=['AD_group','HC_group'])
+    plt.legend(handles=[bp['boxes'][0], bp['boxes'][1]], labels=['AD_group', 'HC_group'])
     plt.show()
 
 
-
-
-
+if __name__ == '__main__':
+    boxplot('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')

@@ -1,16 +1,9 @@
-import math
-import random
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sklearn.preprocessing
-from matplotlib.patches import Ellipse
 from sklearn.decomposition import PCA
-from sklearn.impute import SimpleImputer
-from sklearn.cluster import KMeans
-from skimage.measure import EllipseModel
-from sklearn.preprocessing import StandardScaler
+
+
 def pc1(data):
     data = pd.read_excel(data)
     # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
@@ -26,8 +19,8 @@ def pc1(data):
     print(saved_label)
     del data['dataMatrix']
     data_impute = data.values
-    scaler = StandardScaler()
-    data_impute = scaler.fit_transform(data_impute)
+    for i in range(data_impute.shape[1]):
+        data_impute[:, i] = data_impute[:, i] / np.sum(data_impute[:, i])
     normalized_data_impute = data_impute
     print(normalized_data_impute)
 
@@ -110,32 +103,5 @@ def pc1(data):
     plt.show()
 
 
-#
-# principalDf = pd.DataFrame(data = X_new
-#              , columns = ['principal component 1', 'principal component 2'])
-# finalDf = pd.concat([principalDf, targets], axis = 1)
-# print(finalDf)
-#
-# targets = list(targets[0])
-#
-# colors = color_exist
-# fig = plt.figure(figsize = (20,20))
-# ax = fig.add_subplot(1,1,1)
-# ax.set_xlabel('Principal Component 1 {}%'.format(round(pca.explained_variance_ratio_[0]*100,2)), fontsize = 15)
-# ax.set_ylabel('Principal Component 2 {}%'.format(round(pca.explained_variance_ratio_[1]*100,2)), fontsize = 15)
-# ax.set_title('2 component PCA', fontsize = 20)
-#
-#
-#
-# for target, color in zip(targets,colors):
-#     indicesToKeep = finalDf[0].values == target
-#     ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
-#                , finalDf.loc[indicesToKeep, 'principal component 2']
-#                , c = color
-#                , s = 50)
-#
-# # ax.legend('AD_Disease_group','HC_Control_group')
-# ax.grid()
-#
-#
-# plt.show()
+if __name__ == '__main__':
+    pc1('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')

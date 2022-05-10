@@ -29,13 +29,9 @@ def pca(data):
     saved_label = data['dataMatrix'].values
     print(saved_label)
     del data['dataMatrix']
-    #
-    # sum_baseline = 13800
-    # for i in range(data_impute.shape[1]):
-    #     coe = sum_baseline/np.sum(data_impute[:,i])
-    #     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
-
     data_impute = data.values
+    for i in range(data_impute.shape[1]):
+        data_impute[:, i] = data_impute[:, i]/np.sum(data_impute[:,i])
 
     ad_index=[]
     hc_index=[]
@@ -47,8 +43,9 @@ def pca(data):
     print(ad_index)
     print(hc_index)
 
-    scaler = StandardScaler()
-    data_impute = scaler.fit_transform(data_impute)
+
+    for i in range(data_impute.shape[1]):
+        data_impute[:, i] = data_impute[:, i]/np.sum(data_impute[:,i])
 
     # PCA
     pca = PCA(n_components=2)
@@ -154,4 +151,6 @@ def pca(data):
 
 
 
+if __name__ == '__main__':
+    pca('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
 

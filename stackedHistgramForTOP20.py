@@ -1,12 +1,10 @@
-import math
 import random
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sklearn
-from scipy.stats import ttest_ind
-from sklearn.impute import SimpleImputer
+
+
 def stackedHistgramTop20(data):
     data = pd.read_excel(data)
     # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
@@ -19,13 +17,11 @@ def stackedHistgramTop20(data):
     print(saved_label)
     del data['dataMatrix']
 
-    # print(data_impute)
-    # sum_baseline = 30000
-    # for i in range(data_impute.shape[1]):
-    #     coe = sum_baseline/np.sum(data_impute[:,i])
-    #     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
+
 
     data_impute = data.values
+    for i in range(data_impute.shape[1]):
+        data_impute[:, i] = data_impute[:, i]/np.sum(data_impute[:,i])
     normalized_data_impute = data_impute
     print(normalized_data_impute.shape)
 
@@ -111,3 +107,6 @@ def stackedHistgramTop20(data):
     plt.title('Histogram of the top 20 metabolite percentage')
     ax.legend(bbox_to_anchor=(1, 1))
     plt.show()
+
+if __name__ == '__main__':
+    stackedHistgramTop20('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')

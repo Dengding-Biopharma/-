@@ -1,11 +1,16 @@
-import math
 import random
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sklearn
 from scipy.stats import ttest_ind
-from sklearn.impute import SimpleImputer
+import random
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from scipy.stats import ttest_ind
+
+
 def stackedHistogram(data,k):
     data = pd.read_excel(data)
     # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
@@ -19,6 +24,8 @@ def stackedHistogram(data,k):
     print(saved_label)
     del data['dataMatrix']
     data_impute = data.values
+    for i in range(data_impute.shape[1]):
+        data_impute[:, i] = data_impute[:, i]/np.sum(data_impute[:,i])
     normalized_data_impute = data_impute
     print(normalized_data_impute.shape)
     ad_index=[]
@@ -108,3 +115,6 @@ def stackedHistogram(data,k):
     plt.title('Histogram of the 20 most different metabolic distribution between groups')
     ax.legend(bbox_to_anchor=(1, 1),prop={'size': 8},loc='best')
     plt.show()
+
+if __name__ == '__main__':
+    stackedHistogram('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')

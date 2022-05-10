@@ -1,12 +1,7 @@
-import math
-
 import numpy as np
 import pandas as pd
-import sklearn
-from scipy.stats import ttest_ind
-from sklearn.impute import SimpleImputer
-import dash_bio
-from sklearn.preprocessing import StandardScaler
+
+
 def heatmap(data):
     data = pd.read_excel(data)  # loading data
     # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
@@ -21,6 +16,8 @@ def heatmap(data):
 
     del data['dataMatrix']
     data_impute = data.values
+    for i in range(data_impute.shape[1]):
+        data_impute[:, i] = data_impute[:, i]/np.sum(data_impute[:,i])
     print(data_impute)
 
     # 拿到组别索引
@@ -52,8 +49,8 @@ def heatmap(data):
     top_k_index = sum_list.argsort()[::-1][0:top_k]
 
     # 做完了数值分析，开始归一化画图
-    scaler = StandardScaler()
-    normalized_data_impute = scaler.fit_transform(data_impute)
+
+    normalized_data_impute = data_impute
 
     # 归一化之后还要分别取一次组别数据，用来画图
     normalized_data_impute_ad = []
@@ -113,4 +110,7 @@ def heatmap(data):
 
     clustergram.show()
     dcc.Graph(figure=clustergram)
-# df.to_excel('data_new.xlsx')
+
+
+if __name__ == '__main__':
+    heatmap('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
