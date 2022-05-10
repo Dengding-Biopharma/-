@@ -151,7 +151,7 @@ for i in range(len(groups)):
                                 c='b'
                                 , s=50)
 
-ax.legend(labels=['AD','HC'],handles=[bp['boxes'][0],bp['boxes'][1]],loc='best',borderpad=2,labelspacing=2,prop={'size': 12})
+ax.legend(labels=['AD','HC'],handle=[ax_ad,ax_hc],loc='best',borderpad=2,labelspacing=2,prop={'size': 12})
 ax.grid()
 
 
