@@ -134,15 +134,22 @@ ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
 ax.add_patch(ellipse_hc)
 
 
+groups=['AD_Disease_group','HC_Control_group']
 
-for target, color in zip(targets,colors):
-    print(target)
-    indicesToKeep = finalDf[0].values == target
-    ax.scatter(finalDf.loc[indicesToKeep, 'PC1']
-               , finalDf.loc[indicesToKeep, 'PC2']
-               , c = color
+for i in range(len(groups)):
+    print(groups[i])
+    indicesToKeep = finalDf[0].values == groups[i]
+    print(indicesToKeep)
+    if groups[i] == 'AD_Disease_group':
+        ax_ad = ax.scatter(finalDf.loc[indicesToKeep ,'PC1'],
+               finalDf.loc[indicesToKeep, 'PC2'],
+               c = 'r'
                , s = 50)
-
+    if groups[i] == 'HC_Control_group':
+        ax_hc = ax.scatter(finalDf.loc[indicesToKeep, 'PC1'],
+                                finalDf.loc[indicesToKeep, 'PC2'],
+                                c='b'
+                                , s=50)
 
 ax.legend(labels=['AD','HC'],handles=[bp['boxes'][0],bp['boxes'][1]],loc='best',borderpad=2,labelspacing=2,prop={'size': 12})
 ax.grid()
