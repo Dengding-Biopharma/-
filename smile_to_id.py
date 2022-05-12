@@ -1,13 +1,17 @@
 import csv
 
 import numpy as np
-from rdkit import Chem
+# from rdkit import Chem
 import pandas as pd
 
 table = pd.read_csv('hmdb_metabolites.csv', sep='\t')
-
+count = 0
 print(table.columns.values)
-
+for i in range(len(table)):
+    if type(table['kegg_id'][i]) != float:
+        count += 1
+print(count)
+quit()
 print(table['inchi'])
 
 # import math
