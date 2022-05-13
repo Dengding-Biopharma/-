@@ -11,6 +11,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 from sklearn.preprocessing import StandardScaler
+
+from matplotlib.pyplot import figure
 def pca(data):
     data = pd.read_excel(data)
     # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
@@ -51,10 +53,11 @@ def pca(data):
     pca = PCA(n_components=2)
     pca.fit(data_impute.T)
     X_new = pca.fit_transform(data_impute.T)
-    print(X_new)
+
     print(pca.explained_variance_ratio_)
     y_pred = KMeans(n_clusters=3,random_state=8).fit_predict(X_new)
     print(y_pred)
+
 
 
     group0 =[]
@@ -111,19 +114,21 @@ def pca(data):
     targets = list(targets[0])
 
 
-    fig = plt.figure(figsize = (20,20))
+    fig = plt.figure(figsize = (6,6))
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('Principal Component 1 {}%'.format(round(pca.explained_variance_ratio_[0]*100,2)), fontsize = 15)
     ax.set_ylabel('Principal Component 2 {}%'.format(round(pca.explained_variance_ratio_[1]*100,2)), fontsize = 15)
     ax.set_title('2 component PCA', fontsize = 20)
+    ax.set_aspect('equal', adjustable='box')
+    plt.ylim([-0.001,0.0011])
 
-    #
-    # ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
-    #                         edgecolor='r', fc='None', lw=2)
-    # ax.add_patch(ellipse_ad)
-    # ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
-    #                         edgecolor='b', fc='None', lw=2)
-    # ax.add_patch(ellipse_hc)
+
+    ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
+                            edgecolor='r', fc='None', lw=2)
+    ax.add_patch(ellipse_ad)
+    ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
+                            edgecolor='b', fc='None', lw=2)
+    ax.add_patch(ellipse_hc)
 
 
     groups=['AD_Disease_group','HC_Control_group']
@@ -143,7 +148,7 @@ def pca(data):
                                     c='b'
                                     , s=50)
 
-    ax.legend(labels=['AD','HC'],handles=[ax_ad,ax_hc],loc='best',borderpad=2,labelspacing=2,prop={'size': 12})
+    ax.legend(labels=['AD','HC'],handles=[ax_ad,ax_hc],loc='best',borderpad=2,labelspacing=2,prop={'size': 8})
     ax.grid()
 
 

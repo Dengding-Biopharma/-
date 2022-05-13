@@ -71,8 +71,6 @@ def volcanoPlot(data):
     # print(type(df))
 
     visuz.gene_exp.volcano(df=df,lfc='log2FC',pv='p-value',show=True,lfc_thr=(0,0),ar=0,plotlegend=True)
-    quit()
-    df.to_excel('pos_significant.xlsx', index=False)
 
 
 

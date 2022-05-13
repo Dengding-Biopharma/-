@@ -37,5 +37,5 @@ for i in range(len(data)):
     if 'no_match' not in data['max_name'][i]:
         count += 1
 print(count)
-quit()
+
 data.to_excel('ad files/varsPOSout_pos_noid_more_from_gnps.xlsx',index=False,na_rep=np.nan)

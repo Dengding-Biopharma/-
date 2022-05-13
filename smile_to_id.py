@@ -1,18 +1,17 @@
 import csv
 
 import numpy as np
-# from rdkit import Chem
+from rdkit import Chem
 import pandas as pd
 
 table = pd.read_csv('hmdb_metabolites.csv', sep='\t')
-count = 0
+# count = 0
 print(table.columns.values)
-for i in range(len(table)):
-    if type(table['kegg_id'][i]) != float:
-        count += 1
-print(count)
-quit()
-print(table['inchi'])
+# for i in range(len(table)):
+#     if type(table['kegg_id'][i]) != float:
+#         count += 1
+# print(count)
+# print(table['inchi'])
 
 # import math
 # from math import nan
@@ -107,29 +106,39 @@ print(table['inchi'])
 # print(len(dup_df))
 finalDF = pd.read_excel('pos_significant.xlsx')
 
-print(finalDF)
 
+finalDF['accession'] = np.nan
+finalDF['inchikey']=np.nan
+print(finalDF)
 ids = []
-names = []
-for i in range(len(finalDF)):
-    # smile = saved_label[k]
-    # m = Chem.MolFromSmiles(smile)
-    # inchikey = Chem.MolToInchiKey(m)
-    name = finalDF['name'][i]
+inchiKeys = []
+for k in range(len(finalDF)):
+    smile = finalDF['smile'][k]
+    name = finalDF['name'][k]
+    try:
+        m = Chem.MolFromSmiles(smile)
+        inchikey = Chem.MolToInchiKey(m)
+    except:
+        inchikey = None
+    # print(name,inchiKeys)
     for i in range(len(table['name'].values)):
         if name == table['name'].values[i][2:-1]:
-            # if inchikey == table['inchikey'].values[i]:
-            try:
-                # assert str(table['name'].values[i][2:-1]) not in ids
-                # ids.append(str(table['name'].values[i][2:-1]))
-                ids.append(table['accession'].values[i])
-            except:
-                continue
+            print('match!!!!!!!',table['name'].values[i][2:-1])
+            ids.append(table['accession'].values[i])
+            finalDF['inchikey'][k] = table['inchikey'].values[i]
+            finalDF['accession'][k] = table['accession'].values[i]
             print(ids[-1])
+            break
+        elif inchikey == str(table['inchikey'][i]):
+            print('match!!!!!!!',str(table['inchikey'][i]))
+            ids.append(table['accession'].values[i])
+            finalDF['inchikey'][k] = table['inchikey'].values[i]
+            finalDF['accession'][k] = table['accession'].values[i]
+            print(ids[-1])
+            break
 
-print(ids)
 print(len(ids))
-df = pd.DataFrame()
-df['hmdb_id'] = ids
-print(df)
-df.to_excel('smalltable_hmdb_id.xlsx',index=False,na_rep=np.nan)
+for id in ids:
+    print(id)
+print(finalDF)
+finalDF.to_excel('pos_hmdb_id_smile_inchikey.xlsx',index=False,na_rep=np.nan)

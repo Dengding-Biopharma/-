@@ -24,11 +24,12 @@ for i in range(len(data_dic)):
     try:
         assert 'no_match' in data_dic['max_name'][i]
         data_dic['max_name'][i] = str(random.choice(temp['name'].values))[2:-1]
-        # data_dic['max_smile'][i] = str(random.choice(temp['smiles'].values))
+        data_dic['max_smile'][i] = random.choice(temp['smiles'].values)
     except:
         continue
 
 table['dataMatrix'] = data_dic['max_name']
+table['smile'] =data_dic['max_smile']
 
 for i in range(len(table)):
     try:
@@ -40,7 +41,8 @@ for i in range(len(table)):
 table.to_excel('ad files/temp.xlsx',index=False,na_rep=np.nan)
 print(table)
 data = pd.read_excel('ad files/temp.xlsx')
-targets = data.columns.values[1:]
+targets = data.columns.values[1:-1]
+
 for i in range(len(data)):
     temp = []
     for j in targets:
@@ -83,8 +85,13 @@ for i in range(len(table)):
         table['dataMatrix'][i] = temp
 
 
-
-
+df = pd.DataFrame()
+df['name']=table['dataMatrix']
+df['smile']=table['smile']
+del table['smile']
 print(table)
+print(df)
+
+df.to_excel('ad files/pos_name_smile_pair.xlsx',index=False)
 
 table.to_excel('ad files/peaktablePOSout_POS_noid_more_puring.xlsx',index=False,na_rep=np.nan)

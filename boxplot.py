@@ -2,10 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.stats import ttest_ind
+from delete import deleteDep
 
 
-def boxplot(data):
+def boxplot(data,smile_data='files/ad files/pos_name_smile_pair.xlsx'):
     data = pd.read_excel(data)  # loading data
+    name_smile_pair = pd.read_excel(smile_data)['smile'].values
+
     # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
     targets = data.columns.values[1:]  # 保存病人名称
@@ -17,7 +20,7 @@ def boxplot(data):
     del data['dataMatrix']
     data_impute = data.values
     for i in range(data_impute.shape[1]):
-        data_impute[:, i] = data_impute[:, i] / np.sum(data_impute[:, i])
+        data_impute[:, i] = (data_impute[:, i] / np.sum(data_impute[:, i])) * 100
     print(data_impute)
 
     # 拿到组别索引
@@ -50,16 +53,32 @@ def boxplot(data):
     for p in p_list:
         if p < 0.05:
             count += 1
-    top_k_index = p_list.argsort()[::-1][len(p_list) - count:]
+    top_k_index = p_list.argsort()[::-1][len(p_list) -24:]
+    print(top_k_index)
+
     # top_k_index = p_list.argsort()[::-1][:]
     print(count)
-    # df = pd.DataFrame()
-    # df['P']=p_list[top_k_index]
-    # df['name']=saved_label[top_k_index]
-    #
-    # df.to_excel('pos_significant.xlsx', index=False)
-    # print(df)
-    # quit()
+
+    # for special treatment only!!!!
+    df = pd.DataFrame()
+    df['P']=p_list[top_k_index]
+    df['name']=saved_label[top_k_index]
+    df['smile']=name_smile_pair[top_k_index]
+    df['index']=top_k_index
+    file_path = 'pos_significant.xlsx'
+    df.to_excel(file_path, index=False)
+    deleteDep(file_path)
+    df = pd.read_excel(file_path)
+    df = df.sort_values(by='P',ascending=True)
+    print(df)
+    top_k_index = list(df['index'].values)
+    for i in range(len(df)):
+        if df['name'][i] == 'DG(20:4_18:0)':
+            top_k_index.remove(df['index'][i])
+        if df['name'][i] == "4-((11aS)-1,3-dioxo-5-(p-tolyl)-11,11a-dihydro-1H-imidazo[1',5':1,6]pyrido[3,4-b]indol-2(3H,5H,6H)-yl)-N-(4-phenylbutan-2-yl)benzamide [M+H]+":
+            top_k_index.remove(df['index'][i])
+    print(top_k_index)
+
     # 做完了数值分析，开始归一化画图
 
     normalized_data_impute = data_impute
@@ -150,9 +169,10 @@ def boxplot(data):
             bp['boxes'][i].set(color='b')
 
     plt.title('boxplot for top 20 variables which have significant differences between groups')
-    plt.legend(handles=[bp['boxes'][0], bp['boxes'][1]], labels=['AD_group', 'HC_group'])
+    plt.legend(handles=[bp['boxes'][0], bp['boxes'][1]], labels=['AD', 'HC'])
     plt.show()
 
 
 if __name__ == '__main__':
-    boxplot('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
+    data_path = 'files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx'
+    boxplot(data_path)

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-# data = pd.read_excel('ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
+# data = pd.read_excel('ad files/peaktablePOSout_POS_noid_more_puring.xlsx')
 # print(data.index.values)
 # print(data.columns.values)
 # print(data.T)
@@ -23,7 +23,7 @@ import pandas as pd
 #     temp = pd.DataFrame(columns=[row.values[0]],data=row.values[1:])
 #     df = pd.concat([df,temp],axis=1)
 #
-# df.to_excel('transpose_peaktable_pos_mean_full.xlsx',index=False,na_rep=np.nan)
+# df.to_excel('transpose_peaktable_pos.xlsx',index=False,na_rep=np.nan)
 
 data1= pd.read_excel('transpose_peaktable_pos_mean_full.xlsx')
 data2 = pd.read_excel('transpose_peaktable_pos.xlsx')
