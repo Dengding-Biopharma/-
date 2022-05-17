@@ -15,33 +15,32 @@ from skimage.measure import EllipseModel
 
 # data = pd.read_excel(
 #     '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
-data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace_puring.xlsx')
+# data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
 print(data)
 
 sample_labels = []
 
+
 color_exist = []
 targets = data.columns.values[1:]
+
 
 for i in range(len(targets)):
     if 'WX_' not in targets[i] and 'QX_' not in targets[i] and 'QXRY_' not in targets[i]:
         del data[targets[i]]
 targets = data.columns.values[1:]
-
 print(targets)
-print(len(targets))
+
 
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
+print(data)
 
-imputer_mean_XYCH_WX = SimpleImputer(missing_values=np.nan, strategy='mean')
-data_impute = imputer_mean_XYCH_WX.fit_transform(data)
-
-sum_baseline = 10000
+data_impute = data.values
 for i in range(data_impute.shape[1]):
-    coe = sum_baseline / np.sum(data_impute[:, i])
-    data_impute[:, i] = (data_impute[:, i] * coe) / sum_baseline
+    data_impute[:, i] = (data_impute[:, i] / np.sum(data_impute[:, i])) * 100
 
 normalized_data_impute = data_impute
 print(normalized_data_impute)
@@ -244,7 +243,8 @@ for i in range(len(groups)):
 plt.legend(handles=[ax_x,ax_y,ax_z],labels=['{}group'.format(keywords[0]),'{}group'.format(keywords[1]),'{}group'.format(keywords[2])],loc='best',labelspacing=2,prop={'size': 12})
 
 ax.grid()
-plt.savefig('figures/neg_plots/整体/整体未破壁样本与破壁样本的变化PCA.png')
+plt.show()
+# plt.savefig('figures/neg_plots/整体/整体未破壁样本与破壁样本的变化PCA.png')
 
 
 

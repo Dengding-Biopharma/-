@@ -12,8 +12,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
-data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
-# data = pd.reXYCH_WX_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace_puring.xlsx')
 print(data)
 
 sample_labels = []
@@ -49,15 +48,11 @@ print(targets)
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
+print(data)
 
-imputer_mean_XYCH_WX = SimpleImputer(missing_values=np.nan,strategy='mean')
-data_impute = imputer_mean_XYCH_WX.fit_transform(data)
-
-
-sum_baseline = 10000
+data_impute = data.values
 for i in range(data_impute.shape[1]):
-    coe = sum_baseline/np.sum(data_impute[:,i])
-    data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
+    data_impute[:, i] = (data_impute[:, i] / np.sum(data_impute[:, i])) * 100
 
 normalized_data_impute = data_impute
 print(normalized_data_impute)

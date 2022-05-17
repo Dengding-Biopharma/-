@@ -15,35 +15,32 @@ from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 from statsmodels.stats.anova import anova_lm
 
-data = pd.read_excel(
-    '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
-
+data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace_puring.xlsx')
+# data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
 print(data)
 
 sample_labels = []
 
+
 color_exist = []
 targets = data.columns.values[1:]
+
 
 for i in range(len(targets)):
     if 'WX_' not in targets[i] and 'QX_' not in targets[i] and 'QXRY_' not in targets[i]:
         del data[targets[i]]
 targets = data.columns.values[1:]
-
 print(targets)
-print(len(targets))
+
 
 saved_label = data['dataMatrix'].values
 print(saved_label)
 del data['dataMatrix']
+print(data)
 
-imputer_mean_XYCH_WX = SimpleImputer(missing_values=np.nan, strategy='mean')
-data_impute = imputer_mean_XYCH_WX.fit_transform(data)
-
-sum_baseline = 10000
+data_impute = data.values
 for i in range(data_impute.shape[1]):
-    coe = sum_baseline / np.sum(data_impute[:, i])
-    data_impute[:, i] = (data_impute[:, i] * coe) / sum_baseline
+    data_impute[:, i] = (data_impute[:, i] / np.sum(data_impute[:, i])) * 100
 
 normalized_data_impute = data_impute
 print(normalized_data_impute)
@@ -64,6 +61,7 @@ x_index = []
 y_index = []
 z_index = []
 print(targets)
+
 keywords = keywords6
 for i in range(len(targets)):
     if keywords[0] in targets[i]:
@@ -132,7 +130,7 @@ data_x = []
 labels = []
 for i in range(len(x_diff)):
     data_x.append(x_diff[i])
-    labels.append(saved_label[top_k_index[i]])
+    labels += [saved_label[top_k_index[i]], '','']
 
 data_y = []
 
@@ -172,23 +170,22 @@ data = []
 
 for i in range(data_x.shape[0]):
     data.append(data_x[i, :])
-for i in range(data_y.shape[0]):
     data.append(data_y[i, :])
-for i in range(data_z.shape[0]):
     data.append(data_z[i, :])
+
 
 print(data)
 
-bp = plt.boxplot(data, labels=labels + labels + labels, patch_artist=True)
+bp = plt.boxplot(data, labels=labels, patch_artist=True)
 
 plt.xticks(rotation=90)
 for i in range(len(bp['boxes'])):
-    if i < len(bp['boxes']) / 3:
+    if i%3 == 0:
         bp['boxes'][i].set(color='r')
-    elif len(bp['boxes']) / 3 <= i < 2 * (len(bp['boxes']) / 3):
+    elif i%3 == 1:
         bp['boxes'][i].set(color='g')
     else:
         bp['boxes'][i].set(color='b')
-plt.legend(handles=[bp['boxes'][0],bp['boxes'][0+top_k],bp['boxes'][0+2*top_k]],labels=['{}group'.format(keywords[0]),'{}group'.format(keywords[1]),'{}group'.format(keywords[2])])
+plt.legend(handles=[bp['boxes'][0],bp['boxes'][1],bp['boxes'][2]],labels=['{}group'.format(keywords[0]),'{}group'.format(keywords[1]),'{}group'.format(keywords[2])])
 plt.title('比较不同花粉未清洗、清洗与清洗溶液代谢物差异变化(差异最大的20个小分子)')
 plt.show()
