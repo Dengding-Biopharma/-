@@ -17,10 +17,6 @@ data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_c
 # data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
 print(data)
 
-sample_labels = []
-
-
-color_exist = []
 targets = data.columns.values[1:]
 
 
