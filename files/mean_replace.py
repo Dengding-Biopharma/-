@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-data = pd.read_excel('pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
+data = pd.read_excel('pollen files/results/peaktableBOTHout_BOTH_noid_replace.xlsx')
 
 print(data)
 
@@ -37,15 +37,12 @@ for i in range(len(data)):
                 continue
             temp.append(num)
         mean = np.mean(temp)
-        if np.isnan(mean):
-            data = data.drop(i)
-            break
         for j in range(len(small_group)):
             num = data[column_labels[small_group[j]]][i]
             if np.isnan(num):
                 data[column_labels[small_group[j]]][i] = mean
 
-data.to_excel('pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace_puring.xlsx',index=False)
+data.to_excel('pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx',index=False)
 
 
 

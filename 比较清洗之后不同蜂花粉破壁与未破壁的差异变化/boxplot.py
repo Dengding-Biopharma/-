@@ -61,7 +61,7 @@ keywords6 = ['QX_','QXPB_']
 x_index=[]
 y_index=[]
 print(targets)
-keywords = keywords6
+keywords = keywords1
 for i in range(len(targets)):
     if keywords[0] in targets[i]:
         x_index.append(i)
@@ -70,6 +70,7 @@ for i in range(len(targets)):
 
 print(x_index)
 print(y_index)
+quit()
 targets = np.hstack((targets[x_index],targets[y_index]))
 print(targets)
 

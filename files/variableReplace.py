@@ -6,7 +6,7 @@ from collections import Counter
 data_dic = pd.read_excel('pollen files/results/process_output_quantid_pos_camera_noid/varsPOSout_pos_noid.xlsx')
 data = pd.read_excel('pollen files/0325-pollen-Pos.xlsx')
 table = pd.read_excel('pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid.xlsx')
-
+#
 # data_dic = pd.read_excel('pollen files/results/process_output_quantid_neg_camera_noid/varsNEGout_neg_noid.xlsx')
 # data = pd.read_excel('pollen files/0325-pollen-Neg.xlsx')
 # table = pd.read_excel('pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid.xlsx')
@@ -120,14 +120,14 @@ targets = data.columns.values[1:]
 
 
 
-for i in range(len(data)):
-    temp = []
-    for j in targets:
-        temp.append(data[j][i])
-    for k in range(len(temp)):
-        temp[k] = math.isnan(temp[k])
-    if temp.count(True) > len(temp) /2:
-        data = data.drop(i)
+# for i in range(len(data)):
+#     temp = []
+#     for j in targets:
+#         temp.append(data[j][i])
+#     for k in range(len(temp)):
+#         temp[k] = math.isnan(temp[k])
+#     if temp.count(True) > len(temp) /2:
+#         data = data.drop(i)
 
 print(data)
 data.to_excel('pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx',index=False,na_rep=np.nan)
