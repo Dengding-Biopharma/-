@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
 
-data = pd.read_excel('../files/ad files/peaktablePOSout_POS_noid_more_puring.xlsx')
-for column in data.columns.values:
-    if '0316' in column:
-        del data[column]
+data = pd.read_excel('ad files/peaktableBOTHout_BOTH_noid_replace.xlsx')
+
+
 print(data.values)
 targets = data.columns.values
 print(targets)
@@ -55,7 +54,7 @@ for i in range(len(data)):
 
 df = pd.DataFrame(data_array,columns=targets)
 
-df.to_excel('../files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx',index=False,na_rep=np.nan)
+df.to_excel('ad files/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx',index=False,na_rep=np.nan)
 
 
 
