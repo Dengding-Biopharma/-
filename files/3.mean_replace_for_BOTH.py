@@ -5,7 +5,7 @@ data = pd.read_excel('pollen files/results/peaktableBOTHout_BOTH_noid_replace.xl
 
 print(data)
 
-column_labels = data.columns.values[1:]
+column_labels = data.columns.values[2:]
 
 small_group_index = [] # list of list
 

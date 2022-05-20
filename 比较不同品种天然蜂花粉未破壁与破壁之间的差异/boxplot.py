@@ -13,16 +13,14 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 data = pd.read_excel('../files/pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx')
-# data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace_puring.xlsx')
+# data = pd.read_excel('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx')
 # data = pd.read_excel('../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx')
 
-print(data)
-
-targets = data.columns.values[1:]
+targets = data.columns.values[2:]
 for i in range(len(targets)):
     if 'WX' not in targets[i]:
         del data[targets[i]]
-targets = data.columns.values[1:]
+targets = data.columns.values[2:]
 
 # 分别比较样本1和6、
 keywords1 = ['XYCH_WX_','XYCH_WXPB_']
@@ -42,18 +40,16 @@ print(targets)
 
 for i in range(len(targets)):
     if keywords[0] not in targets[i] and keywords[1] not in targets[i]:
-        print(targets[i])
         del data[targets[i]]
 
-print(data)
-data = data.dropna().reset_index(drop=True)
 
+data = data.dropna().reset_index(drop=True)
+print('dataframe shape after drop rows that have NA value: ',data.shape)
 saved_label = data['dataMatrix'].values
 del data['dataMatrix']
+del data['smile']
 targets = data.columns.values
 print(targets)
-
-print(data)
 
 data_impute = data.values
 
@@ -61,12 +57,10 @@ for i in range(data_impute.shape[1]):
     data_impute[:, i] = (data_impute[:, i] / np.sum(data_impute[:, i])) * 100
 
 normalized_data_impute = data_impute
-print(normalized_data_impute)
-
 
 x_index=[]
 y_index=[]
-print(targets)
+
 
 for i in range(len(targets)):
     if keywords[0] in targets[i]:
@@ -93,7 +87,7 @@ normalized_data_impute_y = np.array(normalized_data_impute_y)
 top_k = 20
 p_list =[]
 for i in range(normalized_data_impute_x.shape[1]):
-    t,p = mannwhitneyu(normalized_data_impute_x[:,i:i+1],normalized_data_impute_y[:,i:i+1])
+    t,p = mannwhitneyu(normalized_data_impute_x[:,i:i+1],normalized_data_impute_y[:,i:i+1],alternative='two-sided')
     p_list.append(p[0])
 p_list = np.array(p_list)
 count = 0
