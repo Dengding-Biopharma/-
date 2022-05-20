@@ -11,18 +11,15 @@ import pandas as pd
 from scipy.stats import ttest_ind
 
 
-def stackedHistogram(data,k):
+def stackedHistogram(data,k,mode):
     data = pd.read_excel(data)
-    # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
-    color_exist = []
-    targets = data.columns.values[1:]
+    targets = data.columns.values[2:]  # 保存病人名称
 
-    print(targets)
-
-    saved_label = data['dataMatrix'].values
-    print(saved_label)
+    saved_label = data['dataMatrix'].values  # 保存小分子名称
+    saved_smile = data['smile'].values  # 小分子对应的smile
     del data['dataMatrix']
+    del data['smile']
     data_impute = data.values
     for i in range(data_impute.shape[1]):
         data_impute[:, i] = data_impute[:, i]/np.sum(data_impute[:,i])
@@ -112,9 +109,16 @@ def stackedHistogram(data,k):
         ax.bar(targets,X_top[i],0.2,bottom=X_top[i-1],label=labels[i],color=get_random_color(color_exist))
 
 
-    plt.title('Histogram of the 20 most different metabolic distribution between groups')
+    plt.title('Histogram of the 20 most different metabolic distribution between groups ({} mode)'.format(mode))
     ax.legend(bbox_to_anchor=(1, 1),prop={'size': 8},loc='best')
     plt.show()
 
 if __name__ == '__main__':
-    stackedHistogram('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
+    mode = 'pos'
+    if mode == 'both':
+        filepath = 'files/ad files/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
+    elif mode == 'pos':
+        filepath = 'files/ad files/peaktablePOSout_POS_noid_replace_mean_full.xlsx'
+    elif mode == 'neg':
+        filepath = 'files/ad files/peaktableNEGout_NEG_noid_replace_mean_full.xlsx'
+    stackedHistogram(filepath,mode=mode,k=20)

@@ -8,9 +8,9 @@ from sklearn.cross_decomposition import PLSRegression
 from matplotlib.pyplot import figure
 
 
-def plsda(data):
+def plsda(data,mode):
     data = pd.read_excel(data)
-    targets = data.columns.values[1:]
+    targets = data.columns.values[2:]
 
 
 
@@ -19,7 +19,7 @@ def plsda(data):
             targets[i] = 'AD_Disease_group'
         else:
             targets[i] = 'HC_Control_group'
-    print(targets)
+
 
 
 
@@ -27,14 +27,9 @@ def plsda(data):
     saved_label = data['dataMatrix'].values
     print(saved_label)
     del data['dataMatrix']
+    del data['smile']
 
-    # imputer_mean_hc = SimpleImputer(missing_values=np.nan,strategy='mean')
-    # data_impute_hc = imputer_mean_ad.fit_transform(df_hc)
-    # print(data_impute)
-    # sum_baseline = 13800
-    # for i in range(data_impute.shape[1]):
-    #     coe = sum_baseline/np.sum(data_impute[:,i])
-    #     data_impute[:, i] = (data_impute[:, i]*coe)/sum_baseline
+
     data_impute = data.values
     for i in range(data_impute.shape[1]):
         data_impute[:, i] = data_impute[:, i] / np.sum(data_impute[:, i])
@@ -153,9 +148,9 @@ def plsda(data):
 
     ax.set_xlabel('PLS-DA axis 1')
     ax.set_ylabel('PLS-DA axis 2')
-    ax.set_title('PLS-DA', fontsize=20)
+    ax.set_title('PLS-DA ({} mode)'.format(mode), fontsize=20)
     ax.set_aspect('equal')
-    plt.xlim([-0.00085,0.0009])
+    # plt.xlim([-0.00085,0.0009])
 
     ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
                             edgecolor='r', fc='None', lw=2)
@@ -185,67 +180,14 @@ def plsda(data):
     ax.grid()
 
     plt.show()
-    quit()
-    # scores = pd.DataFrame(plsr.x_scores_)
-    # scores.index = targets
-    #
-    #
-    #
-    # ax = scores.plot(x=0, y=1, kind='scatter', s=50,
-    #                     figsize=(6,6),c=colorlist)
-    #
-    #
-    # print(scores)
-    #
-    # y_pred = KMeans(n_clusters=3,random_state=8).fit_predict(plsr.x_scores_)
-    #
-    # print(y_pred)
-    #
-    # group0 =[]
-    # outlier_index = []
-    # for i in range(len(y_pred)):
-    #     if y_pred[i] == 2:
-    #         group0.append(plsr.x_scores_[i])
-    #         outlier_index.append(i)
-    #
-    # group0 = np.array(group0)
-    #
-    # points_ad = []
-    # points_hc = []
-    # for i in range(len(scores)):
-    #     if i not in outlier_index:
-    #         if 'AD' in scores.index[i]:
-    #             points_ad.append([scores[0][i],scores[1][i]])
-    #         else:
-    #             points_hc.append([scores[0][i],scores[1][i]])
-    #
-    #
-    #
-    # points_ad = np.array(points_ad)
-    # ellipse_points_ad = EllipseModel()
-    # ellipse_points_ad.estimate(points_ad)
-    # ad_x_mean,ad_y_mean,ad_a,ad_b,ad_theta = ellipse_points_ad.params
-    #
-    # points_hc = np.array(points_hc)
-    # ellipse_points_hc = EllipseModel()
-    # ellipse_points_hc.estimate(points_hc)
-    # hc_x_mean,hc_y_mean,hc_a,hc_b,hc_theta = ellipse_points_hc.params
-    #
-    # ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
-    #                         edgecolor='r', fc='None', lw=2)
-    # ax.add_patch(ellipse_ad)
-    # ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
-    #                         edgecolor='b', fc='None', lw=2)
-    # ax.add_patch(ellipse_hc)
-    #
-    # print(targets)
-    #
-    # ax.set_xlabel('PLS-DA axis 1')
-    # ax.set_ylabel('PLS-DA axis 2')
-    # ax.legend(handles=[ellipse_ad,ellipse_hc],labels=['AD_group','HC_group'])
-    # ax.grid()
-    # plt.title('PLS-DA')
-    # plt.show()
+
 
 if __name__ == '__main__':
-    plsda('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
+    mode = 'pos'
+    if mode == 'both':
+        filepath = 'files/ad files/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
+    elif mode == 'pos':
+        filepath = 'files/ad files/peaktablePOSout_POS_noid_replace_mean_full.xlsx'
+    elif mode == 'neg':
+        filepath = 'files/ad files/peaktableNEGout_NEG_noid_replace_mean_full.xlsx'
+    plsda(filepath,mode)

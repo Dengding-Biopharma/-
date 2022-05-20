@@ -5,23 +5,24 @@ from scipy.stats import ttest_ind
 from delete import deleteDep
 
 
-def boxplot(data,smile_data='files/ad files/pos_name_smile_pair.xlsx'):
+def boxplot(data,mode):
     data = pd.read_excel(data)  # loading data
-    name_smile_pair = pd.read_excel(smile_data)['smile'].values
 
-    # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
-    targets = data.columns.values[1:]  # 保存病人名称
-    print(targets)
+    targets = data.columns.values[2:]  # 保存病人名称
+
 
     saved_label = data['dataMatrix'].values  # 保存小分子名称
-    print(saved_label)
-    quit()
+    saved_smile = data['smile'].values # 小分子对应的smile
     del data['dataMatrix']
+    del data['smile']
+
+
+
     data_impute = data.values
     for i in range(data_impute.shape[1]):
         data_impute[:, i] = (data_impute[:, i] / np.sum(data_impute[:, i])) * 100
-    print(data_impute)
+
 
     # 拿到组别索引
     ad_index = []
@@ -43,7 +44,7 @@ def boxplot(data,smile_data='files/ad files/pos_name_smile_pair.xlsx'):
         data_impute_hc.append(data_impute[:, index].T)
     data_impute_hc = np.array(data_impute_hc)
 
-    top_k = 20  # top几，可调
+    top_k = 22  # top几，可调
     p_list = []
     for i in range(data_impute_ad.shape[1]):
         t, p = ttest_ind(data_impute_ad[:, i:i + 1], data_impute_hc[:, i:i + 1], equal_var=True)
@@ -53,31 +54,26 @@ def boxplot(data,smile_data='files/ad files/pos_name_smile_pair.xlsx'):
     for p in p_list:
         if p < 0.05:
             count += 1
-    top_k_index = p_list.argsort()[::-1][len(p_list) -20:]
-    print(top_k_index)
+    top_k_index = p_list.argsort()[::-1][len(p_list) - top_k:]
+    print('{} metabolites have significant difference after t-test!!!!!!')
     # top_k_index = p_list.argsort()[::-1][:]
-    print(count)
 
     # for special treatment only!!!!
     df = pd.DataFrame()
-    df['P']=p_list[top_k_index]
-    df['name']=saved_label[top_k_index]
-    df['smile']=name_smile_pair[top_k_index]
-    df['index']=top_k_index
-    file_path = 'pos_significant.xlsx'
-    df.to_excel(file_path, index=False)
-    deleteDep(file_path)
-    df = pd.read_excel(file_path)
-    df = df.sort_values(by='P',ascending=True)
-    print(df)
+    df['P'] = p_list[top_k_index]
+    df['name'] = saved_label[top_k_index]
+    df['index'] = top_k_index
+    df = deleteDep(df)
+    df = df.sort_values(by='P', ascending=True)
     top_k_index = list(df['index'].values)
-    for i in range(len(df)):
-        if df['name'][i] == 'DG(20:4_18:0)':
-            top_k_index.remove(df['index'][i])
-        if df['name'][i] == "4-((11aS)-1,3-dioxo-5-(p-tolyl)-11,11a-dihydro-1H-imidazo[1',5':1,6]pyrido[3,4-b]indol-2(3H,5H,6H)-yl)-N-(4-phenylbutan-2-yl)benzamide [M+H]+":
-            top_k_index.remove(df['index'][i])
-    print(top_k_index)
-    quit()
+    # for i in range(len(df)):
+    #     if df['name'][i] == 'DG(20:4_18:0)':
+    #         top_k_index.remove(df['index'][i])
+    #     if df['name'][
+    #         i] == "4-((11aS)-1,3-dioxo-5-(p-tolyl)-11,11a-dihydro-1H-imidazo[1',5':1,6]pyrido[3,4-b]indol-2(3H,5H,6H)-yl)-N-(4-phenylbutan-2-yl)benzamide [M+H]+":
+    #         top_k_index.remove(df['index'][i])
+    print('The top 20 indexs are: ',top_k_index)
+
     # 做完了数值分析，开始归一化画图
 
     normalized_data_impute = data_impute
@@ -153,7 +149,7 @@ def boxplot(data,smile_data='files/ad files/pos_name_smile_pair.xlsx'):
         data.append(data_ad[i, :])
         data.append(data_hc[i, :])
 
-    print(data)
+
     for i in range(len(labels)):
         if i % 2 == 0:
             print(labels[i])
@@ -167,11 +163,17 @@ def boxplot(data,smile_data='files/ad files/pos_name_smile_pair.xlsx'):
         else:
             bp['boxes'][i].set(color='b')
 
-    plt.title('boxplot for top 20 variables which have significant differences between groups')
+    plt.title('boxplot for top 20 variables which have significant differences between groups ({} mode)'.format(mode))
     plt.legend(handles=[bp['boxes'][0], bp['boxes'][1]], labels=['AD', 'HC'])
     plt.show()
 
 
 if __name__ == '__main__':
-    data_path = 'files/ad files/peaktableBOTHout_BOTH_noid_mean_full.xlsx'
-    boxplot(data_path)
+    mode = 'pos'
+    if mode == 'both':
+        filepath = 'files/ad files/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
+    elif mode == 'pos':
+        filepath = 'files/ad files/peaktablePOSout_POS_noid_replace_mean_full.xlsx'
+    elif mode == 'neg':
+        filepath = 'files/ad files/peaktableNEGout_NEG_noid_replace_mean_full.xlsx'
+    boxplot(filepath,mode)

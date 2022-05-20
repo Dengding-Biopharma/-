@@ -1,24 +1,22 @@
 import numpy as np
 import pandas as pd
-def deleteDep(data):
-    data = pd.read_excel(data)
+def deleteDep(df):
+    data = df
     print(data)
 
     dup_row = data.duplicated(subset=['name'],keep=False)
-    print(dup_row)
+
 
     dup_df = data[dup_row]
     for i in range(len(data)):
         if dup_row[i] == True:
             data = data.drop(i)
-    print(data)
     dup_df=dup_df.sort_values(by='name')
 
-    print(dup_df)
 
-    dup_df.to_excel('temp.xlsx',index=False)
-    dup_df = pd.read_excel('temp.xlsx')
-    print(dup_df)
+
+    dup_df = dup_df.reset_index(drop=True)
+
     temp = []
     for i in range(len(dup_df)):
         if len(temp) == 0 or dup_df['name'][i] != temp[0]:
@@ -29,12 +27,11 @@ def deleteDep(data):
         elif dup_df['name'][i] == temp[0] and dup_df['P'][i] > temp[1]:
             dup_df = dup_df.drop(i)
 
-    print(len(dup_df))
     finalDF = pd.concat([dup_df,data])
     print(finalDF)
 
+    return finalDF
 
-    finalDF.to_excel('pos_significant.xlsx',index=False,na_rep=np.nan)
 
 if __name__ == '__main__':
     data_path = 'pos_significant.xlsx'

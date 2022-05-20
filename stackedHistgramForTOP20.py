@@ -5,17 +5,16 @@ import numpy as np
 import pandas as pd
 
 
-def stackedHistgramTop20(data):
+def stackedHistgramTop20(data,mode):
     data = pd.read_excel(data)
     # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
+    targets = data.columns.values[2:]  # 保存病人名称
 
-    targets = data.columns.values[1:]
-
-
-    saved_label = data['dataMatrix'].values
-    print(saved_label)
+    saved_label = data['dataMatrix'].values  # 保存小分子名称
+    saved_smile = data['smile'].values  # 小分子对应的smile
     del data['dataMatrix']
+    del data['smile']
 
 
 
@@ -104,9 +103,17 @@ def stackedHistgramTop20(data):
     for i in range(1,len(X_top)):
         ax.bar(targets,X_top[i],0.2,bottom=X_top[i-1],label=labels[i],color=get_random_color(color_exist))
 
-    plt.title('Histogram of the top 20 metabolite percentage')
+    plt.title('Histogram of the top 20 metabolite percentage ({} mode)'.format(mode))
     ax.legend(bbox_to_anchor=(1, 1))
     plt.show()
 
 if __name__ == '__main__':
-    stackedHistgramTop20('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
+    mode = 'pos'
+    if mode == 'both':
+        filepath = 'files/ad files/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
+    elif mode == 'pos':
+        filepath = 'files/ad files/peaktablePOSout_POS_noid_replace_mean_full.xlsx'
+    elif mode == 'neg':
+        filepath = 'files/ad files/peaktableNEGout_NEG_noid_replace_mean_full.xlsx'
+    stackedHistgramTop20(filepath,mode)
+

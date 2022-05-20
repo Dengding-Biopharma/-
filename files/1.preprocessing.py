@@ -205,9 +205,13 @@ def preprocessing(peak_filename,database_name,exp_filename,hmdb_first=False,matc
                     continue
                 exp_file['max_name'][i] = str(random.choice(temp['name'].values))[2:-1]
                 exp_file['max_smile'][i] = random.choice(temp['smiles'].values)
-
+        if match_from_gnps:
+            exp_file.to_excel(exp_filename[:-5] + '_more_from_gnps_and_hmdb.xlsx', index=False, na_rep=np.nan)
+        else:
+            exp_file.to_excel(exp_filename[:-5] + '_more_from_hmdb.xlsx', index=False, na_rep=np.nan)
     peak_file = peak_file.drop(columns='dataMatrix')
     peak_file.insert(0, 'dataMatrix', exp_file['max_name'])
+    peak_file.insert(1, 'smile', exp_file['max_smile'])
 
     for i in range(len(peak_file)):
         if 'no_match' in peak_file['dataMatrix'][i]:
@@ -230,7 +234,7 @@ def preprocessing(peak_filename,database_name,exp_filename,hmdb_first=False,matc
 
     peak_file = peak_file.reset_index(drop=True)
     print(peak_file)
-    targets = peak_file.columns.values[1:]
+    targets = peak_file.columns.values[2:]
 
     for i in range(len(peak_file)):
         temp = []
@@ -252,6 +256,7 @@ def preprocessing(peak_filename,database_name,exp_filename,hmdb_first=False,matc
     targets = peak_file.columns.values
 
     saved_label = peak_file['dataMatrix'].values
+    saved_smile = peak_file['smile'].values
     ad_index = []
     hc_index = []
     for i in range(len(targets)):
@@ -289,7 +294,7 @@ def preprocessing(peak_filename,database_name,exp_filename,hmdb_first=False,matc
         for n in range(len(hc)):
             if np.isnan(hc[n]):
                 hc[n] = hc_mean
-        row = [saved_label[i]] + ad + hc
+        row = [saved_label[i],saved_smile[i]] + ad + hc
         data_array.append(row)
 
     df = pd.DataFrame(data_array, columns=targets)
@@ -300,18 +305,18 @@ def preprocessing(peak_filename,database_name,exp_filename,hmdb_first=False,matc
 
 if __name__ == '__main__':
     # pos files
-    # peak_filename = 'ad files/peaktablePOSout_POS_noid.xlsx'
-    # database = 'ad files/Pos-summary-0313-16.xlsx'
-    # exp_filename = 'ad files/varsPOSout_pos_noid.xlsx'
-    # gnps_file = 'ad files/Pos_analyzed.xlsx'
-    # mode = 'pos'
+    peak_filename = 'ad files/peaktablePOSout_POS_noid.xlsx'
+    database = 'ad files/Pos-summary-0313-16.xlsx'
+    exp_filename = 'ad files/varsPOSout_pos_noid.xlsx'
+    gnps_file = 'ad files/Pos_analyzed.xlsx'
+    mode = 'pos'
 
     # neg files
-    peak_filename = 'ad files/peaktableNEGout_NEG_noid.xlsx'
-    database = 'ad files/Neg-summary-0313-16.xlsx'
-    exp_filename = 'ad files/varsNEGout_neg_noid.xlsx'
-    gnps_file = 'ad files/Neg_analyzed.xlsx'
-    mode = 'neg'
+    # peak_filename = 'ad files/peaktableNEGout_NEG_noid.xlsx'
+    # database = 'ad files/Neg-summary-0313-16.xlsx'
+    # exp_filename = 'ad files/varsNEGout_neg_noid.xlsx'
+    # gnps_file = 'ad files/Neg_analyzed.xlsx'
+    # mode = 'neg'
 
     # static setting
     hmdb_filename = 'hmdb_metabolites.csv'

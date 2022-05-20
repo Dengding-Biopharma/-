@@ -2,27 +2,25 @@ import numpy as np
 import pandas as pd
 
 
-def heatmap(data):
+def heatmap(data, mode):
     data = pd.read_excel(data)  # loading data
     # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
+    targets = data.columns.values[2:]  # 保存病人名称
 
-    targets = data.columns.values[1:] # 保存病人名称
-
-    print(targets)
-
-    saved_label = data['dataMatrix'].values # 保存小分子名称
-    print(saved_label)
-
+    saved_label = data['dataMatrix'].values  # 保存小分子名称
+    saved_smile = data['smile'].values  # 小分子对应的smile
     del data['dataMatrix']
+    del data['smile']
+
     data_impute = data.values
     for i in range(data_impute.shape[1]):
-        data_impute[:, i] = data_impute[:, i]/np.sum(data_impute[:,i])
+        data_impute[:, i] = data_impute[:, i] / np.sum(data_impute[:, i])
     print(data_impute)
 
     # 拿到组别索引
-    ad_index=[]
-    hc_index=[]
+    ad_index = []
+    hc_index = []
     for i in range(len(targets)):
         if "AD" in targets[i]:
             ad_index.append(i)
@@ -32,18 +30,18 @@ def heatmap(data):
     # 分别拿出AD和HC的数据做差异性分析
     data_impute_ad = []
     for index in ad_index:
-        data_impute_ad.append(data_impute[:,index].T)
+        data_impute_ad.append(data_impute[:, index].T)
     data_impute_ad = np.array(data_impute_ad)
 
-    data_impute_hc =[]
+    data_impute_hc = []
     for index in hc_index:
-        data_impute_hc.append(data_impute[:,index].T)
+        data_impute_hc.append(data_impute[:, index].T)
     data_impute_hc = np.array(data_impute_hc)
 
     top_k = 20
-    sum_list =[]
+    sum_list = []
     for i in range(data_impute_ad.shape[1]):
-        sum = np.sum(data_impute_ad[:,i:i+1])
+        sum = np.sum(data_impute_ad[:, i:i + 1])
         sum_list.append(sum)
     sum_list = np.array(sum_list)
     top_k_index = sum_list.argsort()[::-1][0:top_k]
@@ -55,17 +53,17 @@ def heatmap(data):
     # 归一化之后还要分别取一次组别数据，用来画图
     normalized_data_impute_ad = []
     for index in ad_index:
-        normalized_data_impute_ad.append(normalized_data_impute[:,index].T)
+        normalized_data_impute_ad.append(normalized_data_impute[:, index].T)
     normalized_data_impute_ad = np.array(normalized_data_impute_ad)
 
-    normalized_data_impute_hc =[]
+    normalized_data_impute_hc = []
     for index in hc_index:
-        normalized_data_impute_hc.append(normalized_data_impute[:,index].T)
+        normalized_data_impute_hc.append(normalized_data_impute[:, index].T)
     normalized_data_impute_hc = np.array(normalized_data_impute_hc)
 
     X_ad = normalized_data_impute_ad
     X_hc = normalized_data_impute_hc
-    X = np.vstack((X_ad,X_hc))
+    X = np.vstack((X_ad, X_hc))
     X = X.transpose()
     print(X)
     print(X.shape)
@@ -81,9 +79,9 @@ def heatmap(data):
     df = pd.DataFrame()
 
     for i in range(len(targets)):
-        print(X_top[:,i:i+1])
+        print(X_top[:, i:i + 1])
         temp = []
-        for j in X_top[:,i:i+1]:
+        for j in X_top[:, i:i + 1]:
             temp.append(j[0])
 
         df[targets[i]] = temp
@@ -99,7 +97,6 @@ def heatmap(data):
     import dash_bio as dashbio
     from dash import dcc
 
-
     clustergram = dashbio.Clustergram(
         data=df,
         column_labels=list(df.columns.values),
@@ -113,4 +110,11 @@ def heatmap(data):
 
 
 if __name__ == '__main__':
-    heatmap('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
+    mode = 'pos'
+    if mode == 'both':
+        filepath = 'files/ad files/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
+    elif mode == 'pos':
+        filepath = 'files/ad files/peaktablePOSout_POS_noid_replace_mean_full.xlsx'
+    elif mode == 'neg':
+        filepath = 'files/ad files/peaktableNEGout_NEG_noid_replace_mean_full.xlsx'
+    heatmap(filepath, mode)

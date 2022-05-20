@@ -9,6 +9,7 @@ targets = data.columns.values
 print(targets)
 
 saved_label = data['dataMatrix'].values
+saved_smile = data['smile'].values
 print(saved_label)
 ad_index = []
 hc_index = []
@@ -48,7 +49,7 @@ for i in range(len(data)):
     for n in range(len(hc)):
         if np.isnan(hc[n]):
             hc[n] = hc_mean
-    row = [saved_label[i]]+ad+hc
+    row = [saved_label[i],saved_smile[i]]+ad+hc
     data_array.append(row)
 
 

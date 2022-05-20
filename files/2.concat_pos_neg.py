@@ -22,7 +22,7 @@ print(neg_data.columns.values)
 print(pos_data.columns.values)
 
 data = pd.concat([pos_data, neg_data], ignore_index=True)
-targets = data.columns.values[1:]
+targets = data.columns.values[2:]
 
 for i in range(len(data)):
     temp = []

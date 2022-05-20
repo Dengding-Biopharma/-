@@ -13,12 +13,14 @@ from skimage.measure import EllipseModel
 from sklearn.preprocessing import StandardScaler
 
 from matplotlib.pyplot import figure
-def pca(data):
+def pca(data,mode):
     data = pd.read_excel(data)
     # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
 
-    targets = data.columns.values[1:]
-    print(targets)
+    targets = data.columns.values[2:]  # 保存病人名称
+
+
+
 
 
 
@@ -28,9 +30,11 @@ def pca(data):
         else:
             targets[i] = 'HC_Control_group'
 
-    saved_label = data['dataMatrix'].values
+    saved_label = data['dataMatrix'].values  # 保存小分子名称
+    saved_smile = data['smile'].values  # 小分子对应的smile
     print(saved_label)
     del data['dataMatrix']
+    del data['smile']
     data_impute = data.values
     for i in range(data_impute.shape[1]):
         data_impute[:, i] = data_impute[:, i]/np.sum(data_impute[:,i])
@@ -118,9 +122,9 @@ def pca(data):
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('Principal Component 1 {}%'.format(round(pca.explained_variance_ratio_[0]*100,2)), fontsize = 15)
     ax.set_ylabel('Principal Component 2 {}%'.format(round(pca.explained_variance_ratio_[1]*100,2)), fontsize = 15)
-    ax.set_title('2 component PCA', fontsize = 20)
+    ax.set_title('2 component PCA ({} mode)'.format(mode), fontsize = 20)
     ax.set_aspect('equal', adjustable='box')
-    plt.ylim([-0.001,0.0011])
+    # plt.ylim([-0.001,0.0011])
 
 
     ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
@@ -157,5 +161,12 @@ def pca(data):
 
 
 if __name__ == '__main__':
-    pca('files/ad files/peaktablePOSout_POS_noid_more_puring_mean_full.xlsx')
+    mode = 'pos'
+    if mode == 'both':
+        filepath = 'files/ad files/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
+    elif mode == 'pos':
+        filepath = 'files/ad files/peaktablePOSout_POS_noid_replace_mean_full.xlsx'
+    elif mode == 'neg':
+        filepath = 'files/ad files/peaktableNEGout_NEG_noid_replace_mean_full.xlsx'
+    pca(filepath,mode)
 
