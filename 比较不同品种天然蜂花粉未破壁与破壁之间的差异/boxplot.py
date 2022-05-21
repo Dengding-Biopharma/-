@@ -180,7 +180,7 @@ if __name__ == '__main__':
     keywords5 = ['GCH_WX_','GCH_WXPB_']
     # 研究单个样本破壁与未破壁的变化差异
     keywords6 = ['WX_','WXPB_']
-    keywords = keywords1
+    keywords = keywords6
 
     boxplot(filename,mode,keywords)
 

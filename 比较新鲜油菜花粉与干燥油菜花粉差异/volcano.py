@@ -79,7 +79,7 @@ def volcanoPlot(filename,mode):
     # df = analys.get_data('volcano').data
     # print(type(df))
 
-    visuz.GeneExpression.volcano(df=df,lfc='log2FC',pv='p-value',show=True,lfc_thr=(0,0),ar=0,plotlegend=True)
+    visuz.gene_exp.volcano(df=df,lfc='log2FC',pv='p-value',show=True,lfc_thr=(0,0),ar=0,plotlegend=True)
 
 
 
