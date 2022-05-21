@@ -4,22 +4,24 @@ from scipy.stats import ttest_ind
 from bioinfokit import visuz
 
 
-def volcanoPlot(data):
-    data = pd.read_excel(data)
-    print(data)
-    targets = data.columns.values[1:]
+def volcanoPlot(filename,mode):
+    data = pd.read_excel(filename)
+    targets = data.columns.values[2:]
 
     for i in range(len(targets)):
         if 'XYCH_WX_' not in targets[i] and 'GYCH_WX_' not in targets[i]:
             del data[targets[i]]
-    targets = data.columns.values[1:]
+    targets = data.columns.values[2:]
     print(targets)
 
-    print(targets)
+    data = data.dropna().reset_index(drop=True)
+    print('dataframe shape after drop rows that have NA value: ({} metabolites, {} samples)'.format(data.shape[0],
+                                                                                                    data.shape[1] - 2))
 
     saved_label = data['dataMatrix'].values
     print(saved_label)
     del data['dataMatrix']
+    del data['smile']
     print(data)
 
     data_impute = data.values
@@ -77,9 +79,18 @@ def volcanoPlot(data):
     # df = analys.get_data('volcano').data
     # print(type(df))
 
-    visuz.gene_exp.volcano(df=df,lfc='log2FC',pv='p-value',show=True,lfc_thr=(0,0),ar=0,plotlegend=True)
+    visuz.GeneExpression.volcano(df=df,lfc='log2FC',pv='p-value',show=True,lfc_thr=(0,0),ar=0,plotlegend=True)
 
 
 
 if __name__ == '__main__':
-    volcanoPlot('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace_puring.xlsx')
+    mode = 'POS'
+    if mode == "BOTH":
+        filename = '../files/pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
+    elif mode == 'POS':
+        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx'
+    elif mode == 'NEG':
+        filename = '../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx'
+
+
+    volcanoPlot(filename,mode)
