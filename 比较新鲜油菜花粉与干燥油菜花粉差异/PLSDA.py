@@ -1,8 +1,12 @@
 import math
 import random
+
 import matplotlib
-# matplotlib.rc('font',family='Microsoft YaHei')
-matplotlib.rc('font',family='Arial Unicode MS')
+import platform
+if platform.system() == 'Windows':
+    matplotlib.rc('font', family='Microsoft YaHei')
+else:
+    matplotlib.rc('font',family='Arial Unicode MS')
 import matplotlib.pyplot as plt
 
 import numpy as np

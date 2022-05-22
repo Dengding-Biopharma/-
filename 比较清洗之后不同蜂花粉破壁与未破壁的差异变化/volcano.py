@@ -1,53 +1,50 @@
 import numpy as np
 import pandas as pd
-from scipy.stats import ttest_ind
+from scipy.stats import ttest_ind, mannwhitneyu
 from bioinfokit import visuz
 
 
-def volcanoPlot(data):
-    data = pd.read_excel(data)
-    print(data)
-    targets = data.columns.values[1:]
+def volcanoPlot(filename,mode,keywords):
+    data = pd.read_excel(filename)
 
+    targets = data.columns.values[2:]
     for i in range(len(targets)):
         if 'QX' not in targets[i]:
             del data[targets[i]]
-    targets = data.columns.values[1:]
+    targets = data.columns.values[2:]
     for i in range(len(targets)):
         if 'QXRY' in targets[i]:
             del data[targets[i]]
-    targets = data.columns.values[1:]
+    targets = data.columns.values[2:]
+
+    keywords = keywords
+
     print(targets)
-    print(len(targets))
+
+    for i in range(len(targets)):
+        if keywords[0] not in targets[i] and keywords[1] not in targets[i]:
+            del data[targets[i]]
+
+    data = data.dropna().reset_index(drop=True)
+    print('dataframe shape after drop rows that have NA value: ({} metabolites, {} samples)'.format(data.shape[0],
+                                                                                                    data.shape[1] - 2))
 
     saved_label = data['dataMatrix'].values
-    print(saved_label)
     del data['dataMatrix']
-    print(data)
+    del data['smile']
+    targets = data.columns.values
 
     data_impute = data.values
     for i in range(data_impute.shape[1]):
         data_impute[:, i] = (data_impute[:, i] / np.sum(data_impute[:, i])) * 100
 
     normalized_data_impute = data_impute
-    print(normalized_data_impute)
 
-    # 分别比较样本1和6、
-    keywords1 = ['XYCH_QX_', 'XYCH_QXPB_']
-    # 样本2和7、
-    keywords2 = ['GYCH_QX_', 'GYCH_QXPB_']
-    # 样本3和8、
-    keywords3 = ['GWBZ_QX_', 'GWBZ_QXPB_']
-    # 样本4和9、
-    keywords4 = ['GHH_QX_', 'GHH_QXPB_']
-    # 样本5和10
-    keywords5 = ['GCH_QX_', 'GCH_QXPB_']
-    # 研究单个样本破壁与未破壁的变化差异
-    keywords6 = ['QX_', 'QXPB_']
+
     x_index = []
     y_index = []
-    print(targets)
-    keywords = keywords6
+
+
     for i in range(len(targets)):
         if keywords[0] in targets[i]:
             x_index.append(i)
@@ -73,7 +70,7 @@ def volcanoPlot(data):
     p_list = []
     log2fc_list = []
     for i in range(normalized_data_impute_x.shape[1]):
-        t, p = ttest_ind(normalized_data_impute_x[:, i:i + 1], normalized_data_impute_y[:, i:i + 1], equal_var=True)
+        t,p = mannwhitneyu(normalized_data_impute_x[:,i:i+1],normalized_data_impute_y[:,i:i+1],alternative='two-sided')
         log2fc = np.log2(np.mean(normalized_data_impute_x[:, i:i + 1])/np.mean(normalized_data_impute_y[:, i:i + 1]))
         log2fc_list.append(log2fc)
         p_list.append(p[0])
@@ -102,4 +99,26 @@ def volcanoPlot(data):
 
 
 if __name__ == '__main__':
-    volcanoPlot('../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace_puring.xlsx')
+    mode = 'BOTH'
+    if mode == "BOTH":
+        filename = '../files/pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
+    elif mode == 'POS':
+        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx'
+    elif mode == 'NEG':
+        filename = '../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx'
+
+    # 分别比较样本1和6、
+    keywords1 = ['XYCH_QX_','XYCH_QXPB_']
+    # 样本2和7、
+    keywords2 = ['GYCH_QX_','GYCH_QXPB_']
+    # 样本3和8、
+    keywords3 = ['GWBZ_QX_','GWBZ_QXPB_']
+    # 样本4和9、
+    keywords4 = ['GHH_QX_','GHH_QXPB_']
+    # 样本5和10
+    keywords5 = ['GCH_QX_','GCH_QXPB_']
+    # 研究单个样本破壁与未破壁的变化差异
+    keywords6 = ['QX_','QXPB_']
+    keywords = keywords5
+
+    volcanoPlot(filename,mode,keywords)

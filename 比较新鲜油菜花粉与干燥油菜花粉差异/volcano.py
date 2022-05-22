@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from scipy.stats import ttest_ind
+from scipy.stats import ttest_ind, mannwhitneyu
 from bioinfokit import visuz
 
 
@@ -55,7 +55,7 @@ def volcanoPlot(filename,mode):
     p_list = []
     log2fc_list = []
     for i in range(normalized_data_impute_x.shape[1]):
-        t, p = ttest_ind(normalized_data_impute_x[:, i:i + 1], normalized_data_impute_y[:, i:i + 1], equal_var=True)
+        t,p = mannwhitneyu(normalized_data_impute_x[:,i:i+1],normalized_data_impute_y[:,i:i+1],alternative='two-sided')
         log2fc = np.log2(np.mean(normalized_data_impute_x[:, i:i + 1])/np.mean(normalized_data_impute_y[:, i:i + 1]))
         log2fc_list.append(log2fc)
         p_list.append(p[0])
