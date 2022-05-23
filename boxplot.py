@@ -54,11 +54,6 @@ def boxplot(data,mode):
     for p in p_list:
         if p < 0.05:
             count += 1
-    # for i in range(len(df)):
-    #     if df['name'][i] == 'DG(20:4_18:0)':
-    #         top_k_index.remove(df['index'][i])
-    #     if df['name'][
-    #         i] == "4-((11aS)-1,3-dioxo-5-(p-tolyl)-11,11a-dihydro-1H-imidazo[1',5':1,6]pyrido[3,4-b]indol-2(3H,5H,6H)-yl)-N-(4-phenylbutan-2-yl)benzamide [M+H]+":
     print('{} metabolites have significant difference after t-test!!!!!!'.format(count))
     while True:
         top_k_index = p_list.argsort()[::-1][len(p_list) - top_k:]
