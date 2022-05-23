@@ -123,7 +123,14 @@ def find_significant(filename,mode,keywords):
 
 if __name__ == '__main__':
     modes = ['BOTH','POS','NEG']
-    keywords_list = [['XYCH_WX_', 'XYCH_QX_', 'XYCH_QXRY_'],['GYCH_WX_', 'GYCH_QX_', 'GYCH_QXRY_'],['GWBZ_WX_', 'GWBZ_QX_', 'GWBZ_QXRY_'],['GHH_WX_', 'GHH_QX_', 'GHH_QXRY_'],['GCH_WX_', 'GCH_QX_', 'GCH_QXRY_'],['WX_', 'QX_', 'QXRY']]
+    keywords_list = [
+        ['XYCH_WX_', 'XYCH_QX_', 'XYCH_QXRY_'],
+        ['GYCH_WX_', 'GYCH_QX_', 'GYCH_QXRY_'],
+        ['GWBZ_WX_', 'GWBZ_QX_', 'GWBZ_QXRY_'],
+        ['GHH_WX_', 'GHH_QX_', 'GHH_QXRY_'],
+        ['GCH_WX_', 'GCH_QX_', 'GCH_QXRY_'],
+        ['WX_', 'QX_', 'QXRY']
+    ]
     for mode in modes:
         if mode == "BOTH":
             filename = '../files/pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'

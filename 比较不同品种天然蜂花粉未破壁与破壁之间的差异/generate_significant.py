@@ -110,7 +110,8 @@ def find_significant(filename,mode,keywords):
 
 if __name__ == '__main__':
     modes = ['BOTH','POS','NEG']
-    keywords_list = [['XYCH_WX_','XYCH_WXPB_'],
+    keywords_list = [
+                    ['XYCH_WX_','XYCH_WXPB_'],
                      ['GYCH_WX_','GYCH_WXPB_'],
                      ['GWBZ_WX_','GWBZ_WXPB_'],
                      ['GHH_WX_','GHH_WXPB_'],
