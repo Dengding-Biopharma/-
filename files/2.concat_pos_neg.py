@@ -20,16 +20,6 @@ for i in range(len(neg_columns)):
         pos_data.insert(i, neg_columns[i], np.nan)
 
 data = pd.concat([pos_data, neg_data], ignore_index=True)
-targets = data.columns.values[2:]
-
-for i in range(len(data)):
-    temp = []
-    for j in targets:
-        temp.append(data[j][i])
-    for k in range(len(temp)):
-        temp[k] = math.isnan(temp[k])
-    if temp.count(True) > len(temp) / 2:
-        data = data.drop(i)
 
 print(data)
 

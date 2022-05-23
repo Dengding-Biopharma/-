@@ -234,6 +234,12 @@ def preprocessing(peak_filename,database_name,exp_filename,hmdb_first=False,matc
 
     peak_file = peak_file.reset_index(drop=True)
     print(peak_file)
+
+    targets = peak_file.columns.values[2:]
+    for i in range(len(targets)):
+        if '0316' in targets[i]:
+            del peak_file[targets[i]]
+
     targets = peak_file.columns.values[2:]
 
     for i in range(len(peak_file)):
@@ -245,9 +251,6 @@ def preprocessing(peak_filename,database_name,exp_filename,hmdb_first=False,matc
         if temp.count(True) > len(temp) / 2:
             peak_file = peak_file.drop(i)
 
-    for i in range(len(targets)):
-        if '0316' in targets[i]:
-            del peak_file[targets[i]]
 
     peak_file.to_excel(peak_filename[:-5]+'_replace.xlsx',index=False,na_rep=np.nan)
     print(peak_file)

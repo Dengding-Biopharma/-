@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-data = pd.read_excel('ad files/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx')
+data = pd.read_excel('ad files/peaktableNEGout_NEG_noid_replace_mean_full.xlsx')
 
 
 df = pd.DataFrame()
@@ -19,7 +19,7 @@ for i, row in data.iterrows():
     temp = pd.DataFrame(columns=[row.values[0]],data=row.values[2:])
     df = pd.concat([df,temp],axis=1)
 
-df.to_excel('transpose_peaktable_both_mean_full.xlsx',index=False,na_rep=np.nan)
+df.to_excel('transpose_peaktable_neg_mean_full.xlsx',index=False,na_rep=np.nan)
 
 
 

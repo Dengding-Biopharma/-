@@ -5,7 +5,7 @@ from rdkit import Chem
 import pandas as pd
 
 table = pd.read_csv('hmdb_metabolites.csv', sep='\t')
-filename = 'BOTH_significant.xlsx'
+filename = 'NEG_significant.xlsx'
 finalDF = pd.read_excel(filename)
 
 

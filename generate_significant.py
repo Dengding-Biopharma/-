@@ -63,7 +63,6 @@ def find_significant(data,mode):
     df['P'] = p_list[top_k_index]
     df['name'] = saved_label[top_k_index]
     df['smile'] = saved_smile[top_k_index]
-    df['index'] = top_k_index
     df = deleteDep(df)
     df = df.sort_values(by='P', ascending=True)
     if mode == 'both':
@@ -75,7 +74,7 @@ def find_significant(data,mode):
     df.to_excel(filename,index=False)
 
 if __name__ == '__main__':
-    mode = 'neg'
+    mode = 'both'
     if mode == 'both':
         filepath = 'files/ad files/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
     elif mode == 'pos':
