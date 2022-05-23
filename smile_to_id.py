@@ -5,7 +5,8 @@ from rdkit import Chem
 import pandas as pd
 
 table = pd.read_csv('hmdb_metabolites.csv', sep='\t')
-finalDF = pd.read_excel('BOTH_significant.xlsx')
+filename = 'BOTH_significant.xlsx'
+finalDF = pd.read_excel(filename)
 
 
 finalDF['accession'] = np.nan
@@ -21,7 +22,7 @@ for k in range(len(finalDF)):
         inchikey = Chem.MolToInchiKey(m)
     except:
         inchikey = None
-    # print(name,inchiKeys)
+
     for i in range(len(table['name'].values)):
         if name == table['name'].values[i][2:-1]:
             print('match name!!!!!!!',table['name'].values[i][2:-1])
@@ -42,4 +43,4 @@ print(len(ids))
 for id in ids:
     print(id)
 print(finalDF)
-finalDF.to_excel('both_hmdb_id_smile_inchikey.xlsx',index=False,na_rep=np.nan)
+finalDF.to_excel('{}_hmdbId_smile_inchikey.xlsx'.format(filename[:-5]),index=False,na_rep=np.nan)
