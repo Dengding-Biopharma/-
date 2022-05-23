@@ -1,5 +1,3 @@
-import math
-import random
 import matplotlib
 import platform
 if platform.system() == 'Windows':
@@ -9,14 +7,9 @@ else:
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sklearn.preprocessing
-from matplotlib.patches import Ellipse
-from scipy.stats import ttest_ind, mannwhitneyu
-from sklearn.decomposition import PCA
-from sklearn.impute import SimpleImputer
-from sklearn.cluster import KMeans
-from skimage.measure import EllipseModel
-from delete import deleteDep
+from scipy.stats import mannwhitneyu
+
+
 def boxplot(filename,mode,keywords):
     data = pd.read_excel(filename)
     targets = data.columns.values[2:]
@@ -95,7 +88,7 @@ def boxplot(filename,mode,keywords):
         print('there are no significant difference between metabolites on these two groups {} by mann whitney u test'.format(keywords))
     else:
         print(top_k_index)
-
+        quit()
         X = np.array(normalized_data_impute_x)
         Y = np.array(normalized_data_impute_y)
 
@@ -165,7 +158,7 @@ def boxplot(filename,mode,keywords):
         # plt.savefig('figures/pos_plots/干燥油菜花粉.png')
 
 if __name__ == '__main__':
-    mode = 'BOTH'
+    mode = 'POS'
     if mode == "BOTH":
         filename = '../files/pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
     elif mode == 'POS':
@@ -184,7 +177,7 @@ if __name__ == '__main__':
     keywords5 = ['GCH_WX_','GCH_WXPB_']
     # 研究单个样本破壁与未破壁的变化差异
     keywords6 = ['WX_','WXPB_']
-    keywords = keywords1
+    keywords = keywords6
 
     boxplot(filename,mode,keywords)
 

@@ -20,10 +20,16 @@ from delete import deleteDep
 
 def find_significant(filename,mode,keywords):
     data = pd.read_excel(filename)
+
     targets = data.columns.values[2:]
     for i in range(len(targets)):
-        if 'WX' not in targets[i]:
+        if 'QX' not in targets[i]:
             del data[targets[i]]
+    targets = data.columns.values[2:]
+    for i in range(len(targets)):
+        if 'QXRY' in targets[i]:
+            del data[targets[i]]
+    targets = data.columns.values[2:]
     targets = data.columns.values[2:]
 
     keywords = keywords
@@ -110,12 +116,7 @@ def find_significant(filename,mode,keywords):
 
 if __name__ == '__main__':
     modes = ['BOTH','POS','NEG']
-    keywords_list = [['XYCH_WX_','XYCH_WXPB_'],
-                     ['GYCH_WX_','GYCH_WXPB_'],
-                     ['GWBZ_WX_','GWBZ_WXPB_'],
-                     ['GHH_WX_','GHH_WXPB_'],
-                     ['GCH_WX_','GCH_WXPB_'],
-                     ['WX_','WXPB_']]
+    keywords_list = [['XYCH_QX_','XYCH_QXPB_'],['GYCH_QX_','GYCH_QXPB_'],['GWBZ_QX_','GWBZ_QXPB_'],['GHH_QX_','GHH_QXPB_'],['GCH_QX_','GCH_QXPB_'],['QX_','QXPB_']]
     for mode in modes:
         if mode == "BOTH":
             filename = '../files/pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
