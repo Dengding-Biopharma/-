@@ -74,7 +74,7 @@ def find_significant(data,mode):
     df.to_excel(filename,index=False)
 
 if __name__ == '__main__':
-    mode = 'both'
+    mode = 'pos'
     if mode == 'both':
         filepath = 'files/ad files/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
     elif mode == 'pos':

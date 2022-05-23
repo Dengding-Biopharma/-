@@ -15,7 +15,7 @@ from sklearn.preprocessing import StandardScaler
 from matplotlib.pyplot import figure
 def pca(data,mode):
     data = pd.read_excel(data)
-    # data = pd.read_excel('files/ad files/peaktableNEGout_NEG_noid_replace.xlsx')
+
 
     targets = data.columns.values[2:]  # 保存病人名称
 
@@ -113,18 +113,13 @@ def pca(data,mode):
 
 
 
-
-
-    targets = list(targets[0])
-
-
     fig = plt.figure(figsize = (6,6))
     ax = fig.add_subplot(1,1,1)
     ax.set_xlabel('Principal Component 1 {}%'.format(round(pca.explained_variance_ratio_[0]*100,2)), fontsize = 15)
     ax.set_ylabel('Principal Component 2 {}%'.format(round(pca.explained_variance_ratio_[1]*100,2)), fontsize = 15)
     ax.set_title('2 component PCA ({} mode)'.format(mode), fontsize = 20)
     ax.set_aspect('equal', adjustable='box')
-    # plt.ylim([-0.001,0.0011])
+    plt.ylim([-0.001,0.0011])
 
 
     ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,

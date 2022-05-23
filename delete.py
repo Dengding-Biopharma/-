@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 def deleteDep(df):
     data = df
-    print(data)
+
 
     dup_row = data.duplicated(subset=['name'],keep=False)
 
@@ -12,8 +12,6 @@ def deleteDep(df):
         if dup_row[i] == True:
             data = data.drop(i)
     dup_df=dup_df.sort_values(by='name')
-
-
 
     dup_df = dup_df.reset_index(drop=True)
 
@@ -28,7 +26,6 @@ def deleteDep(df):
             dup_df = dup_df.drop(i)
 
     finalDF = pd.concat([dup_df,data])
-    print(finalDF)
 
     return finalDF
 

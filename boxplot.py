@@ -44,7 +44,7 @@ def boxplot(data,mode):
         data_impute_hc.append(data_impute[:, index].T)
     data_impute_hc = np.array(data_impute_hc)
 
-    top_k = 22  # top几，可调
+    top_k = 20  # top几，可调
     p_list = []
     for i in range(data_impute_ad.shape[1]):
         t, p = ttest_ind(data_impute_ad[:, i:i + 1], data_impute_hc[:, i:i + 1], equal_var=True)
@@ -54,28 +54,44 @@ def boxplot(data,mode):
     for p in p_list:
         if p < 0.05:
             count += 1
-    top_k_index = p_list.argsort()[::-1][len(p_list) - top_k:]
-    print('{} metabolites have significant difference after t-test!!!!!!')
-    # top_k_index = p_list.argsort()[::-1][:]
-
-    # for special treatment only!!!!
-    df = pd.DataFrame()
-    df['P'] = p_list[top_k_index]
-    df['name'] = saved_label[top_k_index]
-    df['index'] = top_k_index
-    df = deleteDep(df)
-    df = df.sort_values(by='P', ascending=True)
-    top_k_index = list(df['index'].values)
     # for i in range(len(df)):
     #     if df['name'][i] == 'DG(20:4_18:0)':
     #         top_k_index.remove(df['index'][i])
     #     if df['name'][
     #         i] == "4-((11aS)-1,3-dioxo-5-(p-tolyl)-11,11a-dihydro-1H-imidazo[1',5':1,6]pyrido[3,4-b]indol-2(3H,5H,6H)-yl)-N-(4-phenylbutan-2-yl)benzamide [M+H]+":
-    #         top_k_index.remove(df['index'][i])
-    print('The top 20 indexs are: ',top_k_index)
-
+    print('{} metabolites have significant difference after t-test!!!!!!'.format(count))
+    while True:
+        top_k_index = p_list.argsort()[::-1][len(p_list) - top_k:]
+        print('The top 20 indexs are (原始): ', top_k_index)
+        # for special treatment only!!!!
+        # 要去掉什么名字的小分子
+        delete_keywords = [
+            'DG(20:4_18:0)',
+            "4-((11aS)-1,3-dioxo-5-(p-tolyl)-11,11a-dihydro-1H-imidazo[1',5':1,6]pyrido[3,4-b]indol-2(3H,5H,6H)-yl)-N-(4-phenylbutan-2-yl)benzamide [M+H]+",
+        ]
+        # 要更改什么小分子的名字
+        modified_keywords = []
+        df = pd.DataFrame()
+        df['P'] = p_list[top_k_index]
+        df['name'] = saved_label[top_k_index]
+        df['index'] = top_k_index
+        df = deleteDep(df)
+        df = df.sort_values(by='P', ascending=True)
+        df = df.reset_index(drop=True)
+        top_k_index = list(df['index'].values)
+        for i in range(len(df)):
+            if df['name'][i] in delete_keywords:
+                top_k_index.remove(df['index'][i])
+                print('去掉一个小分子')
+        print('The top 20 indexs are (去重后并且去掉特殊小分子): ',top_k_index)
+        if len(top_k_index) == 20:
+            print('找到20个小分子,选取了top{}'.format(top_k))
+            break
+        else:
+            top_k+=1
+            print('还没到20个小分子被选出来！！！')
+            print('*'*50)
     # 做完了数值分析，开始归一化画图
-
     normalized_data_impute = data_impute
 
     # 归一化之后还要分别取一次组别数据，用来画图
@@ -106,19 +122,6 @@ def boxplot(data,mode):
     for i in range(len(X_diff_ad)):
         data_ad.append(X_diff_ad[i])
         labels += [saved_label[top_k_index[i]], '']
-
-    for i in range(len(labels)):
-        if labels[i] == '(2R,3S)-3-(6-Amino-9H-purin-9-yl)nonan-2-ol':
-            labels[i] = '(2R,3S)-EHNA'
-        if labels[i] == '12-[Methyl-(4-nitro-2,1,3-benzoxadiazol-7-yl)amino]octadecanoic acid':
-            labels[i] = 'NBD-stearic acid'
-        if labels[i] == 'N-((2,2-Dimethyl-2,3-dihydro-benzofuran-7-yloxy)ethyl)-3-(cyclopent-1-enyl)benzylamine':
-            labels[i] = 'DDEC-benzylamine'
-        if labels[i] == '2-Oxo-4-methylthiobutanoic acid':
-            labels[i] = '2-Oxomethionine'
-        if labels[
-            i] == 'NCGC00385952-01_C15H26O_1,7-Dimethyl-7-(4-methyl-3-penten-1-yl)bicyclo[2.2.1]heptan-2-ol M-H2O+H':
-            labels[i] = 'NCGC00385952-01'
 
     for i in range(len(labels)):
         labels[i] = '\n\n' + labels[i]

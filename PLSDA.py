@@ -151,6 +151,7 @@ def plsda(data,mode):
     ax.set_title('PLS-DA ({} mode)'.format(mode), fontsize=20)
     ax.set_aspect('equal')
     # plt.xlim([-0.00085,0.0009])
+    plt.xlim([-0.0008, 0.0008])
 
     ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
                             edgecolor='r', fc='None', lw=2)
@@ -183,7 +184,7 @@ def plsda(data,mode):
 
 
 if __name__ == '__main__':
-    mode = 'pos'
+    mode = 'both'
     if mode == 'both':
         filepath = 'files/ad files/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
     elif mode == 'pos':
