@@ -39,6 +39,7 @@ def boxplot(filename,mode,keywords):
                                                                                                     data.shape[1] - 2))
 
     saved_label = data['dataMatrix'].values
+    saved_smile = data['smile'].values
     del data['dataMatrix']
     del data['smile']
     targets = data.columns.values
@@ -92,8 +93,21 @@ def boxplot(filename,mode,keywords):
 
     if len(top_k_index) == 0:
         print('there are no significant difference between metabolites on these two groups {} by mann whitney u test'.format(keywords))
+        df = pd.DataFrame()
+        df['P'] = p_list[top_k_index]
+        df['name'] = saved_smile[top_k_index]
+        df['smile'] = saved_label[top_k_index]
+        df = df.sort_values(by='P', ascending=True)
+        df.to_excel('{}vs{}_{}_significant.xlsx'.format(keywords[0], keywords[1], mode))
     else:
         print(top_k_index)
+        df = pd.DataFrame()
+        df['P'] = p_list[top_k_index]
+        df['name'] = saved_smile[top_k_index]
+        df['smile'] = saved_label[top_k_index]
+        df = df.sort_values(by='P',ascending=True)
+        df.to_excel('{}_vs_{}_{}_significant.xlsx'.format(keywords[0][:-1],keywords[1][:-1],mode),index=False,na_rep=np.nan)
+        quit()
 
         X = np.array(normalized_data_impute_x)
         Y = np.array(normalized_data_impute_y)
