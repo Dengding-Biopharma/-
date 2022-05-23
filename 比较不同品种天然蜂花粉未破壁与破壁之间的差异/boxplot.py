@@ -16,6 +16,7 @@ from sklearn.decomposition import PCA
 from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
+from delete import deleteDep
 def boxplot(filename,mode,keywords):
     data = pd.read_excel(filename)
     targets = data.columns.values[2:]
@@ -90,24 +91,10 @@ def boxplot(filename,mode,keywords):
             count +=1
 
     top_k_index = p_list.argsort()[::-1][len(p_list)-count:]
-
     if len(top_k_index) == 0:
         print('there are no significant difference between metabolites on these two groups {} by mann whitney u test'.format(keywords))
-        df = pd.DataFrame()
-        df['P'] = p_list[top_k_index]
-        df['name'] = saved_smile[top_k_index]
-        df['smile'] = saved_label[top_k_index]
-        df = df.sort_values(by='P', ascending=True)
-        df.to_excel('{}vs{}_{}_significant.xlsx'.format(keywords[0], keywords[1], mode))
     else:
         print(top_k_index)
-        df = pd.DataFrame()
-        df['P'] = p_list[top_k_index]
-        df['name'] = saved_smile[top_k_index]
-        df['smile'] = saved_label[top_k_index]
-        df = df.sort_values(by='P',ascending=True)
-        df.to_excel('{}_vs_{}_{}_significant.xlsx'.format(keywords[0][:-1],keywords[1][:-1],mode),index=False,na_rep=np.nan)
-        quit()
 
         X = np.array(normalized_data_impute_x)
         Y = np.array(normalized_data_impute_y)
@@ -197,7 +184,7 @@ if __name__ == '__main__':
     keywords5 = ['GCH_WX_','GCH_WXPB_']
     # 研究单个样本破壁与未破壁的变化差异
     keywords6 = ['WX_','WXPB_']
-    keywords = keywords6
+    keywords = keywords1
 
     boxplot(filename,mode,keywords)
 
