@@ -49,10 +49,6 @@ def pca(data,mode):
     print(ad_index)
     print(hc_index)
 
-
-    for i in range(data_impute.shape[1]):
-        data_impute[:, i] = data_impute[:, i]/np.sum(data_impute[:,i])
-
     # PCA
     pca = PCA(n_components=2)
     pca.fit(data_impute.T)
@@ -119,8 +115,8 @@ def pca(data,mode):
     ax.set_ylabel('Principal Component 2 {}%'.format(round(pca.explained_variance_ratio_[1]*100,2)), fontsize = 15)
     ax.set_title('2 component PCA ({} mode)'.format(mode), fontsize = 20)
     ax.set_aspect('equal', adjustable='box')
-    # plt.ylim([-0.001,0.0011])
-    # plt.xlim(([-0.001,0.001]))
+    plt.ylim([-0.0008,0.001])
+    plt.xlim(([-0.0005,0.0015]))
 
 
     # ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
@@ -157,7 +153,7 @@ def pca(data,mode):
 
 
 if __name__ == '__main__':
-    mode = 'neg'
+    mode = 'pos'
     if mode == 'both':
         filepath = 'files/ad files/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
     elif mode == 'pos':

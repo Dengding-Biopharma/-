@@ -151,14 +151,14 @@ def plsda(data,mode):
     ax.set_title('PLS-DA ({} mode)'.format(mode), fontsize=20)
     ax.set_aspect('equal')
     # plt.xlim([-0.00085,0.0009])
-    plt.xlim([-0.0008, 0.0008])
+    # plt.xlim([-0.003, 0.003])
 
-    ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
-                            edgecolor='r', fc='None', lw=2)
-    ax.add_patch(ellipse_ad)
-    ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
-                            edgecolor='b', fc='None', lw=2)
-    ax.add_patch(ellipse_hc)
+    # ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
+    #                         edgecolor='r', fc='None', lw=2)
+    # ax.add_patch(ellipse_ad)
+    # ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
+    #                         edgecolor='b', fc='None', lw=2)
+    # ax.add_patch(ellipse_hc)
 
     groups = ['AD_Disease_group', 'HC_Control_group']
 
