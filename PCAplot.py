@@ -67,7 +67,7 @@ def pca(data,mode):
     group0 =[]
     outlier_index = []
     for i in range(len(y_pred)):
-        if y_pred[i] == 2:
+        if y_pred[i] == 0:
             group0.append(X_new[i])
             outlier_index.append(i)
 
@@ -119,15 +119,16 @@ def pca(data,mode):
     ax.set_ylabel('Principal Component 2 {}%'.format(round(pca.explained_variance_ratio_[1]*100,2)), fontsize = 15)
     ax.set_title('2 component PCA ({} mode)'.format(mode), fontsize = 20)
     ax.set_aspect('equal', adjustable='box')
-    plt.ylim([-0.001,0.0011])
+    # plt.ylim([-0.001,0.0011])
+    # plt.xlim(([-0.001,0.001]))
 
 
-    ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
-                            edgecolor='r', fc='None', lw=2)
-    ax.add_patch(ellipse_ad)
-    ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
-                            edgecolor='b', fc='None', lw=2)
-    ax.add_patch(ellipse_hc)
+    # ellipse_ad = Ellipse((ad_x_mean, ad_y_mean), 2*ad_a, 2*ad_b,ad_theta,
+    #                         edgecolor='r', fc='None', lw=2)
+    # ax.add_patch(ellipse_ad)
+    # ellipse_hc = Ellipse((hc_x_mean, hc_y_mean), 2*hc_a, 2*hc_b,hc_theta,
+    #                         edgecolor='b', fc='None', lw=2)
+    # ax.add_patch(ellipse_hc)
 
 
     groups=['AD_Disease_group','HC_Control_group']
@@ -156,7 +157,7 @@ def pca(data,mode):
 
 
 if __name__ == '__main__':
-    mode = 'pos'
+    mode = 'neg'
     if mode == 'both':
         filepath = 'files/ad files/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
     elif mode == 'pos':

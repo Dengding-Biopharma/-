@@ -63,9 +63,15 @@ def boxplot(data,mode):
         delete_keywords = [
             'DG(20:4_18:0)',
             "4-((11aS)-1,3-dioxo-5-(p-tolyl)-11,11a-dihydro-1H-imidazo[1',5':1,6]pyrido[3,4-b]indol-2(3H,5H,6H)-yl)-N-(4-phenylbutan-2-yl)benzamide [M+H]+",
+            '2-((7-acetamido-1,2,3-trimethoxy-9-oxo-5,6,7,9-tetrahydrobenzo[a]heptalen-10-yl)amino)-N-(3-acetamidophenyl)-3-methylpentanamide [M+H]+',
+            '(2-{[3-(hexadecanoyloxy)-2-[octadec-9-enoyloxy]propyl phosphono]oxy}ethyl)trimethylazanium',
+            '(3S,4S,4aS,6R,6aS,6bS,7S,8R,8aR,9S,9aS,12S,15aS,15bS,16aR,16bS)-9,12,16b-trimethyldocosahydro-1H-4,16a-epoxybenzo[4,5]indeno[1,2-h]pyrido[1,2-b]',
+            "4,4'-((9S,9'S,10R,10'R,17S,17'S)-((1E,1'E)-(butane-1,4-diylbis(azanylylidene))bis(methanylylidene))bis(3,5,14-trihydroxy-13-methylhexadecahydro-1H-cyclopenta[a]phenanthrene-17,10-diyl))bis(furan-2(5H)-one) [M+H]+",
+            '4-((9S,13R)-10-((E)-((2,2-dimethoxyethyl)imino)methyl)-3,5,14-trihydroxy-13-methylhexadecahydro-1H-cyclopenta[a]phenanthren-17-yl)furan-2(5H)-one [M+Na]+',
+            '3,6-Ditert-butyl-1,2-benzenediol',
+            '(3S,4S,4aS,6R,6aS,6bS,7S,8R,8aR,9S,9aS,12S,15aS,15bS,16aR,16bS)-9,12,16b-trimethyldocosahydro-1H-4,16a-epoxybenzo[4,5]indeno[1,2-h]pyrido[1,2-b]isoquinoline-3,4,6,6b,7,8,9-heptaol [M+H]+'
         ]
         # 要更改什么小分子的名字
-        modified_keywords = []
         df = pd.DataFrame()
         df['P'] = p_list[top_k_index]
         df['name'] = saved_label[top_k_index]
@@ -114,9 +120,47 @@ def boxplot(data,mode):
     data_ad = []
     labels = []
 
+    before_keywords = [
+        'Cyclopentasiloxane, decamethyl- from NIST14',
+        'NCGC00385952-01_C15H26O_1,7-Dimethyl-7-(4-methyl-3-penten-1-yl)bicyclo[2.2.1]heptan-2-ol M-H2O+H',
+        'Arjungenin [M+H]+',
+        '2-hydroxynaphthalene-1,4-dione [M+Na]+',
+        "(S)-6-Acetamido-2-(2-((S)-2-acetamido-4-methylpentanamido)acetamido)-N-(4-methyl-2-oxo-2H-chromen-7-yl)hexanamide",
+        'gomisin A [M+H]+',
+        'Wedelolactone [M+H]+',
+        'Corynoxeine [M+Na]+',
+        '(2-aminoethoxy)[2-[icosa-5.8.11.14-tetraenoyloxy]-3-[octadec-1-en-1-yloxy]propoxy]phosphinic acid',
+        'Icaritin [M+Na]+',
+        'Liquidambaric acid [M+H]+',
+        'deltaline [M+Na]+',
+        'Lutein [M+Na]+'
+                       ]
+    after_keywords = [
+        'Decamethylcyclopentasiloxane',
+        'NCGC00385952-01',
+        'Arjungenin',
+        'Lawsone',
+        'HDAC inhibitor',
+        'gomisin A',
+        'Wedelolactone',
+        'Corynoxeine',
+        'PE(P-18:0/20:4)',
+        'Icaritin',
+        'Liquidambaric acid',
+        'deltaline',
+        'Lutein'
+    ]
+    modified = False
     for i in range(len(X_diff_ad)):
         data_ad.append(X_diff_ad[i])
-        labels += [saved_label[top_k_index[i]], '']
+        for k in range(len(before_keywords)):
+            if saved_label[top_k_index[i]] == before_keywords[k]:
+                labels += [after_keywords[k],'']
+                modified = True
+                break
+        if not modified:
+            labels += [saved_label[top_k_index[i]], '']
+        modified = False
 
     for i in range(len(labels)):
         labels[i] = '\n\n' + labels[i]
@@ -142,7 +186,6 @@ def boxplot(data,mode):
     print(data_hc.shape)
 
     data = []
-    color_list = []
     for i in range(data_ad.shape[0]):
         data.append(data_ad[i, :])
         data.append(data_hc[i, :])
