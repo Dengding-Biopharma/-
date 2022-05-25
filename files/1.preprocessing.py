@@ -260,7 +260,15 @@ def preprocessing(peak_filename,database_name,exp_filename,hmdb_first=False,matc
             temp.append(i + 1)
             small_group_index.append(temp)
             break
-    print(small_group_index)
+
+    special_groups = []
+
+    for small_group in small_group_index:
+        for index in small_group:
+            a_column = peak_file[column_labels[index]]
+            if a_column.isnull().all():
+                special_groups.append(small_group)
+
 
     for i in range(len(peak_file)):
         for small_group in small_group_index:
@@ -270,11 +278,16 @@ def preprocessing(peak_filename,database_name,exp_filename,hmdb_first=False,matc
                 if np.isnan(num):
                     continue
                 temp.append(num)
-            mean = np.mean(temp)
-            for j in range(len(small_group)):
-                num = peak_file[column_labels[small_group[j]]][i]
-                if np.isnan(num):
-                    peak_file[column_labels[small_group[j]]][i] = mean
+            count = len(temp)
+            if count == 1 and small_group not in special_groups:
+                for j in range(len(small_group)):
+                    peak_file[column_labels[small_group[j]]][i] = np.nan
+            else:
+                mean = np.mean(temp)
+                for j in range(len(small_group)):
+                    num = peak_file[column_labels[small_group[j]]][i]
+                    if np.isnan(num):
+                        peak_file[column_labels[small_group[j]]][i] = mean
 
     print(peak_file)
     peak_file.to_excel(peak_filename[:-5]+'_replace_mean_full.xlsx',index=False,na_rep=np.nan)
@@ -283,16 +296,16 @@ def preprocessing(peak_filename,database_name,exp_filename,hmdb_first=False,matc
 
 if __name__ == '__main__':
     # pos files
-    # peak_filename = 'pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid.xlsx'
-    # database = 'pollen files/0325-pollen-Pos.xlsx'
-    # exp_filename = 'pollen files/results/process_output_quantid_pos_camera_noid/varsPOSout_pos_noid.xlsx'
-    # mode = 'pos'
+    peak_filename = 'pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_full_sample.xlsx'
+    database = 'pollen files/0325-pollen-Pos.xlsx'
+    exp_filename = 'pollen files/results/process_output_quantid_pos_camera_noid/varsPOSout_pos_noid.xlsx'
+    mode = 'pos'
 
     # neg files
-    peak_filename = 'pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid.xlsx'
-    database = 'pollen files/0325-pollen-Neg.xlsx'
-    exp_filename = 'pollen files/results/process_output_quantid_neg_camera_noid/varsNEGout_neg_noid.xlsx'
-    mode = 'neg'
+    # peak_filename = 'pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid.xlsx'
+    # database = 'pollen files/0325-pollen-Neg.xlsx'
+    # exp_filename = 'pollen files/results/process_output_quantid_neg_camera_noid/varsNEGout_neg_noid.xlsx'
+    # mode = 'neg'
 
     # static setting
     hmdb_filename = 'hmdb_metabolites.csv'
