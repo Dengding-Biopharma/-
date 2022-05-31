@@ -136,17 +136,18 @@ def plsda(filename,mode,keywords):
 
 
 
-    plt.legend(handles=[ax_XYCH_WX,ax_GYCH_WX],labels=['WX_group','WXPB_group'],loc='best',labelspacing=2,prop={'size': 10})
+    plt.legend(handles=[ax_XYCH_WX,ax_GYCH_WX],labels=[keywords[0]+'group',keywords[1]+'roup'],loc='best',labelspacing=2,prop={'size': 10})
     plt.title('PLS-DA for 未洗和未洗破壁 ({} mode)'.format(mode))
+    plt.grid()
     plt.show()
     # plt.savefig('figures/neg_plots/整体未破壁样本与破壁样本的变化PLS-DA.png')
 
 if __name__ == '__main__':
-    mode = 'BOTH'
+    mode = 'POS'
     if mode == "BOTH":
         filename = '../files/pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
     elif mode == 'POS':
-        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx'
+        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_full_sample_replace_mean_full.xlsx'
     elif mode == 'NEG':
         filename = '../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx'
 
@@ -161,6 +162,6 @@ if __name__ == '__main__':
     keywords5 = ['GCH_WX_','GCH_WXPB_']
     # 研究单个样本破壁与未破壁的变化差异
     keywords6 = ['WX_','WXPB_']
-    keywords = keywords6
+    keywords = keywords5
 
     plsda(filename,mode,keywords)

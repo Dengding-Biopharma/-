@@ -16,18 +16,24 @@ from sklearn.decomposition import PCA
 from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
+from delete import deleteDupFromOriginalTableByDiff, Topkindex_DeleteNotInPubChem, reasonableNameForBoxplot
+
+
 def boxplot(filename,mode):
     data = pd.read_excel(filename)
     targets = data.columns.values[2:]
 
-
+    keywords = ['XYCH_WX_', 'GYCH_WX_']
     for i in range(len(targets)):
-        if 'XYCH_WX_' not in targets[i] and 'GYCH_WX_' not in targets[i]:
+        if keywords[0] not in targets[i] and keywords[1] not in targets[i]:
             del data[targets[i]]
     targets = data.columns.values[2:]
     print(targets)
 
+
     data = data.dropna().reset_index(drop=True)
+    data, diff_list = deleteDupFromOriginalTableByDiff(df=data, keywords=keywords)
+
     print('dataframe shape after drop rows that have NA value: ({} metabolites, {} samples)'.format(data.shape[0],
                                                                                                     data.shape[1] - 2))
 
@@ -68,20 +74,9 @@ def boxplot(filename,mode):
 
 
     top_k = 20
-    p_list =[]
-    for i in range(normalized_data_impute_XYCH_WX.shape[1]):
-        t, p = mannwhitneyu(normalized_data_impute_XYCH_WX[:, i:i + 1], normalized_data_impute_GYCH_WX[:, i:i + 1],
-                            alternative='two-sided')
-        p_list.append(p[0])
-    p_list = np.array(p_list)
-    count = 0
-    for p in p_list:
-        if p < 0.05:
-            count +=1
+    top_k_index = Topkindex_DeleteNotInPubChem(saved_label,top_k)
 
-    top_k_index = p_list.argsort()[::-1][len(p_list)-top_k:]
     print(top_k_index)
-
 
 
     X_XYCH_WX = np.array(normalized_data_impute_XYCH_WX)
@@ -105,7 +100,9 @@ def boxplot(filename,mode):
     labels = []
     for i in range(len(X_diff_XYCH_WX)):
         data_XYCH_WX.append(X_diff_XYCH_WX[i])
-        labels += [saved_label[top_k_index[i]], '']
+        temp = reasonableNameForBoxplot(saved_label[top_k_index[i]])
+        print(temp)
+        labels += [temp, '']
 
     data_GYCH_WX = []
     for i in range(len(X_diff_GYCH_WX)):
@@ -160,7 +157,7 @@ if __name__ == '__main__':
     if mode == "BOTH":
         filename = '../files/pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
     elif mode == 'POS':
-        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx'
+        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_full_sample_replace_mean_full.xlsx'
     elif mode == 'NEG':
         filename = '../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx'
 

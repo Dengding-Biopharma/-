@@ -10,11 +10,21 @@ df['Sample ID'] = data.columns.values[2:]
 
 group = []
 for i in range(len(df)):
-    group.append(df['Sample ID'][i][:-2])
+    if 'WX_' in df['Sample ID'][i]:
+        temp = 'WX'
+    elif 'WXPB_' in df['Sample ID'][i]:
+        temp = 'WXPB'
+    elif 'QX_' in df['Sample ID'][i]:
+        temp = 'QX'
+    elif 'QXPB_' in df['Sample ID'][i]:
+        temp = 'QXPB'
+    elif 'QXRY_' in df['Sample ID'][i]:
+        temp = 'QXRY'
+    group.append(temp)
 df['Group'] = group
 
 for i, row in data.iterrows():
     temp = pd.DataFrame(columns=[row.values[0]],data=row.values[2:])
     df = pd.concat([df,temp],axis=1)
 
-df.to_excel('pollen files/results/transpose_peaktable_pos_mean_full.xlsx',index=False,na_rep=np.nan)
+df.to_excel('pollen files/results/transpose_peaktable_pos_mean_full_general_group.xlsx',index=False,na_rep=np.nan)

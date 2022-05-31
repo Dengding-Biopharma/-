@@ -1,9 +1,12 @@
 import math
+import platform
 import random
 import matplotlib
 
-# matplotlib.rc('font',family='Microsoft YaHei')
-matplotlib.rc('font',family='Arial Unicode MS')
+if platform.system() == 'Windows':
+    matplotlib.rc('font', family='Microsoft YaHei')
+else:
+    matplotlib.rc('font',family='Arial Unicode MS')
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -15,6 +18,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 from statsmodels.stats.anova import anova_lm
+from delete import deleteDupFromOriginalTableByDiff, Topkindex_DeleteNotInPubChem, reasonableNameForBoxplot
 
 
 def boxplot(filename,mode,keywords):
@@ -37,12 +41,17 @@ def boxplot(filename,mode,keywords):
 
 
     data = data.dropna().reset_index(drop=True)
+
+    data, diff_list = deleteDupFromOriginalTableByDiff(df=data, keywords=keywords)
+
     print('dataframe shape after drop rows that have NA value: ({} metabolites, {} samples)'.format(data.shape[0],
                                                                                                     data.shape[1] - 2))
+
     if data.shape[0] == 0:
         print('no metabolites exist!!! Stop!')
     else:
         saved_label = data['dataMatrix'].values
+
         del data['dataMatrix']
         del data['smile']
         targets = data.columns.values
@@ -90,18 +99,7 @@ def boxplot(filename,mode,keywords):
         normalized_data_impute_z = np.array(normalized_data_impute_z)
 
         top_k = 20
-        p_list = []
-        for i in range(normalized_data_impute_x.shape[1]):
-            f, p = stats.f_oneway(normalized_data_impute_x[:, i:i + 1], normalized_data_impute_y[:, i:i + 1],
-                                  normalized_data_impute_z[:, i:i + 1])
-            p_list.append(p[0])
-        p_list = np.array(p_list)
-        count = 0
-        for p in p_list:
-            if p < 0.05:
-                count += 1
-
-        top_k_index = p_list.argsort()[::-1][len(p_list) - top_k:]
+        top_k_index = Topkindex_DeleteNotInPubChem(saved_label, top_k)
 
         if len(top_k_index) == 0:
             print('there are no significant difference between metabolites on these three groups {} by ANOVA'.format(keywords))
@@ -128,7 +126,9 @@ def boxplot(filename,mode,keywords):
             labels = []
             for i in range(len(x_diff)):
                 data_x.append(x_diff[i])
-                labels += [saved_label[top_k_index[i]], '', '']
+                temp = reasonableNameForBoxplot(saved_label[top_k_index[i]])
+                print(temp)
+                labels += [temp, '','']
 
             data_y = []
 
@@ -188,11 +188,11 @@ def boxplot(filename,mode,keywords):
             # plt.savefig('figures/pos_plots/干燥油菜花粉.png')
 
 if __name__ == '__main__':
-    mode = 'BOTH'
+    mode = 'POS'
     if mode == "BOTH":
         filename = '../files/pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
     elif mode == 'POS':
-        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx'
+        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_full_sample_replace_mean_full.xlsx'
     elif mode == 'NEG':
         filename = '../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx'
 
@@ -208,7 +208,7 @@ if __name__ == '__main__':
     keywords5 = ['GCH_WX_', 'GCH_QX_', 'GCH_QXRY_']
     # 研究单个样本破壁与未破壁的变化差异
     keywords6 = ['WX_', 'QX_', 'QXRY']
-    keywords = keywords1
+    keywords = keywords5
 
     boxplot(filename,mode,keywords)
 

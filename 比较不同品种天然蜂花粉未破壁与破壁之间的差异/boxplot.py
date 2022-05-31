@@ -8,20 +8,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.stats import mannwhitneyu
+from delete import deleteDupFromOriginalTableByDiff,reasonableNameForBoxplot,Topkindex_DeleteNotInPubChem
 
 
 def boxplot(filename,mode,keywords):
     data = pd.read_excel(filename)
     targets = data.columns.values[2:]
-    for i in range(len(targets)):
-        if 'WX' not in targets[i]:
-            del data[targets[i]]
-    targets = data.columns.values[2:]
 
     keywords = keywords
 
 
-    print(targets)
 
     for i in range(len(targets)):
         if keywords[0] not in targets[i] and keywords[1] not in targets[i]:
@@ -29,6 +25,8 @@ def boxplot(filename,mode,keywords):
 
 
     data = data.dropna().reset_index(drop=True)
+    data,diff_list = deleteDupFromOriginalTableByDiff(df=data,keywords=keywords)
+
     print('dataframe shape after drop rows that have NA value: ({} metabolites, {} samples)'.format(data.shape[0],
                                                                                                     data.shape[1] - 2))
 
@@ -38,6 +36,7 @@ def boxplot(filename,mode,keywords):
     del data['smile']
     targets = data.columns.values
     print(targets)
+
 
     data_impute = data.values
 
@@ -72,23 +71,15 @@ def boxplot(filename,mode,keywords):
     normalized_data_impute_y = np.array(normalized_data_impute_y)
 
 
-    top_k = 20
-    p_list =[]
-    for i in range(normalized_data_impute_x.shape[1]):
-        t,p = mannwhitneyu(normalized_data_impute_x[:,i:i+1],normalized_data_impute_y[:,i:i+1],alternative='two-sided')
-        p_list.append(p[0])
-    p_list = np.array(p_list)
-    count = 0
-    for p in p_list:
-        if p < 0.05:
-            count +=1
 
-    top_k_index = p_list.argsort()[::-1][len(p_list)-count:]
+    top_k = 20
+    top_k_index = Topkindex_DeleteNotInPubChem(saved_label,top_k)
+
+
     if len(top_k_index) == 0:
         print('there are no significant difference between metabolites on these two groups {} by mann whitney u test'.format(keywords))
     else:
         print(top_k_index)
-        quit()
         X = np.array(normalized_data_impute_x)
         Y = np.array(normalized_data_impute_y)
 
@@ -110,7 +101,12 @@ def boxplot(filename,mode,keywords):
         labels = []
         for i in range(len(X_diff)):
             data_X.append(X_diff[i])
-            labels += [saved_label[top_k_index[i]], '']
+            temp = reasonableNameForBoxplot(saved_label[top_k_index[i]])
+            print(temp)
+            labels += [temp, '']
+
+
+
 
 
         data_Y = []
@@ -155,16 +151,15 @@ def boxplot(filename,mode,keywords):
         plt.legend(handles=[bp['boxes'][0],bp['boxes'][1]],labels=['{}group'.format(keywords[0]),'{}group'.format(keywords[1])])
         plt.title('不同品种天然蜂花粉未破壁与破壁之间的差异（未洗）({} mode)'.format(mode))
         plt.show()
-        # plt.savefig('figures/pos_plots/干燥油菜花粉.png')
 
 if __name__ == '__main__':
     mode = 'POS'
     if mode == "BOTH":
         filename = '../files/pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
     elif mode == 'POS':
-        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx'
+        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_full_sample_replace_mean_full.xlsx'
     elif mode == 'NEG':
-        filename = '../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx'
+        filename = '../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace_mean_full.xlsx'
 
     keywords1 = ['XYCH_WX_','XYCH_WXPB_']
     # 样本2和7、
@@ -177,7 +172,7 @@ if __name__ == '__main__':
     keywords5 = ['GCH_WX_','GCH_WXPB_']
     # 研究单个样本破壁与未破壁的变化差异
     keywords6 = ['WX_','WXPB_']
-    keywords = keywords6
+    keywords = keywords5
 
     boxplot(filename,mode,keywords)
 

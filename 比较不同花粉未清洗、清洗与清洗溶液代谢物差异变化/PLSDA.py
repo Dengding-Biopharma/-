@@ -1,8 +1,11 @@
 import math
+import platform
 import random
 import matplotlib
-# matplotlib.rc('font',family='Microsoft YaHei')
-matplotlib.rc('font',family='Arial Unicode MS')
+if platform.system() == 'Windows':
+    matplotlib.rc('font', family='Microsoft YaHei')
+else:
+    matplotlib.rc('font',family='Arial Unicode MS')
 import matplotlib.pyplot as plt
 
 import numpy as np
@@ -162,14 +165,15 @@ def plsda(filename,mode,keywords):
 
         plt.legend(handles=[ax_x,ax_y,ax_z],labels=['{}group'.format(keywords[0]),'{}group'.format(keywords[1]),'{}group'.format(keywords[2])],loc='best',labelspacing=2,prop={'size': 10})
         plt.title('PLS-DA for 比较不同花粉未清洗、清洗与清洗溶液代谢物差异变化 ({} mode)'.format(mode))
+        plt.grid()
         plt.show()
 
 if __name__ == '__main__':
-    mode = 'BOTH'
+    mode = 'POS'
     if mode == "BOTH":
         filename = '../files/pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
     elif mode == 'POS':
-        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx'
+        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_full_sample_replace_mean_full.xlsx'
     elif mode == 'NEG':
         filename = '../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx'
 
@@ -185,6 +189,6 @@ if __name__ == '__main__':
     keywords5 = ['GCH_WX_', 'GCH_QX_', 'GCH_QXRY_']
     # 研究单个样本破壁与未破壁的变化差异
     keywords6 = ['WX_', 'QX_', 'QXRY']
-    keywords = keywords1
+    keywords = keywords5
 
     plsda(filename,mode,keywords)

@@ -138,7 +138,7 @@ def plsda(filename,mode):
 
     plt.legend(handles=[ax_XYCH_WX,ax_GYCH_WX],labels=['XYCH_WX_group','GYCH_WX_group'],loc='best',labelspacing=2,prop={'size': 10})
     plt.title('PLS-DA for 新鲜油菜花粉和干燥油菜花粉 ({} mode)'.format(mode))
-
+    plt.grid()
     plt.show()
 
 if __name__ == '__main__':
@@ -146,7 +146,7 @@ if __name__ == '__main__':
     if mode == "BOTH":
         filename = '../files/pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
     elif mode == 'POS':
-        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx'
+        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_full_sample_replace_mean_full.xlsx'
     elif mode == 'NEG':
         filename = '../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx'
 

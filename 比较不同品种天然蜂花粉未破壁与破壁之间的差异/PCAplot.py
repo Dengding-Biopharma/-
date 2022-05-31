@@ -164,11 +164,11 @@ def pca(filename,mode,keywords):
     plt.show()
 
 if __name__ == '__main__':
-    mode = 'BOTH'
+    mode = 'POS'
     if mode == "BOTH":
         filename = '../files/pollen files/results/peaktableBOTHout_BOTH_noid_replace_mean_full.xlsx'
     elif mode == 'POS':
-        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_replace.xlsx'
+        filename = '../files/pollen files/results/process_output_quantid_pos_camera_noid/peaktablePOSout_POS_noid_full_sample_replace_mean_full.xlsx'
     elif mode == 'NEG':
         filename = '../files/pollen files/results/process_output_quantid_neg_camera_noid/peaktableNEGout_NEG_noid_replace.xlsx'
 
@@ -183,8 +183,8 @@ if __name__ == '__main__':
     keywords5 = ['GCH_WX_','GCH_WXPB_']
     # 研究单个样本破壁与未破壁的变化差异
     keywords6 = ['WX_','WXPB_']
-    keywords = keywords6
-
-    pca(filename,mode,keywords)
+    keywords = [keywords1, keywords2, keywords3, keywords4, keywords5, keywords6, ]
+    for keyword in keywords:
+        pca(filename, mode, keyword)
 
 
