@@ -13,6 +13,7 @@ from delete import deleteDupFromOriginalTableByDiff,reasonableNameForBoxplot,Top
 
 def boxplot(filename,mode,keywords):
     data = pd.read_excel(filename)
+
     targets = data.columns.values[2:]
 
     keywords = keywords
@@ -25,6 +26,7 @@ def boxplot(filename,mode,keywords):
 
 
     data = data.dropna().reset_index(drop=True)
+
     data,diff_list = deleteDupFromOriginalTableByDiff(df=data,keywords=keywords)
 
     print('dataframe shape after drop rows that have NA value: ({} metabolites, {} samples)'.format(data.shape[0],
@@ -104,7 +106,7 @@ def boxplot(filename,mode,keywords):
             temp = reasonableNameForBoxplot(saved_label[top_k_index[i]])
             print(temp)
             labels += [temp, '']
-
+        quit()
 
 
 
@@ -172,7 +174,7 @@ if __name__ == '__main__':
     keywords5 = ['GCH_WX_','GCH_WXPB_']
     # 研究单个样本破壁与未破壁的变化差异
     keywords6 = ['WX_','WXPB_']
-    keywords = keywords5
+    keywords = keywords6
 
     boxplot(filename,mode,keywords)
 

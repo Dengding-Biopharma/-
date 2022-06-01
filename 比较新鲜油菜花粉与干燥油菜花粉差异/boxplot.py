@@ -103,7 +103,7 @@ def boxplot(filename,mode):
         temp = reasonableNameForBoxplot(saved_label[top_k_index[i]])
         print(temp)
         labels += [temp, '']
-
+    quit()
     data_GYCH_WX = []
     for i in range(len(X_diff_GYCH_WX)):
         data_GYCH_WX.append(X_diff_GYCH_WX[i])

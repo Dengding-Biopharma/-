@@ -97,6 +97,10 @@ def deleteDupFromOriginalTableByDiff(df, keywords):
     finalDF = pd.concat([dup_df, df])
     finalDF = finalDF.sort_values(by='diff', key=abs, ascending=False)
     diff_list = finalDF['diff'].values
+    for i in range(20):
+        print(finalDF['dataMatrix'].values[i],'|',diff_list[i])
+
+    quit()
     del finalDF['diff']
     return finalDF, diff_list
 
@@ -128,7 +132,8 @@ def Topkindex_DeleteNotInPubChem(labels, top_k):
 
     current_index = top_k - 1
     index = [i for i in range(top_k)]
-
+    print(labels[index])
+    quit()
     for i in range(top_k):
         if labels[i] in delete_table:
             print("delete '{}'".format(labels[i]))
