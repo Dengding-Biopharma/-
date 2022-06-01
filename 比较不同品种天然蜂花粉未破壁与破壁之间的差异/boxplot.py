@@ -8,11 +8,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.stats import mannwhitneyu
-from delete import deleteDupFromOriginalTableByDiff,reasonableNameForBoxplot,Topkindex_DeleteNotInPubChem
+from delete import deleteDupFromOriginalTableByDiff,reasonableNameForBoxplot,Topkindex_DeleteNotInPubChem,DeleteDupFromOriginalTableByP_then_diff
 
 
-def boxplot(filename,mode,keywords):
+def boxplot(filename,mode,keywords,special=True):
     data = pd.read_excel(filename)
+
 
     targets = data.columns.values[2:]
 
@@ -25,10 +26,11 @@ def boxplot(filename,mode,keywords):
             del data[targets[i]]
 
 
-    data = data.dropna().reset_index(drop=True)
-
-    data,diff_list = deleteDupFromOriginalTableByDiff(df=data,keywords=keywords)
-
+    if special:
+        data,diff_list = DeleteDupFromOriginalTableByP_then_diff(df=data,keywords=keywords)
+    else:
+        data = data.dropna().reset_index(drop=True)
+        data, diff_list = deleteDupFromOriginalTableByDiff(df=data, keywords=keywords)
     print('dataframe shape after drop rows that have NA value: ({} metabolites, {} samples)'.format(data.shape[0],
                                                                                                     data.shape[1] - 2))
 
@@ -41,9 +43,11 @@ def boxplot(filename,mode,keywords):
 
 
     data_impute = data.values
-
-    for i in range(data_impute.shape[1]):
-        data_impute[:, i] = (data_impute[:, i] / np.sum(data_impute[:, i])) * 100
+    if special:
+        pass
+    else:
+        for i in range(data_impute.shape[1]):
+            data_impute[:, i] = (data_impute[:, i] / np.sum(data_impute[:, i])) * 100
 
     normalized_data_impute = data_impute
 
@@ -106,9 +110,6 @@ def boxplot(filename,mode,keywords):
             temp = reasonableNameForBoxplot(saved_label[top_k_index[i]])
             print(temp)
             labels += [temp, '']
-        quit()
-
-
 
 
         data_Y = []
@@ -134,12 +135,13 @@ def boxplot(filename,mode,keywords):
         data_Y = np.array(data_Y)
         print(data_X.shape)
         print(data_Y.shape)
-        data = np.hstack((data_X,data_Y))
 
         data = []
         for i in range(data_X.shape[0]):
-            data.append(data_X[i,:])
-            data.append(data_Y[i, :])
+
+            data.append([value for value in data_X[i,:] if not np.isnan(value)])
+            data.append([value for value in data_Y[i,:] if not np.isnan(value)])
+
 
 
 

@@ -18,10 +18,11 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 from statsmodels.stats.anova import anova_lm
-from delete import deleteDupFromOriginalTableByDiff, Topkindex_DeleteNotInPubChem, reasonableNameForBoxplot
+from delete import deleteDupFromOriginalTableByDiff, Topkindex_DeleteNotInPubChem, reasonableNameForBoxplot, \
+    DeleteDupFromOriginalTableByP_then_diff
 
 
-def boxplot(filename,mode,keywords):
+def boxplot(filename,mode,keywords,special=True):
     data = pd.read_excel(filename)
     targets = data.columns.values[2:]
     print(targets)
@@ -40,9 +41,11 @@ def boxplot(filename,mode,keywords):
             del data[targets[i]]
 
 
-    data = data.dropna().reset_index(drop=True)
-
-    data, diff_list = deleteDupFromOriginalTableByDiff(df=data, keywords=keywords)
+    if special:
+        data,diff_list = DeleteDupFromOriginalTableByP_then_diff(df=data,keywords=keywords)
+    else:
+        data = data.dropna().reset_index(drop=True)
+        data, diff_list = deleteDupFromOriginalTableByDiff(df=data, keywords=keywords)
 
     print('dataframe shape after drop rows that have NA value: ({} metabolites, {} samples)'.format(data.shape[0],
                                                                                                     data.shape[1] - 2))
@@ -59,8 +62,11 @@ def boxplot(filename,mode,keywords):
 
         data_impute = data.values
 
-        for i in range(data_impute.shape[1]):
-            data_impute[:, i] = (data_impute[:, i] / np.sum(data_impute[:, i])) * 100
+        if special:
+            pass
+        else:
+            for i in range(data_impute.shape[1]):
+                data_impute[:, i] = (data_impute[:, i] / np.sum(data_impute[:, i])) * 100
 
         normalized_data_impute = data_impute
 
@@ -208,7 +214,7 @@ if __name__ == '__main__':
     keywords5 = ['GCH_WX_', 'GCH_QX_', 'GCH_QXRY_']
     # 研究单个样本破壁与未破壁的变化差异
     keywords6 = ['WX_', 'QX_', 'QXRY']
-    keywords = keywords5
+    keywords = keywords6
 
     boxplot(filename,mode,keywords)
 

@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy.stats import kruskal
 
 
 def deleteDep(df):
@@ -144,6 +145,56 @@ def Topkindex_DeleteNotInPubChem(labels, top_k):
 
     return index
 
+def DeleteDupFromOriginalTableByP_then_diff(df,keywords):
+    x_index = []
+    y_index = []
+    z_index = []
+    targets = df.columns.values
+    for i in range(len(targets)):
+        if keywords[0] in targets[i]:
+            x_index.append(i)
+        elif keywords[1] in targets[i]:
+            y_index.append(i)
+        elif keywords[2] in targets[i]:
+            z_index.append(i)
+
+    diff_list = []
+    p_list = []
+    for i in range(len(df)):
+        if np.isnan(np.nanmean(df.values[i, x_index],dtype=float)) or np.isnan(np.nanmean(df.values[i, y_index],dtype=float)) or\
+                np.isnan(np.nanmean(df.values[i, z_index],dtype=float)):
+            diff_list.append(np.nan)
+            p_list.append(np.nan)
+            continue
+        diff = (np.nanmean(df.values[i, y_index],dtype=float) - np.nanmean(df.values[i, x_index],dtype=float)) / np.nanmean(
+            df.values[i, x_index],dtype=float)
+        x = df.values[i, x_index]
+        y = df.values[i, y_index]
+        z = df.values[i, z_index]
+        x = [value for value in x if not np.isnan(value)]
+        y = [value for value in y if not np.isnan(value)]
+        z = [value for value in z if not np.isnan(value)]
+        t, p = kruskal(x, y,z)
+        p_list.append(p)
+        diff_list.append(diff * 100)
+    df['diff'] = diff_list
+    df['p'] = p_list
+    df = df.sort_values(by=['p','diff'],ascending=[True,False],key=abs)
+    for i in range(len(df)):
+        if np.isnan(df['diff'][i]):
+            df = df.drop(i)
+    df = df.reset_index(drop=True)
+    keep = []
+    for i in range(len(df)):
+        if df['dataMatrix'][i] not in keep:
+            keep.append(df['dataMatrix'][i])
+        else:
+            df = df.drop(i)
+    df = df.reset_index(drop=True)
+
+    del df['diff']
+    del df['p']
+    return df, diff_list
 
 if __name__ == '__main__':
     data_path = 'pos_significant.xlsx'

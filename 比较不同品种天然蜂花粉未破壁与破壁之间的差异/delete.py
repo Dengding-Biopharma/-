@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy.stats import mannwhitneyu
 
 
 def deleteDep(df):
@@ -97,10 +98,6 @@ def deleteDupFromOriginalTableByDiff(df, keywords):
     finalDF = pd.concat([dup_df, df])
     finalDF = finalDF.sort_values(by='diff', key=abs, ascending=False)
     diff_list = finalDF['diff'].values
-    for i in range(20):
-        print(finalDF['dataMatrix'].values[i],'|',diff_list[i])
-
-    quit()
     del finalDF['diff']
     return finalDF, diff_list
 
@@ -132,8 +129,6 @@ def Topkindex_DeleteNotInPubChem(labels, top_k):
 
     current_index = top_k - 1
     index = [i for i in range(top_k)]
-    print(labels[index])
-    quit()
     for i in range(top_k):
         if labels[i] in delete_table:
             print("delete '{}'".format(labels[i]))
@@ -147,6 +142,54 @@ def Topkindex_DeleteNotInPubChem(labels, top_k):
         else:
             print("delete '{}'".format(next_name))
     return index
+
+def DeleteDupFromOriginalTableByP_then_diff(df,keywords):
+    x_index = []
+    y_index = []
+    targets = df.columns.values
+    for i in range(len(targets)):
+        if keywords[0] in targets[i]:
+            x_index.append(i)
+        elif keywords[1] in targets[i]:
+            y_index.append(i)
+
+    diff_list = []
+    p_list = []
+    for i in range(len(df)):
+        if np.isnan(np.nanmean(df.values[i, x_index],dtype=float)) or np.isnan(np.nanmean(df.values[i, y_index],dtype=float)):
+            diff_list.append(np.nan)
+            p_list.append(np.nan)
+            continue
+        diff = (np.nanmean(df.values[i, y_index],dtype=float) - np.nanmean(df.values[i, x_index],dtype=float)) / np.nanmean(
+            df.values[i, x_index],dtype=float)
+        x = df.values[i, x_index]
+        y = df.values[i, y_index]
+        x = [value for value in x if not np.isnan(value)]
+        y = [value for value in y if not np.isnan(value)]
+        t, p = mannwhitneyu(x, y)
+        p_list.append(p)
+        diff_list.append(diff * 100)
+    df['diff'] = diff_list
+    df['p'] = p_list
+    df = df.sort_values(by=['p','diff'],ascending=[True,False],key=abs)
+
+    for i in range(len(df)):
+        if np.isnan(df['diff'][i]):
+            df = df.drop(i)
+    df = df.reset_index(drop=True)
+    keep = []
+    for i in range(len(df)):
+        if df['dataMatrix'][i] not in keep:
+            keep.append(df['dataMatrix'][i])
+        else:
+            df = df.drop(i)
+    df = df.reset_index(drop=True)
+
+
+    del df['diff']
+    del df['p']
+    return df, diff_list
+
 
 
 if __name__ == '__main__':

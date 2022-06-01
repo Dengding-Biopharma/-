@@ -3,7 +3,8 @@ import random
 import matplotlib
 import platform
 
-from delete import deleteDupFromOriginalTableByDiff, Topkindex_DeleteNotInPubChem, reasonableNameForBoxplot
+from delete import deleteDupFromOriginalTableByDiff, Topkindex_DeleteNotInPubChem, reasonableNameForBoxplot, \
+    DeleteDupFromOriginalTableByP_then_diff
 
 if platform.system() == 'Windows':
     matplotlib.rc('font', family='Microsoft YaHei')
@@ -20,7 +21,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
 from skimage.measure import EllipseModel
 
-def boxplot(filename,mode,keywords):
+def boxplot(filename,mode,keywords,special=True):
     data = pd.read_excel(filename)
 
     targets = data.columns.values[2:]
@@ -41,8 +42,11 @@ def boxplot(filename,mode,keywords):
         if keywords[0] not in targets[i] and keywords[1] not in targets[i]:
             del data[targets[i]]
 
-    data = data.dropna().reset_index(drop=True)
-    data, diff_list = deleteDupFromOriginalTableByDiff(df=data, keywords=keywords)
+    if special:
+        data,diff_list = DeleteDupFromOriginalTableByP_then_diff(df=data,keywords=keywords)
+    else:
+        data = data.dropna().reset_index(drop=True)
+        data, diff_list = deleteDupFromOriginalTableByDiff(df=data, keywords=keywords)
 
     print('dataframe shape after drop rows that have NA value: ({} metabolites, {} samples)'.format(data.shape[0],
                                                                                                     data.shape[1] - 2))
@@ -54,8 +58,9 @@ def boxplot(filename,mode,keywords):
 
 
     data_impute = data.values
-    for i in range(data_impute.shape[1]):
-        data_impute[:, i] = (data_impute[:, i] / np.sum(data_impute[:, i])) * 100
+    if not special:
+        for i in range(data_impute.shape[1]):
+            data_impute[:, i] = (data_impute[:, i] / np.sum(data_impute[:, i])) * 100
 
     normalized_data_impute = data_impute
 
@@ -147,8 +152,8 @@ def boxplot(filename,mode,keywords):
 
         data = []
         for i in range(data_XYCH_WX.shape[0]):
-            data.append(data_XYCH_WX[i,:])
-            data.append(data_GYCH_WX[i, :])
+            data.append([value for value in data_XYCH_WX[i,:] if not np.isnan(value)])
+            data.append([value for value in data_GYCH_WX[i, :] if not np.isnan(value)])
 
 
         bp = plt.boxplot(data,labels=labels,patch_artist=True)
@@ -184,7 +189,7 @@ if __name__ == '__main__':
     keywords5 = ['GCH_QX_','GCH_QXPB_']
     # 研究单个样本破壁与未破壁的变化差异
     keywords6 = ['QX_','QXPB_']
-    keywords = keywords5
+    keywords = keywords6
 
     boxplot(filename,mode,keywords)
 
