@@ -171,11 +171,10 @@ def boxplot(filename,mode,keywords,special=True):
             data = []
 
             for i in range(data_x.shape[0]):
-                data.append(data_x[i, :])
-                data.append(data_y[i, :])
-                data.append(data_z[i, :])
+                data.append([value for value in data_x[i, :] if not np.isnan(value)])
+                data.append([value for value in data_y[i, :] if not np.isnan(value)])
+                data.append([value for value in data_z[i, :] if not np.isnan(value)])
 
-            print(data)
 
             bp = plt.boxplot(data, labels=labels, patch_artist=True)
 
