@@ -19,7 +19,7 @@ from scipy.stats import ttest_ind, mannwhitneyu
 from sklearn.decomposition import PCA
 from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
-from skimage.measure import EllipseModel
+
 
 def boxplot(filename,mode,keywords,special=True):
     data = pd.read_excel(filename)
@@ -93,7 +93,7 @@ def boxplot(filename,mode,keywords,special=True):
 
 
     top_k = 20
-    top_k_index = Topkindex_DeleteNotInPubChem(saved_label,top_k)
+    top_k_index,saved_label = Topkindex_DeleteNotInPubChem(saved_label,top_k)
 
 
     if len(top_k_index) == 0:

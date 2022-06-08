@@ -103,14 +103,7 @@ def deleteDupFromOriginalTableByDiff(df, keywords):
 
 def reasonableNameForBoxplot(label):
     xls = pd.ExcelFile('../files/operation database.xlsx')
-    delete_Char_table = pd.read_excel(xls, 'Delete Char')
     renaming_table = pd.read_excel(xls, 'Renaming')
-    # print(renaming_table)
-    # step 1
-    for char in delete_Char_table['Unnamed: 0'].values:
-        if char in label:
-            temp = label.split(' '+char)[0]
-            label = temp
 
     for i in range(len(renaming_table)):
         if label == renaming_table['Original Name'][i]:
@@ -125,6 +118,12 @@ def Topkindex_DeleteNotInPubChem(labels, top_k):
     xls = pd.ExcelFile('../files/operation database.xlsx')
     delete_PubChem_table = pd.read_excel(xls, 'Not in PubChem', header=None)
     delete_table = [i[0] for i in delete_PubChem_table.values]
+    delete_Char_table = pd.read_excel(xls, 'Delete Char')
+    for char in delete_Char_table['Unnamed: 0'].values:
+        for i in range(len(labels)):
+            if char in labels[i]:
+                temp = labels[i].split(' '+char)[0]
+                labels[i] = temp
 
     current_index = top_k - 1
     index = [i for i in range(top_k)]
@@ -142,7 +141,7 @@ def Topkindex_DeleteNotInPubChem(labels, top_k):
         else:
             print("delete '{}'".format(next_name))
 
-    return index
+    return index,labels
 
 
 if __name__ == '__main__':

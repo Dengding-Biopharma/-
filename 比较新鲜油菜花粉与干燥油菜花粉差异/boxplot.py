@@ -15,7 +15,7 @@ from scipy.stats import ttest_ind, mannwhitneyu
 from sklearn.decomposition import PCA
 from sklearn.impute import SimpleImputer
 from sklearn.cluster import KMeans
-from skimage.measure import EllipseModel
+
 from delete import deleteDupFromOriginalTableByDiff, Topkindex_DeleteNotInPubChem, reasonableNameForBoxplot
 
 
@@ -74,7 +74,7 @@ def boxplot(filename,mode):
 
 
     top_k = 20
-    top_k_index = Topkindex_DeleteNotInPubChem(saved_label,top_k)
+    top_k_index,saved_label = Topkindex_DeleteNotInPubChem(saved_label,top_k)
 
     print(top_k_index)
 
@@ -103,7 +103,7 @@ def boxplot(filename,mode):
         temp = reasonableNameForBoxplot(saved_label[top_k_index[i]])
         print(temp)
         labels += [temp, '']
-    quit()
+
     data_GYCH_WX = []
     for i in range(len(X_diff_GYCH_WX)):
         data_GYCH_WX.append(X_diff_GYCH_WX[i])

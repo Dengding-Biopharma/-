@@ -79,7 +79,7 @@ def boxplot(filename,mode,keywords,special=True):
 
 
     top_k = 20
-    top_k_index = Topkindex_DeleteNotInPubChem(saved_label,top_k)
+    top_k_index,saved_label = Topkindex_DeleteNotInPubChem(saved_label,top_k)
 
 
     if len(top_k_index) == 0:
